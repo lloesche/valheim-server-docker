@@ -14,7 +14,7 @@ main() {
 update() {
     local logfile="$(mktemp)"
     echo "Updating/Validating Valheim Server"
-    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim +app_update 896660 validate +quit 2>&1 | tee "$logfile"
+    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim +app_update 896660 +quit 2>&1 | tee "$logfile"
     grep downloading "$logfile" > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         echo "Valheim Server was updated - restarting"
