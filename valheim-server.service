@@ -1,5 +1,5 @@
 [Unit]
-Description=Tower Unite Server
+Description=Valheim Server
 After=docker.service
 Requires=docker.service
 
