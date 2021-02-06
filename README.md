@@ -24,6 +24,7 @@ SERVER_PUBLIC=1
 ```
 
 ```
+$ sudo mkdir /etc/valheim
 $ sudo curl -o /etc/systemd/system/valheim-server.service https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/valheim-server.service
 $ sudo systemctl daemon-reload
 $ sudo systemctl enable valheim-server.service
