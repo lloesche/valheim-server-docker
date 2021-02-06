@@ -15,7 +15,7 @@ update() {
     grep downloading "$logfile" > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         echo "Valheim Server was updated - restarting"
-	supervisorctl restart valheim-server
+	    supervisorctl restart valheim-server
     else
         echo "Valheim Server is already the latest version"
     fi
