@@ -14,11 +14,11 @@ ExecStart=/usr/bin/docker run \
           --rm \
           -v /etc/valheim:/config \
           -p 2456-2458:2456-2458/udp \
-          --env SERVER_NAME \
-          --env SERVER_PORT \
-          --env WORLD_NAME \
-          --env SERVER_PASS \
-          --env SERVER_PUBLIC \
+          -e SERVER_NAME \
+          -e SERVER_PORT \
+          -e WORLD_NAME \
+          -e SERVER_PASS \
+          -e SERVER_PUBLIC \
           --dns 8.8.8.8 \
           --dns 8.8.4.4 \
           lloesche/valheim-server
