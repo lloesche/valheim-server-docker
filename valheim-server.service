@@ -1,0 +1,29 @@
+[Unit]
+Description=Tower Unite Server
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=-/etc/sysconfig/valheim-server
+ExecStartPre=-/usr/bin/docker stop %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull lloesche/valheim-server
+ExecStart=/usr/bin/docker run \
+          --name %n \
+          --rm \
+          -p 2456-2458:2456-2458/udp \
+          --env SERVER_NAME \
+          --env SERVER_PORT \
+          --env WORLD_NAME \
+          --env SERVER_PASS \
+          --env SERVER_PUBLIC \
+          --dns 8.8.8.8 \
+          --dns 8.8.4.4 \
+          lloesche/valheim-server
+ExecStop=/usr/bin/docker stop %n
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

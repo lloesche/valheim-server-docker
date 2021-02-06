@@ -1,0 +1,30 @@
+#!/bin/bash
+cd /opt/tower-unite
+tuserver="Tower/Binaries/Linux/TowerServer-Linux-Shipping"
+tuconfig="Tower/Saved/Config/LinuxServer/TowerServer.ini"
+
+main() {
+    while :; do
+        if [ -f "$tuserver" ]; then
+            break
+        else
+            echo "Tower Unite Server is not yet downloaded"
+            sleep 10
+        fi
+    done
+    writeconfig
+    exec "$tuserver" -log
+}
+
+writeconfig() {
+    echo "Writing Server Config $tuconfig"
+    config="[/script/towernetworking.dedicatedserveroptions]"
+    [ -n "$ServerTitle" ] && config="$config\nServerTitle=$ServerTitle"
+    [ -n "$MaxPlayers" ] && config="$config\nMaxPlayers=$MaxPlayers"
+    [ -n "$SteamLoginToken" ] && config="$config\nSteamLoginToken=$SteamLoginToken"
+    echo "---"
+    echo -e "$config" | tee "$tuconfig"
+    echo "---"
+}
+
+main

@@ -1,0 +1,26 @@
+#!/bin/bash
+cd /opt/valheim
+valheim_server="/opt/valheim/valheim_server.x86_64"
+SERVER_NAME=${SERVER_NAME:-My Server}
+SERVER_PORT=${SERVER_PORT:-2456}
+WORLD_NAME=${WORLD_NAME:-Dedicated}
+SERVER_PASS=${SERVER_PASS:-secret}
+SERVER_PUBLIC=${SERVER_PUBLIC:-1}
+
+export SteamAppId=892970
+export LD_LIBRARY_PATH="/opt/valheim/linux64/"
+
+main() {
+    while :; do
+        if [ -f "$valheim_server" ]; then
+            break
+        else
+            echo "Valheim Server is not yet downloaded - waiting"
+            sleep 10
+        fi
+    done
+    echo "Running Valheim Server"
+    exec "$valheim_server" -name "$SERVER_NAME" -port $SERVER_PORT -world "$WORLD_NAME" -password "$SERVER_PASS" -public $SERVER_PUBLIC
+}
+
+main

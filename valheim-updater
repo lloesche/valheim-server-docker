@@ -1,0 +1,25 @@
+#!/bin/bash
+cd /opt/steamcmd
+
+main() {
+    while :; do
+        update
+        sleep 900
+    done
+}
+
+update() {
+    local logfile="$(mktemp)"
+    echo "Updating/Validating Valheim Server"
+    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim +app_update 896660 validate +quit 2>&1 | tee "$logfile"
+    grep downloading "$logfile" > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "Valheim Server was updated - restarting"
+	supervisorctl restart valheim-server
+    else
+        echo "Valheim Server is already the latest version"
+    fi
+    rm -f "$logfile"
+}
+
+main
