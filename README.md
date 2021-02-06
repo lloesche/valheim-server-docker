@@ -4,12 +4,10 @@ Valheim Server in a Docker Container
 # Docker example
 ```
 $ docker run -d --rm \
-    -p 27015-27050:27015-27050/tcp \
-    -p 27015-27050:27015-27050/udp \
-    -p 7777-7780:7777-7780/udp \
-    -p 3478:3478/udp \
-    -p 4379-4380:4379-4380/udp \
-    -e MaxPlayers=64
+    -p 2456-2458:2456-2458/udp \
+    -e SERVER_NAME="My Server" \
+    -e WORLD_NAME="Neotopia" \
+    -e SERVER_PASS="secret" \
     lloesche/valheim-server
 ```
 
@@ -20,7 +18,7 @@ SERVER_NAME="My Server"
 SERVER_PORT=2456
 WORLD_NAME=Dedicated
 SERVER_PASS=secret
-SERVER_PUBLIC=0
+SERVER_PUBLIC=1
 ```
 
 ```
