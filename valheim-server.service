@@ -12,7 +12,7 @@ ExecStartPre=/usr/bin/docker pull lloesche/valheim-server
 ExecStart=/usr/bin/docker run \
           --name %n \
           --rm \
-          -v /etc/valheim:/config \
+          -v /etc/valheim:/config:Z \
           -p 2456-2458:2456-2458/udp \
           -e SERVER_NAME \
           -e SERVER_PORT \
