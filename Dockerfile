@@ -38,4 +38,4 @@ RUN apt-get update \
 VOLUME /config
 EXPOSE 2456-2458/udp
 WORKDIR /home/steam
-CMD ["/usr/bin/supervisord"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
