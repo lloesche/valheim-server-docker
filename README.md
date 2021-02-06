@@ -3,8 +3,10 @@ Valheim Server in a Docker Container
 
 # Docker example
 ```
+$ mkdir -p $PWD/valheim-server-config
 $ docker run -d --rm \
     -p 2456-2458:2456-2458/udp \
+    -v $PWD/valheim-server-config:/config \
     -e SERVER_NAME="My Server" \
     -e WORLD_NAME="Neotopia" \
     -e SERVER_PASS="secret" \

@@ -1,6 +1,8 @@
 #!/bin/bash
-cd /opt/steamcmd
+# Fix permissions in case they were altered externaly
+chown -R steam:steam /config
 
+cd /opt/steamcmd
 main() {
     while :; do
         update
