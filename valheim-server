@@ -20,7 +20,13 @@ main() {
         fi
     done
     echo "Running Valheim Server"
-    exec "$valheim_server" -name "$SERVER_NAME" -port $SERVER_PORT -world "$WORLD_NAME" -password "$SERVER_PASS" -public $SERVER_PUBLIC
+    "$valheim_server" -name "$SERVER_NAME" -port $SERVER_PORT -world "$WORLD_NAME" -password "$SERVER_PASS" -public $SERVER_PUBLIC
 }
 
+shutdown() {
+    echo "Shutting down Valheim Server"
+    echo 1 > /opt/valheim/server_exit.drp
+}
+
+trap shutdown SIGINT SIGTERM
 main
