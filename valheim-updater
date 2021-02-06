@@ -18,6 +18,8 @@ update() {
     grep downloading "$logfile" > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         echo "Valheim Server was updated - restarting"
+        # Update directory permissions so valheim-server running as steam
+        # can create /opt/valheim/server_exit.drp on shutdown.
         chown steam:steam /opt/valheim
         supervisorctl restart valheim-server
     else
