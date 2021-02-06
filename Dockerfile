@@ -13,7 +13,8 @@ RUN apt-get update \
         procps \
         locales \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
-    && locale-gen en_US.UTF-8 \
+    && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+    && locale-gen \
     && apt-get clean \
     && adduser \
         --home /home/steam \
