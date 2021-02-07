@@ -1,6 +1,7 @@
 #!/bin/bash
 cd /opt/valheim
 valheim_server="/opt/valheim/valheim_server.x86_64"
+valheim_server_pid=-1
 SERVER_NAME=${SERVER_NAME:-My Server}
 SERVER_PORT=${SERVER_PORT:-2456}
 WORLD_NAME=${WORLD_NAME:-Dedicated}
@@ -21,13 +22,17 @@ main() {
     done
     echo "Running Valheim Server"
     "$valheim_server" -name "$SERVER_NAME" -port $SERVER_PORT -world "$WORLD_NAME" -password "$SERVER_PASS" -public $SERVER_PUBLIC &
+    valheim_server_pid=$!
     wait
 }
 
 shutdown() {
-    echo "Shutting down Valheim Server"
+    echo "Shutting down Valheim Server with PID $valheim_server_pid"
     echo 1 > /opt/valheim/server_exit.drp
-    sleep 30
+    while [ -d "/proc/$valheim_server_pid" ]; do
+        echo "Waiting for Valheim Server shutdown"
+        sleep 1
+    done
     exit
 }
 

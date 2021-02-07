@@ -14,6 +14,9 @@ main() {
 update() {
     local logfile="$(mktemp)"
     echo "Updating/Validating Valheim Server"
+    # Valheim dedicated server contains the file server_exit.drp which will make the server shut down / restart
+    # on each update check if validate is being used.
+    # ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim +app_update 896660 validate +quit 2>&1 | tee "$logfile"
     ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim +app_update 896660 +quit 2>&1 | tee "$logfile"
     grep downloading "$logfile" > /dev/null 2>&1
     if [ $? -eq 0 ]; then
