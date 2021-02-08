@@ -4,6 +4,7 @@ echo "Running Valheim Server updater as user $USER uid $UID"
 CONFIG_DIRECTORY_PERMISSIONS=${CONFIG_DIRECTORY_PERMISSIONS:-755}
 WORLDS_DIRECTORY_PERMISSIONS=${WORLDS_DIRECTORY_PERMISSIONS:-755}
 WORLDS_FILE_PERMISSIONS=${WORLDS_FILE_PERMISSIONS:-644}
+UPDATE_INTERVAL=${UPDATE_INTERVAL:-900}
 
 just_started=true
 
@@ -12,7 +13,7 @@ main() {
     while :; do
         update_permissions
         update
-        sleep 900
+        sleep $UPDATE_INTERVAL
     done
 }
 

@@ -89,6 +89,7 @@ However the `worlds/` directory also contains a `.db.old` file for each world wh
 |`WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
 |`SERVER_PASS` | `secret` | Password for logging into the server |
 |`SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
+|`UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
 |`BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
 |`BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
 |`BACKUPS_MAX_AGE` | `7` | Age in days after which old backups are flushed |
