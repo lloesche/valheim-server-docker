@@ -2,6 +2,7 @@
 # Fix permissions in case they were altered externaly
 echo "Running Valheim Server updater as user $USER uid $UID"
 chown -R steam:steam /config
+just_started=true
 
 cd /opt/steamcmd
 main() {
@@ -27,7 +28,11 @@ update() {
         supervisorctl restart valheim-server
     else
         echo "Valheim Server is already the latest version"
+        if [ $just_started = "true" ]; then
+            supervisorctl start valheim-server
+        fi
     fi
+    just_started=false
     rm -f "$logfile"
 }
 
