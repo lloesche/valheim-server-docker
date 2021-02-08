@@ -20,8 +20,12 @@ main() {
 }
 
 backup() {
+    if [ ! -d "/config/worlds" ]; then
+        echo "No Valheim worlds to backup"
+        return
+    fi
     local backup_file="$BACKUPS_DIRECTORY/worlds-$(date +%Y%m%d-%H%M%S).zip"
-    echo "Backing up Valheim Server Worlds to $backup_file"
+    echo "Backing up Valheim server worlds to $backup_file"
     mkdir -p "$BACKUPS_DIRECTORY"
     chmod $BACKUPS_DIRECTORY_PERMISSIONS "$BACKUPS_DIRECTORY"
     zip -r "$backup_file" "worlds/"
@@ -29,6 +33,10 @@ backup() {
 }
 
 flush_old() {
+    if [ ! -d "$BACKUPS_DIRECTORY" ]; then
+        echo "No old backups to remove"
+        return
+    fi
     echo "Removing backups older than $BACKUPS_MAX_AGE days"
     find "$BACKUPS_DIRECTORY" -type f -mtime +$BACKUPS_MAX_AGE -name 'worlds-*.zip' -print -exec rm -f "{}" \;
 }

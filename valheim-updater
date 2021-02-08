@@ -44,6 +44,7 @@ update_permissions() {
     chown -R steam:steam /config
     chmod $CONFIG_DIRECTORY_PERMISSIONS /config
     if [ -d /config/worlds ]; then
+        chown -R steam:steam /config/worlds
         chmod $WORLDS_DIRECTORY_PERMISSIONS /config/worlds
         chmod $WORLDS_FILE_PERMISSIONS /config/worlds/*
     fi
