@@ -1,4 +1,4 @@
-# valheim-server-docker
+# lloesche/valheim-server Docker image
 Valheim Server in a Docker Container
 
 # Docker example
@@ -79,3 +79,21 @@ By default 3 days worth of backups will be kept. A different number can be confi
 
 Beware that backups are performed while the server is running. As such files might be in an open state when the backup runs.
 However the `worlds/` directory also contains a `.db.old` file for each world which should always be closed and in a consistent state.
+
+
+# Environment Variables
+| Name | Default | Purpose |
+|----------|----------|-------|
+|`SERVER_NAME` | `My Server` | Name that will be shown in the server browser |
+|`SERVER_PORT` | `2456` | UDP start port that the server will listen on |
+|`WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
+|`SERVER_PASS` | `secret` | Password for logging into the server |
+|`SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
+|`BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
+|`BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
+|`BACKUPS_MAX_AGE` | `7` | Age in days after which old backups are flushed |
+|`BACKUPS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the backup directory |
+|`BACKUPS_FILE_PERMISSIONS` | `644` | Unix permissions for the backup zip files |
+|`CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
+|`WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
+|`WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
