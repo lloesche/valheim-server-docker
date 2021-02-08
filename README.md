@@ -101,8 +101,9 @@ However the `worlds/` directory also contains a `.db.old` file for each world wh
 
 
 # Synology Help
-This is not an extensive tutorial, but I hope these screenshots help somebody getting Valheim server running on their Synology.
+This is not an extensive tutorial, but I hope these screenshots can be helpful.
 Beware that the server can use multiple GB of RAM and produces a lot of CPU load.
+
 ![Step 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/misc/step1.png "Step 1")
 ![Step 2](https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/misc/step2.png "Step 2")
 ![Step 3](https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/misc/step3.png "Step 3")
