@@ -63,3 +63,19 @@ $ sudo systemctl start valheim-server.service
 # Updates
 The container will check for Valheim server updates every 15 minutes.
 If an update is found it is downloaded and the server restarted.
+
+
+# Backups
+The container will on startup and periodically create a backup of the `worlds/` directory.
+
+The default is once per hour but can be changed using the `BACKUPS_INTERVAL` environment variable.
+The number is in seconds. Meaning for hourly backups set `BACKUPS_INTERVAL=3600`.
+
+Default backup directory is `/config/backups/` within the container. A different directory can be set using the `BACKUPS_DIRECTORY` environment variable.
+It makes sense to have this directory be a volume mount from the host.
+Warning: do not make the backup directory a subfolder of `/config/worlds/`. Otherwise each backup will backup all previous backups.
+
+By default 3 days worth of backups will be kept. A different number can be configured using `BACKUPS_MAX_AGE`. The value is in days.
+
+Beware that backups are performed while the server is running. As such files might be in an open state when the backup runs.
+However the `worlds/` directory also contains a `.db.old` file for each world which should always be closed and in a consistent state.

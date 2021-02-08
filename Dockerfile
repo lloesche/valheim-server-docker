@@ -2,9 +2,10 @@ FROM debian:stable
 COPY supervisord.conf /etc/supervisor/conf.d/valheim.conf
 COPY valheim-server /usr/local/bin/
 COPY valheim-updater /usr/local/bin/
+COPY valheim-backup /usr/local/bin/
 ADD https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz /tmp
 RUN apt-get update \
-    && apt-get -y dist-upgrade \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install \
         lib32gcc1 \
         libsdl2-2.0-0 \
@@ -12,6 +13,8 @@ RUN apt-get update \
         supervisor \
         procps \
         locales \
+        unzip \
+        zip \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && locale-gen \

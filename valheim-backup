@@ -1,0 +1,32 @@
+#!/bin/bash
+
+BACKUPS_INTERVAL=${BACKUPS_INTERVAL:-3600}
+BACKUPS_DIRECTORY=${BACKUPS_DIRECTORY:-/config/backups}
+BACKUPS_MAX_AGE=${BACKUPS_MAX_AGE:-3}
+
+# Remove trailing slash if any
+BACKUPS_DIRECTORY=${BACKUPS_DIRECTORY%/}
+
+main() {
+    cd /config
+    while :; do
+        backup
+        flush_old
+        echo "Waiting $BACKUPS_INTERVAL seconds before next backup run"
+        sleep $BACKUPS_INTERVAL
+    done
+}
+
+backup() {
+    local backup_file="$BACKUPS_DIRECTORY/worlds-$(date +%Y%m%d-%H%M%S).zip"
+    echo "Backing up Valheim Server Worlds to $backup_file"
+    mkdir -p "$BACKUPS_DIRECTORY"
+    zip -r "$backup_file" "worlds/"
+}
+
+flush_old() {
+    echo "Removing backups older than $BACKUPS_MAX_AGE days"
+    find "$BACKUPS_DIRECTORY" -type f -mtime +$BACKUPS_MAX_AGE -name 'worlds-*.zip' -print -exec rm -f "{}" \;
+}
+
+main
