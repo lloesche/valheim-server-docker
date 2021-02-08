@@ -97,3 +97,15 @@ However the `worlds/` directory also contains a `.db.old` file for each world wh
 |`CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
 |`WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
 |`WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
+
+
+# Synology Help
+This is not an extensive tutorial, but I hope these screenshots help somebody getting Valheim server running on their Synology.
+Beware that the server can use multiple GB of RAM and produces a lot of CPU load.
+![Step 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/misc/step1.png "Step 1")
+![Step 2](https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/misc/step2.png "Step 2")
+![Step 3](https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/misc/step3.png "Step 3")
+![Step 4](https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/misc/step4.png "Step 4")
+![Step 5](https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/misc/step5.png "Step 5")
+![Step 6](https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/misc/step6.png "Step 6")
+![Step 7](https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/misc/step7.png "Step 7")
