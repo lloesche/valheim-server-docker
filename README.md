@@ -128,10 +128,12 @@ Note that in my tests when connecting to the server via the Steam server browser
 A third option within Steam is to add the server manually by IP. This also allows for LAN play without the need to open or forward any firewall ports.
 
 Steps:
-1) `ADD SERVER`
-2) Enter Server IP and port+1. So if the server is running on UDP port `2456` enter `ip:2457`
-3) `FIND GAMES AT THIS ADDRESS...`
-4) `ADD SELECTED GAME SERVER TO FAV...`
+1) Within Steam click on `View -> Servers`
+2) `FAVORITES`
+3) `ADD SERVER`
+4) Enter Server IP and port+1. So if the server is running on UDP port `2456` enter `ip:2457`
+5) `FIND GAMES AT THIS ADDRESS...`
+6) `ADD SELECTED GAME SERVER TO FAV...`
 
 ![Add server manually](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/find3.png "Add server manually")
 
