@@ -1,5 +1,4 @@
 FROM debian:stable
-COPY supervisord.conf /etc/supervisor/conf.d/valheim.conf
 COPY valheim-server /usr/local/bin/
 COPY valheim-updater /usr/local/bin/
 COPY valheim-backup /usr/local/bin/
@@ -39,6 +38,7 @@ RUN dpkg --add-architecture i386 \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 VOLUME /config
 EXPOSE 2456-2458/udp
