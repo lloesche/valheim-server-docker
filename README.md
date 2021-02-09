@@ -102,19 +102,6 @@ However the `worlds/` directory also contains a `.db.old` file for each world wh
 |`WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
 
 
-# Synology Help
-This is not an extensive tutorial, but I hope these screenshots can be helpful.
-Beware that the server can use multiple GB of RAM and produces a lot of CPU load.
-
-![Step 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step1.png "Step 1")
-![Step 2](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step2.png "Step 2")
-![Step 3](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step3.png "Step 3")
-![Step 4](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step4.png "Step 4")
-![Step 5](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step5.png "Step 5")
-![Step 6](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step6.png "Step 6")
-![Step 7](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step7.png "Step 7")
-
-
 # Finding your server
 Once the server is up and running and the log says something like
 ```
@@ -142,3 +129,16 @@ A third option within Steam is to add the server manually by IP. Steps:
 4) `ADD SELECTED GAME SERVER TO FAV...`
 
 Do NOT use the `ADD THIS ADDRESS TO FAVORITES` button!
+
+
+# Synology Help
+This is not an extensive tutorial, but I hope these screenshots can be helpful.
+Beware that the server can use multiple GB of RAM and produces a lot of CPU load.
+
+![Step 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step1.png "Step 1")
+![Step 2](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step2.png "Step 2")
+![Step 3](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step3.png "Step 3")
+![Step 4](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step4.png "Step 4")
+![Step 5](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step5.png "Step 5")
+![Step 6](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step6.png "Step 6")
+![Step 7](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step7.png "Step 7")
