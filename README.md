@@ -3,28 +3,17 @@
 
 Valheim Server in a Docker Container
 
-# Docker example
+# Basic Docker Usage
 
-Volume mount the server config directory to
-`/config` within the Docker container.
+The name of the Docker image is `lloesche/valheim-server`.
 
-If you have an existing world on a Windows system you
-can copy it from e.g.
-  `C:\Users\Lukas\AppData\LocalLow\IronGate\Valheim\worlds`
-to e.g.
-  `$HOME/valheim-server-config/worlds`
-and run the image.
+Volume mount the server config directory to `/config` within the Docker container.
 
-Do not forget to modify `WORLD_NAME` to reflect the name of
-your world!
-
-If behind NAT make sure that UDP ports 2456-2458 are
-forwarded to the container host.
-Also ensure they are publicly accessible in any firewall.
-
-If your server name does not show up in the server list 
-a couple of minutes after startup you likely have a firewall
-issue.
+If you have an existing world on a Windows system you can copy it from e.g.  
+  `C:\Users\Lukas\AppData\LocalLow\IronGate\Valheim\worlds`  
+to e.g.  
+  `$HOME/valheim-server-config/worlds`  
+and run the image with `$HOME/valheim-server-config` volume mounted to `/config` inside the container.
 
 ```
 $ mkdir -p $HOME/valheim-server-config/worlds
@@ -39,11 +28,40 @@ $ docker run -d \
     lloesche/valheim-server
 ```
 
-A fresh start will take several minutes depending on your
-Internet connection speed as the container will download
-the Valheim dedicated server from Steam.
+A fresh start will take several minutes depending on your Internet connection speed as the container will download the Valheim dedicated server from Steam (~1 GB).
 
-# Docker+systemd example
+Do not forget to modify `WORLD_NAME` to reflect the name of your world! For existing worlds that is the filename in the `worlds/` folder without the `.db/.fwl` extension.
+
+If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2458 are forwarded to the container host.
+Also ensure they are publicly accessible in any firewall.
+
+If your server name does not show up in the server list  a couple of minutes after startup you likely have a firewall issue.
+
+There is more info in section [Finding your server](#finding-your-server).
+
+For LAN-only play see section [Steam Server Favorites & LAN play](#steam-server-favorites--lan-play)
+
+
+# Environment Variables
+| Name | Default | Purpose |
+|----------|----------|-------|
+|`SERVER_NAME` | `My Server` | Name that will be shown in the server browser |
+|`SERVER_PORT` | `2456` | UDP start port that the server will listen on |
+|`WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
+|`SERVER_PASS` | `secret` | Password for logging into the server |
+|`SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
+|`UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
+|`BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
+|`BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
+|`BACKUPS_MAX_AGE` | `7` | Age in days after which old backups are flushed |
+|`BACKUPS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the backup directory |
+|`BACKUPS_FILE_PERMISSIONS` | `644` | Unix permissions for the backup zip files |
+|`CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
+|`WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
+|`WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
+
+
+# Docker+systemd Example
 Create an optional config file `/etc/sysconfig/valheim-server`
 ```
 SERVER_NAME="My Server"
@@ -83,26 +101,7 @@ Beware that backups are performed while the server is running. As such files mig
 However the `worlds/` directory also contains a `.db.old` file for each world which should always be closed and in a consistent state.
 
 
-# Environment Variables
-| Name | Default | Purpose |
-|----------|----------|-------|
-|`SERVER_NAME` | `My Server` | Name that will be shown in the server browser |
-|`SERVER_PORT` | `2456` | UDP start port that the server will listen on |
-|`WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
-|`SERVER_PASS` | `secret` | Password for logging into the server |
-|`SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
-|`UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
-|`BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
-|`BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
-|`BACKUPS_MAX_AGE` | `7` | Age in days after which old backups are flushed |
-|`BACKUPS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the backup directory |
-|`BACKUPS_FILE_PERMISSIONS` | `644` | Unix permissions for the backup zip files |
-|`CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
-|`WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
-|`WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
-
-
-# Finding your server
+# Finding Your Server
 Once the server is up and running and the log says something like
 ```
 02/09/2021 10:42:24: Game server connected
@@ -124,7 +123,7 @@ From there you can right-click it and add as a favourite.
 
 Note that in my tests when connecting to the server via the Steam server browser I had to enter the server password twice. Once in Steam and once in-game.
 
-## Steam Server Favorites & LAN play
+## Steam Server Favorites & LAN Play
 A third option within Steam is to add the server manually by IP. This also allows for LAN play without the need to open or forward any firewall ports.
 
 Steps:
