@@ -136,7 +136,14 @@ Steps:
 
 ![Add server manually](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/find3.png "Add server manually")
 
-Do NOT use the `ADD THIS ADDRESS TO FAVORITES` button!
+Do not use the `ADD THIS ADDRESS TO FAVORITES` button at this point.
+
+NOTE: Sometimes I will get the following error when trying to connect to a LAN server:
+![Steam Server Browser Error](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/find4.png "Steam Server Browser Error")
+In those cases it helped to add the server again, but this time using port `2456` and now pressing the `ADD THIS ADDRESS TO FAVORITES` button.
+It will not generate a new entry in the favourites list but seemingly just update the existing one that was originally discovered on port `2457`.
+
+That said LAN play via the Steam Server Browser has been a bit hit and miss for me while online play using the in-game search has resulted in the most consistent success.
 
 
 # Synology Help
