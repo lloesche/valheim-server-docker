@@ -144,7 +144,22 @@ NOTE: Sometimes I will get the following error when trying to connect to a LAN s
 In those cases it sometimes helped to add the server again, but this time using port `2456` and now pressing the `ADD THIS ADDRESS TO FAVORITES` button.
 It will not generate a new entry in the favourites list but seemingly just update the existing one that was originally discovered on port `2457`.
 
+Sometimes it also helps to press the `REFRESH` button and then immediately double click on the Server.
+
 Overall LAN play via the Steam Server Browser has been a bit hit and miss for me while online play using the in-game search has resulted in the most consistent success.
+
+
+# Admin Commands
+Upon startup the server will create a file `/config/adminlist.txt`. In it you can list the IDs of all administrator users.
+
+The ID of a user can be gotten either in-game by pressing ***F5***
+![User ID in-game](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin2.png "User ID in-game")
+
+or in the server logs when a user connects.
+![User ID in logs](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin1.png "User ID in logs")
+
+Administrators can press ***F2*** to open the in-game console and use commands like `ban` and `kick`.
+![Kick a user](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin3.png "Kick a user")
 
 
 # Synology Help
