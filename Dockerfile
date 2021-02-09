@@ -5,6 +5,7 @@ COPY valheim-backup /usr/local/bin/
 ADD https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz /tmp
 RUN dpkg --add-architecture i386 \
     && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils \
     && DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install \
         lib32gcc1 \
