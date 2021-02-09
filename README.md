@@ -37,9 +37,9 @@ Also ensure they are publicly accessible in any firewall.
 
 If your server name does not show up in the server list  a couple of minutes after startup you likely have a firewall issue.
 
-There is more info in section [Finding your server](#finding-your-server).
+There is more info in section [Finding Your Server](#finding-your-server).
 
-For LAN-only play see section [Steam Server Favorites & LAN play](#steam-server-favorites--lan-play)
+For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
 
 
 # Environment Variables
