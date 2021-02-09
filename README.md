@@ -144,7 +144,7 @@ NOTE: Sometimes I will get the following error when trying to connect to a LAN s
 In those cases it sometimes helped to add the server again, but this time using port `2456` and now pressing the `ADD THIS ADDRESS TO FAVORITES` button.
 It will not generate a new entry in the favourites list but seemingly just update the existing one that was originally discovered on port `2457`.
 
-That said LAN play via the Steam Server Browser has been a bit hit and miss for me while online play using the in-game search has resulted in the most consistent success.
+Overall LAN play via the Steam Server Browser has been a bit hit and miss for me while online play using the in-game search has resulted in the most consistent success.
 
 
 # Synology Help
