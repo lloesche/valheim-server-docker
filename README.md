@@ -152,13 +152,13 @@ Overall LAN play via the Steam Server Browser has been a bit hit and miss for me
 # Admin Commands
 Upon startup the server will create a file `/config/adminlist.txt`. In it you can list the IDs of all administrator users.
 
-The ID of a user can be gotten either in-game by pressing ***F5***
+The ID of a user can be gotten either in-game by pressing ***F2***
 ![User ID in-game](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin2.png "User ID in-game")
 
 or in the server logs when a user connects.
 ![User ID in logs](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin1.png "User ID in logs")
 
-Administrators can press ***F2*** to open the in-game console and use commands like `ban` and `kick`.
+Administrators can press ***F5*** to open the in-game console and use commands like `ban` and `kick`.
 ![Kick a user](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin3.png "Kick a user")
 
 
