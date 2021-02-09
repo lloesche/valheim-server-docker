@@ -109,12 +109,14 @@ Once the server is up and running and the log says something like
 ```
 it can still be challenging to actually find the server.
 
-There are two ways of getting to your server. Either using the Steam server browser or using the in-game `Community` server list.
+There are three ways of getting to your server. Either using the Steam server browser, adding the IP manually or using the in-game `Community` server list.
 
+## In-game
 When in-game, click on `Join Game` and select `Community`. Wait for the game to load the list of all 4000+ servers.
 Only 200 servers will be shown at a time so we will have to enter part of our server name to filter the view.
 ![in-game server browser](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/find1.png "in-game server browser")
 
+## Steam Server Browser
 When using the Steam server browser, in Steam go to `View -> Servers`. Click on `CHANGE FILTERS` and select Game `Valheim`.
 Wait for Steam to load all 4000+ Servers then sort the `SERVERS` column by clicking on its title. Scroll down until you find your server.
 ![Steam server browser](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/find2.png "Steam server browser")
@@ -122,7 +124,8 @@ From there you can right-click it and add as a favourite.
 
 Note that in my tests when connecting to the server via the Steam server browser I had to enter the server password twice. Once in Steam and once in-game.
 
-A third option within Steam is to add the server manually by IP.
+## Steam Server Favorites & LAN play
+A third option within Steam is to add the server manually by IP. This also allows for LAN play without the need to open or forward any firewall ports.
 
 Steps:
 1) `ADD SERVER`
