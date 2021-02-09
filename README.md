@@ -122,11 +122,15 @@ From there you can right-click it and add as a favourite.
 
 Note that in my tests when connecting to the server via the Steam server browser I had to enter the server password twice. Once in Steam and once in-game.
 
-A third option within Steam is to add the server manually by IP. Steps:
+A third option within Steam is to add the server manually by IP.
+
+Steps:
 1) `ADD SERVER`
 2) Enter Server IP and port+1. So if the server is running on UDP port `2456` enter `ip:2457`
 3) `FIND GAMES AT THIS ADDRESS...`
 4) `ADD SELECTED GAME SERVER TO FAV...`
+
+![Add server manually](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/find3.png "Add server manually")
 
 Do NOT use the `ADD THIS ADDRESS TO FAVORITES` button!
 
