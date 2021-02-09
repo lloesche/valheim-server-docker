@@ -113,3 +113,32 @@ Beware that the server can use multiple GB of RAM and produces a lot of CPU load
 ![Step 5](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step5.png "Step 5")
 ![Step 6](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step6.png "Step 6")
 ![Step 7](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step7.png "Step 7")
+
+
+# Finding your server
+Once the server is up and running and the log says something like
+```
+02/09/2021 10:42:24: Game server connected
+```
+it can still be challenging to actually find the server.
+
+There are two ways of getting to your server. Either using the Steam server browser or using the in-game `Community` server list.
+
+When in-game, click on `Join Game` and select `Community`. Wait for the game to load the list of all 4000+ servers.
+Only 200 servers will be shown at a time so we will have to enter part of our server name to filter the view.
+![in-game server browser](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/find1.png "in-game server browser")
+
+When using the Steam server browser, in Steam go to `View -> Servers`. Click on `CHANGE FILTERS` and select Game `Valheim`.
+Wait for Steam to load all 4000+ Servers then sort the `SERVERS` column by clicking on its title. Scroll down until you find your server.
+![Steam server browser](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/find2.png "Steam server browser")
+From there you can right-click it and add as a favourite.
+
+Note that in my tests when connecting to the server via the Steam server browser I had to enter the server password twice. Once in Steam and once in-game.
+
+A third option within Steam is to add the server manually by IP. Steps:
+1) `ADD SERVER`
+2) Enter Server IP and port+1. So if the server is running on UDP port `2456` enter `ip:2457`
+3) `FIND GAMES AT THIS ADDRESS...`
+4) `ADD SELECTED GAME SERVER TO FAV...`
+
+Do NOT use the `ADD THIS ADDRESS TO FAVORITES` button!
