@@ -5,35 +5,37 @@ CONFIG_DIRECTORY_PERMISSIONS=${CONFIG_DIRECTORY_PERMISSIONS:-755}
 WORLDS_DIRECTORY_PERMISSIONS=${WORLDS_DIRECTORY_PERMISSIONS:-755}
 WORLDS_FILE_PERMISSIONS=${WORLDS_FILE_PERMISSIONS:-644}
 UPDATE_INTERVAL=${UPDATE_INTERVAL:-900}
-
 just_started=true
+next_update=$(date +%s)
 
 cd /opt/steamcmd
 main() {
     while :; do
         update_permissions
         update
-        sleep $UPDATE_INTERVAL
+        next_update=$(($(date +%s)+$UPDATE_INTERVAL))
+        while [ $(date +%s) -lt $next_update ]; do
+            sleep 3
+        done
     done
 }
 
 update() {
     local logfile="$(mktemp)"
     echo "Updating/Validating Valheim Server"
-    # Valheim dedicated server contains the file server_exit.drp which will make the server shut down / restart
-    # on each update check if validate is being used.
-    # ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim +app_update 896660 validate +quit 2>&1 | tee "$logfile"
-    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim +app_update 896660 +quit 2>&1 | tee "$logfile"
-    grep downloading "$logfile" > /dev/null 2>&1
+    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim_dl +app_update 896660 validate +quit
+    rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps /opt/valheim_dl/ /opt/valheim | tee "$logfile"
+    grep '^[*>]' "$logfile" > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         echo "Valheim Server was updated - restarting"
-        # Update directory permissions so valheim-server running as steam
-        # can create /opt/valheim/server_exit.drp on shutdown.
-        chown steam:steam /opt/valheim
-        supervisorctl restart valheim-server
+        if [ $just_started = true ]; then
+            supervisorctl start valheim-server
+        else
+            supervisorctl restart valheim-server
+        fi
     else
         echo "Valheim Server is already the latest version"
-        if [ $just_started = "true" ]; then
+        if [ $just_started = true ]; then
             supervisorctl start valheim-server
         fi
     fi
@@ -42,13 +44,17 @@ update() {
 }
 
 update_permissions() {
-    chown -R steam:steam /config
     chmod $CONFIG_DIRECTORY_PERMISSIONS /config
     if [ -d /config/worlds ]; then
-        chown -R steam:steam /config/worlds
         chmod $WORLDS_DIRECTORY_PERMISSIONS /config/worlds
         chmod $WORLDS_FILE_PERMISSIONS /config/worlds/*
     fi
 }
 
+update_now() {
+    echo "Received signal to check for update"
+    next_update=$(date +%s)
+}
+
+trap update_now SIGHUP
 main
