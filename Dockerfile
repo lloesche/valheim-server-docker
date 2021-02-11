@@ -33,7 +33,7 @@ RUN dpkg --add-architecture i386 \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
-VOLUME /config
+VOLUME ["/config", "/opt/valheim_dl"]
 EXPOSE 2456-2458/udp
 WORKDIR /
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
