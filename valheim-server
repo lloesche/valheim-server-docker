@@ -28,7 +28,7 @@ main() {
 
 shutdown() {
     echo "Shutting down Valheim Server with PID $valheim_server_pid"
-    echo 1 > /opt/valheim/server_exit.drp
+    kill -INT $valheim_server_pid
     while [ -d "/proc/$valheim_server_pid" ]; do
         echo "Waiting for Valheim Server shutdown"
         sleep 1
