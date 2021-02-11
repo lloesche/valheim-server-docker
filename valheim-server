@@ -7,6 +7,8 @@ SERVER_PORT=${SERVER_PORT:-2456}
 WORLD_NAME=${WORLD_NAME:-Dedicated}
 SERVER_PASS=${SERVER_PASS:-secret}
 SERVER_PUBLIC=${SERVER_PUBLIC:-1}
+timeout=20
+kill_signal=TERM
 
 export SteamAppId=892970
 export LD_LIBRARY_PATH="/opt/valheim/linux64/"
@@ -29,10 +31,24 @@ main() {
 shutdown() {
     echo "Shutting down Valheim Server with PID $valheim_server_pid"
     kill -INT $valheim_server_pid
+    shutdown_timeout=$(($(date +%s)+$timeout))
     while [ -d "/proc/$valheim_server_pid" ]; do
-        echo "Waiting for Valheim Server shutdown"
-        sleep 1
+        if [ $(date +%s) -gt $shutdown_timeout ]; then
+            shutdown_timeout=$(($(date +%s)+$timeout))
+            echo "Timeout while waiting for server to shutdown - sending SIG$kill_signal to PID $valheim_server_pid"
+            kill -$kill_signal $valheim_server_pid
+            case "$kill_signal" in
+                INT)
+                    kill_signal=TERM
+                    ;;
+                *)
+                    kill_signal=KILL
+            esac
+        fi
+        echo "Waiting for Valheim Server with PID $valheim_server_pid to shutdown"
+        sleep 3
     done
+    echo "Shutdown complete"
     exit
 }
 

@@ -17,21 +17,13 @@ RUN dpkg --add-architecture i386 \
         locales \
         unzip \
         zip \
+        rsync \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && locale-gen \
     && apt-get clean \
-    && adduser \
-        --home /home/steam \
-        --disabled-password \
-        --shell /bin/bash \
-        --gecos "Steam User" \
-        --quiet \
-        steam \
-    && mkdir -p /var/log/supervisor /opt/valheim /opt/steamcmd /home/steam/.config/unity3d/IronGate /config \
-    && ln -s /config /home/steam/.config/unity3d/IronGate/Valheim \
-    && chown -R steam:steam /opt/valheim /home/steam /config \
-    && cd /home/steam \
+    && mkdir -p /var/log/supervisor /opt/valheim /opt/valheim_dl /opt/steamcmd /root/.config/unity3d/IronGate /config \
+    && ln -s /config /root/.config/unity3d/IronGate/Valheim \
     && tar xzvf /tmp/steamcmd_linux.tar.gz -C /opt/steamcmd/ \
     && chown -R root:root /opt/steamcmd \
     && chmod 755 /opt/steamcmd/steamcmd.sh /opt/steamcmd/linux32/steamcmd /opt/steamcmd/linux32/steamerrorreporter \
@@ -43,5 +35,5 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 VOLUME /config
 EXPOSE 2456-2458/udp
-WORKDIR /home/steam
+WORKDIR /
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

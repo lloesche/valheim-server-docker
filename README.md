@@ -29,6 +29,8 @@ $ docker run -d \
     lloesche/valheim-server
 ```
 
+Warning: `SERVER_PASS` must be at least 5 characters long. Otherwise `valheim_server.x86_64` will refuse to start!
+
 A fresh start will take several minutes depending on your Internet connection speed as the container will download the Valheim dedicated server from Steam (~1 GB).
 
 Do not forget to modify `WORLD_NAME` to reflect the name of your world! For existing worlds that is the filename in the `worlds/` folder without the `.db/.fwl` extension.
@@ -49,7 +51,7 @@ For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-
 |`SERVER_NAME` | `My Server` | Name that will be shown in the server browser |
 |`SERVER_PORT` | `2456` | UDP start port that the server will listen on |
 |`WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
-|`SERVER_PASS` | `secret` | Password for logging into the server |
+|`SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
 |`SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
 |`UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
 |`BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
