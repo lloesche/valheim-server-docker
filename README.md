@@ -55,7 +55,7 @@ For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-
 |`UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
 |`BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
 |`BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
-|`BACKUPS_MAX_AGE` | `7` | Age in days after which old backups are flushed |
+|`BACKUPS_MAX_AGE` | `3` | Age in days after which old backups are flushed |
 |`BACKUPS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the backup directory |
 |`BACKUPS_FILE_PERMISSIONS` | `644` | Unix permissions for the backup zip files |
 |`CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
