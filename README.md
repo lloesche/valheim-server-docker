@@ -61,6 +61,8 @@ For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-
 |`CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
 |`WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
 |`WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
+|`DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames |
+|`DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames |
 
 
 # Docker+systemd Example
@@ -71,6 +73,8 @@ SERVER_PORT=2456
 WORLD_NAME=Dedicated
 SERVER_PASS=secret
 SERVER_PUBLIC=1
+DNS_1=8.8.8.8
+DNS_2=8.8.4.4
 ```
 
 Then enable the Docker container on system boot
