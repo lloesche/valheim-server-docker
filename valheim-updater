@@ -5,6 +5,7 @@ CONFIG_DIRECTORY_PERMISSIONS=${CONFIG_DIRECTORY_PERMISSIONS:-755}
 WORLDS_DIRECTORY_PERMISSIONS=${WORLDS_DIRECTORY_PERMISSIONS:-755}
 WORLDS_FILE_PERMISSIONS=${WORLDS_FILE_PERMISSIONS:-644}
 UPDATE_INTERVAL=${UPDATE_INTERVAL:-900}
+STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 just_started=true
 next_update=$(date +%s)
 
@@ -23,7 +24,7 @@ main() {
 update() {
     local logfile="$(mktemp)"
     echo "Updating/Validating Valheim Server"
-    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim_dl +app_update 896660 validate +quit
+    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim_dl +app_update 896660 $STEAMCMD_ARGS +quit
     rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps /opt/valheim_dl/ /opt/valheim | tee "$logfile"
     grep '^[*>]' "$logfile" > /dev/null 2>&1
     if [ $? -eq 0 ]; then

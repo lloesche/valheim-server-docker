@@ -47,23 +47,23 @@ For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-
 # Environment Variables
 | Name | Default | Purpose |
 |----------|----------|-------|
-|`SERVER_NAME` | `My Server` | Name that will be shown in the server browser |
-|`SERVER_PORT` | `2456` | UDP start port that the server will listen on |
-|`WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
-|`SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
-|`SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
-|`UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
-|`BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
-|`BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
-|`BACKUPS_MAX_AGE` | `3` | Age in days after which old backups are flushed |
-|`BACKUPS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the backup directory |
-|`BACKUPS_FILE_PERMISSIONS` | `644` | Unix permissions for the backup zip files |
-|`CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
-|`WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
-|`WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
-|`DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames |
-|`DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames |
-
+| `SERVER_NAME` | `My Server` | Name that will be shown in the server browser |
+| `SERVER_PORT` | `2456` | UDP start port that the server will listen on |
+| `WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
+| `SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
+| `SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
+| `UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
+| `BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
+| `BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
+| `BACKUPS_MAX_AGE` | `3` | Age in days after which old backups are flushed |
+| `BACKUPS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the backup directory |
+| `BACKUPS_FILE_PERMISSIONS` | `644` | Unix permissions for the backup zip files |
+| `CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
+| `WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
+| `WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
+| `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames |
+| `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames |
+| `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 
 # Docker+systemd Example
 Create an optional config file `/etc/sysconfig/valheim-server`
