@@ -180,3 +180,12 @@ Beware that the server can use multiple GB of RAM and produces a lot of CPU load
 ![Step 5](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step5.png "Step 5")
 ![Step 6](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step6.png "Step 6")
 ![Step 7](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step7.png "Step 7")
+
+
+# Deploying on K8S
+K8S Helm Chart using this container image is available from the following repository:
+[https://github.com/Addyvan/valheim-k8s](https://github.com/Addyvan/valheim-k8s)
+
+# Deploying on AWS
+CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and Amazon EFS is available here:
+[https://github.com/rileydakota/valheim-ecs-fargate-cdk](https://github.com/rileydakota/valheim-ecs-fargate-cdk)
