@@ -169,6 +169,7 @@ Administrators can press ***F5*** to open the in-game console and use commands l
 
 
 # Synology Help
+## First install
 This is not an extensive tutorial, but I hope these screenshots can be helpful.
 Beware that the server can use multiple GB of RAM and produces a lot of CPU load.
 
@@ -181,6 +182,13 @@ Beware that the server can use multiple GB of RAM and produces a lot of CPU load
 ![Step 6](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step6.png "Step 6")
 ![Step 7](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/step7.png "Step 7")
 
+## Updating the container image to the latest version
+![Update Step 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update1.png "Update Step 1")
+![Update Step 2](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update2.png "Update Step 2")
+![Update Step 3](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update3.png "Update Step 3")
+![Update Step 4](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update4.png "Update Step 4")
+![Update Step 5](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update5.png "Update Step 5")
+![Update Step 6](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update6.png "Update Step 6")
 
 # Deploying on K8S
 K8S Helm Chart using this container image is available from the following repository:
