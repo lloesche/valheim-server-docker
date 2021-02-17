@@ -16,7 +16,7 @@ main() {
         update
         next_update=$(($(date +%s)+$UPDATE_INTERVAL))
         while [ $(date +%s) -lt $next_update ]; do
-            sleep 3
+            sleep 5
         done
     done
 }

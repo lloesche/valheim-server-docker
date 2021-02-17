@@ -53,6 +53,7 @@ For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-
 | `SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
 | `SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
 | `UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
+| `BACKUPS` | `true` | Whether the server should create periodic backups (`true` or `false`) |
 | `BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
 | `BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
 | `BACKUPS_MAX_AGE` | `3` | Age in days after which old backups are flushed |
@@ -61,9 +62,9 @@ For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-
 | `CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
 | `WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
 | `WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
-| `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames |
-| `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
+| `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames (systemd only) |
+| `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames (systemd only) |
 
 # Docker+systemd Example
 Create an optional config file `/etc/sysconfig/valheim-server`

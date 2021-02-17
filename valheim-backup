@@ -1,5 +1,6 @@
 #!/bin/bash
 
+BACKUPS=${BACKUPS:-true}
 BACKUPS_INTERVAL=${BACKUPS_INTERVAL:-3600}
 BACKUPS_DIRECTORY=${BACKUPS_DIRECTORY:-/config/backups}
 BACKUPS_MAX_AGE=${BACKUPS_MAX_AGE:-3}
@@ -41,4 +42,9 @@ flush_old() {
     find "$BACKUPS_DIRECTORY" -type f -mtime +$BACKUPS_MAX_AGE -name 'worlds-*.zip' -print -exec rm -f "{}" \;
 }
 
-main
+if [ "X$BACKUPS" = Xtrue ]; then
+    main
+else
+    echo "Backups have been turned off by env BACKUPS=$BACKUPS"
+    supervisorctl stop valheim-backup
+fi
