@@ -43,6 +43,8 @@ There is more info in section [Finding Your Server](#finding-your-server).
 
 For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
 
+For more deployment options see the [Deployment section](#deployment). 
+
 
 # Environment Variables
 | Name | Default | Purpose |
@@ -192,10 +194,19 @@ The process of updating the image clears all data stored inside the container. S
 ![Update Step 5](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update5.png "Update Step 5")
 ![Update Step 6](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update6.png "Update Step 6")
 
-# Deploying on K8S
-K8S Helm Chart using this container image is available from the following repository:
+# [Deployment](#deployment)
+
+## Deploying to Kubernetes
+Kubernetes manifests using this container image, along with a helm chart, are available from the following repository:
 [https://github.com/Addyvan/valheim-k8s](https://github.com/Addyvan/valheim-k8s)
 
-# Deploying on AWS
+The chart is also available directly using:
+```bash
+helm repo add valheim-k8s https://addyvan.github.io/valheim-k8s/
+helm repo update
+helm install valheim-server valheim-k8s/valheim-k8s # see repo for full config
+```
+
+## Deploying to AWS ECS
 CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and Amazon EFS is available here:
 [https://github.com/rileydakota/valheim-ecs-fargate-cdk](https://github.com/rileydakota/valheim-ecs-fargate-cdk)
