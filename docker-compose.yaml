@@ -1,0 +1,12 @@
+version: "3.9"
+services: 
+  valheim: 
+    image: lloesche/valheim-server
+    volumes: 
+      - /path/to/valheim/settings:/config
+    ports: 
+      - "2456-2458:2456-2458/udp" 
+    environment: 
+      - SERVER_NAME=Server Name
+      - SERVER_PASS=secret
+      - SERVER_PUBLIC=1
