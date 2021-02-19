@@ -68,7 +68,9 @@ For more deployment options see the [Deployment section](#deployment).
 | `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames (systemd only) |
 | `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames (systemd only) |
 
-# Docker+systemd Example
+# Deployment
+
+## Deploying with Docker and systemd
 Create an optional config file `/etc/sysconfig/valheim-server`
 ```
 SERVER_NAME="My Server"
@@ -88,6 +90,23 @@ $ sudo systemctl daemon-reload
 $ sudo systemctl enable valheim-server.service
 $ sudo systemctl start valheim-server.service
 ```
+
+## Deploying to Kubernetes
+Kubernetes manifests using this container image, along with a helm chart, are available from the following repository:
+[https://github.com/Addyvan/valheim-k8s](https://github.com/Addyvan/valheim-k8s)
+
+The chart is also available directly using:
+```bash
+helm repo add valheim-k8s https://addyvan.github.io/valheim-k8s/
+helm repo update
+helm install valheim-server valheim-k8s/valheim-k8s # see repo for full config
+```
+
+## Deploying to AWS ECS
+CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and Amazon EFS is available here:
+[https://github.com/rileydakota/valheim-ecs-fargate-cdk](https://github.com/rileydakota/valheim-ecs-fargate-cdk)
+
+
 
 # Updates
 The container will check for Valheim server updates every 15 minutes.
@@ -193,20 +212,3 @@ The process of updating the image clears all data stored inside the container. S
 ![Update Step 4](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update4.png "Update Step 4")
 ![Update Step 5](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update5.png "Update Step 5")
 ![Update Step 6](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update6.png "Update Step 6")
-
-# [Deployment](#deployment)
-
-## Deploying to Kubernetes
-Kubernetes manifests using this container image, along with a helm chart, are available from the following repository:
-[https://github.com/Addyvan/valheim-k8s](https://github.com/Addyvan/valheim-k8s)
-
-The chart is also available directly using:
-```bash
-helm repo add valheim-k8s https://addyvan.github.io/valheim-k8s/
-helm repo update
-helm install valheim-server valheim-k8s/valheim-k8s # see repo for full config
-```
-
-## Deploying to AWS ECS
-CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and Amazon EFS is available here:
-[https://github.com/rileydakota/valheim-ecs-fargate-cdk](https://github.com/rileydakota/valheim-ecs-fargate-cdk)
