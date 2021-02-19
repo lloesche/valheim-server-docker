@@ -109,8 +109,9 @@ CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and A
 
 
 # Updates
-The container will check for Valheim server updates every 15 minutes.
+By default the container will check for Valheim server updates every 15 minutes.
 If an update is found it is downloaded and the server restarted.
+This interval can be changed using the `UPDATE_INTERVAL` environment variable.
 
 
 # Backups
