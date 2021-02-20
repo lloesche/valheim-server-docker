@@ -3,6 +3,7 @@
 
 Valheim Server in a Docker Container  
 
+
 # Basic Docker Usage
 
 The name of the Docker image is `lloesche/valheim-server`.
@@ -55,6 +56,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
 | `SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
 | `UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
+| `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `BACKUPS` | `true` | Whether the server should create periodic backups (`true` or `false`) |
 | `BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
 | `BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
@@ -67,6 +69,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames (systemd only) |
 | `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames (systemd only) |
+
 
 # Deployment
 
@@ -105,7 +108,6 @@ helm install valheim-server valheim-k8s/valheim-k8s # see repo for full config
 ## Deploying to AWS ECS
 CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and Amazon EFS is available here:
 [https://github.com/rileydakota/valheim-ecs-fargate-cdk](https://github.com/rileydakota/valheim-ecs-fargate-cdk)
-
 
 
 # Updates

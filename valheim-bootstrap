@@ -1,0 +1,14 @@
+#!/bin/bash
+RESTART_CRON=${RESTART_CRON-0 5 * * *}
+
+if [ -n "$RESTART_CRON" ]; then
+    echo "Creating cron to restart valheim-server using schedule $RESTART_CRON"
+    tmpfile=$(mktemp)
+    echo "$RESTART_CRON /usr/bin/supervisorctl restart valheim-server" > $tmpfile
+    crontab $tmpfile
+    rm -f $tmpfile
+else
+    echo "Environment variable RESTART_CRON is empty - no automatic valheim-server restart scheduled"
+fi
+
+exit 0
