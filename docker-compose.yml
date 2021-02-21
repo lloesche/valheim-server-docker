@@ -5,7 +5,7 @@ services:
     volumes:
       - /path/to/valheim/settings:/config
       # The volume mount below is mandatory for V+ so that you can modify the config file for the mod
-      - /path/to/valheim/server:/opt/valheim_dl
+      - /path/to/valheim/server:/opt/valheim
     ports:
       - "2456-2458:2456-2458/udp"
     environment:
