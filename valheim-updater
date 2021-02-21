@@ -65,10 +65,10 @@ update_valheimplus() {
 
     if [ "$remote_md5" != "$local_md5" ]; then
         echo "Updating Valheim Plus"
-        cp -a /opt/valheim_dl/BepInEx/config/valheim_plus.cfg /opt/valheimplus/valheim_plus.cfg
+        cp -a /opt/valheim_dl/BepInEx/config/valheim_plus.cfg /opt/valheimplus/BepInEx/config/valheim_plus.cfg
         install_valheimplus
-        cp -a /opt/valheimplus/valheim_plus.cfg /opt/valheim_dl/BepInEx/config/valheim_plus.cfg && \
-        rm -f /opt/valheimplus/valheim_plus.cfg
+        cp -a /opt/valheimplus/BepInEx/config/valheim_plus.cfg /opt/valheim_dl/BepInEx/config/valheim_plus.cfg && \
+        rm -f /opt/valheimplus/BepInEx/config/valheim_plus.cfg
     else
         echo "Valheim Plus is already the latest version"
     fi
