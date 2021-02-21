@@ -1,12 +1,18 @@
-version: "3.9"
-services: 
-  valheim: 
+---
+version: '2'
+services:
+  valheim:
     image: lloesche/valheim-server
-    volumes: 
-      - /path/to/valheim/settings:/config
-    ports: 
-      - "2456-2458:2456-2458/udp" 
-    environment: 
+    container_name: valheim
+    restart: always
+    environment:
       - SERVER_NAME=okazuki server
+      - WORLD_NAME=okazuki
       - SERVER_PASS=19980919
       - SERVER_PUBLIC=1
+      - DNS_1=1.1.1.1
+      - DNS_2=1.0.0.1
+    volumes:
+      - /srv/dev-disk-by-label-Files/Config/Valheim/valheim-server-config:/config
+    ports:
+      - 2456-2458:2456-2458/udp
