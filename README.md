@@ -63,6 +63,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
+| `FORCE_VALIDATE` | `false` | Allows to forcefully validate all server files on container start (if Valheim Plus is enabled, then it will be reinstalled if needed after validation runs) |
 | `VALHEIM_PLUS_ENABLED` | `false` | Enable support for the popular [Valheim Plus](https://github.com/nxPublic/ValheimPlus) mod |
 | `BACKUPS` | `true` | Whether the server should create periodic backups (`true` or `false`) |
 | `BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
@@ -73,7 +74,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
 | `WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
 | `WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
-| `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
+| `STEAMCMD_ARGS` |  | Additional steamcmd CLI arguments |
 | `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames (systemd only) |
 | `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames (systemd only) |
 
