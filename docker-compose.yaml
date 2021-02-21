@@ -7,6 +7,6 @@ services:
     ports: 
       - "2456-2458:2456-2458/udp" 
     environment: 
-      - SERVER_NAME=Server Name
-      - SERVER_PASS=secret
+      - SERVER_NAME=okazuki server
+      - SERVER_PASS=19980919
       - SERVER_PUBLIC=1
