@@ -6,6 +6,7 @@ WORLDS_DIRECTORY_PERMISSIONS=${WORLDS_DIRECTORY_PERMISSIONS:-755}
 WORLDS_FILE_PERMISSIONS=${WORLDS_FILE_PERMISSIONS:-644}
 UPDATE_INTERVAL=${UPDATE_INTERVAL:-900}
 STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
+VALHEIM_PLUS_ENABLED=${VALHEIM_PLUS_ENABLED:-true}
 just_started=true
 next_update=$(date +%s)
 
@@ -14,11 +15,63 @@ main() {
     while :; do
         update_permissions
         update
+        if [ $VALHEIM_PLUS_ENABLED = true ]; then
+            update_valheimplus
+        fi
         next_update=$(($(date +%s)+$UPDATE_INTERVAL))
         while [ $(date +%s) -lt $next_update ]; do
             sleep 5
         done
     done
+}
+
+install_valheimplus() {
+    wget -q -O /opt/valheimplus/UnixServer.zip https://github.com/nxPublic/ValheimPlus/releases/latest/download/UnixServer.zip && \
+    unzip -qo /opt/valheimplus/UnixServer.zip -x changelog.txt -d /opt/valheimplus
+
+    find /opt/valheimplus/valheim_server_Data/Managed -type f -exec md5sum {} \; > /opt/valheimplus/vplus_md5.list
+
+    if [ -f /opt/valheim_dl/BepInEx/config/valheim_plus.cfg ]; then
+        cp -a /opt/valheim_dl/BepInEx/config/valheim_plus.cfg /opt/valheimplus/BepInEx/config/valheim_plus.cfg
+    fi
+
+    cp -a /root/run_bepinex.sh /opt/valheimplus/run_bepinex.sh && \
+    chown 1000:1000 /opt/valheimplus/BepInEx/config/valheim_plus.cfg
+
+    rsync -a --itemize-changes --exclude UnixServer.zip --exclude valheim_md5.list \
+    --exclude vplus_md5.list /opt/valheimplus/ /opt/valheim_dl
+
+    rsync -a --itemize-changes --exclude UnixServer.zip --exclude valheim_md5.list \
+    --exclude vplus_md5.list /opt/valheimplus/ /opt/valheim
+}
+
+check_valheimplus() {
+    if [ ! -f /opt/valheim_dl/BepInEx/plugins/ValheimPlus.dll ]; then
+        echo "Installing Valheim Plus"
+        install_valheimplus
+    else
+        awk -F"/" 'FNR==NR{filearray[$1]=$NF; next }!($1 in filearray){printf "%s\n",$NF}' \
+        /opt/valheimplus/vplus_md5.list /opt/valheimplus/valheim_md5.list | grep 'dll' > /dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            echo "Valheim server files modified - reinstalling Valheim Plus"
+            install_valheimplus
+        fi
+    fi
+}
+
+update_valheimplus() {
+    remote_md5="$(curl -sL https://github.com/nxPublic/ValheimPlus/releases/latest/download/UnixServer.zip | md5sum | cut -d ' ' -f 1)"
+    local_md5="$(md5sum /opt/valheimplus/UnixServer.zip | cut -d ' ' -f 1)"
+
+    if [ "$remote_md5" != "$local_md5" ]; then
+        echo "Updating Valheim Plus"
+        cp -a /opt/valheim_dl/BepInEx/config/valheim_plus.cfg /opt/valheimplus/valheim_plus.cfg
+        install_valheimplus
+        cp -a /opt/valheimplus/valheim_plus.cfg /opt/valheim_dl/BepInEx/config/valheim_plus.cfg && \
+        rm -f /opt/valheimplus/valheim_plus.cfg
+    else
+        echo "Valheim Plus is already the latest version"
+    fi
 }
 
 update() {
@@ -28,6 +81,11 @@ update() {
     rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps /opt/valheim_dl/ /opt/valheim | tee "$logfile"
     grep '^[*>]' "$logfile" > /dev/null 2>&1
     if [ $? -eq 0 ]; then
+        if [ $VALHEIM_PLUS_ENABLED = true ]; then
+            mkdir -p /opt/valheimplus
+            find /opt/valheim_dl/valheim_server_Data/Managed -type f -exec md5sum {} \; > /opt/valheimplus/valheim_md5.list
+            check_valheimplus
+        fi
         echo "Valheim Server was updated - restarting"
         supervisorctl restart valheim-server
     else
