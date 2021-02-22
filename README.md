@@ -30,7 +30,7 @@ $ docker run -d \
     -e SERVER_PASS="secret" \
     -e WORLD_NAME="Neotopia" \
     -e PUBLIC=1 \
-    -e VALHEIM_PLUS_ENABLED=true
+    -e VALHEIM_PLUS_ENABLED=false
     lloesche/valheim-server
 ```
 
