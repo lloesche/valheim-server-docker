@@ -6,7 +6,7 @@ WORLDS_DIRECTORY_PERMISSIONS=${WORLDS_DIRECTORY_PERMISSIONS:-755}
 WORLDS_FILE_PERMISSIONS=${WORLDS_FILE_PERMISSIONS:-644}
 UPDATE_INTERVAL=${UPDATE_INTERVAL:-900}
 STEAMCMD_ARGS=$(echo ${STEAMCMD_ARGS} | tr " " "\n" | sed -n '/\(-validate\b\|^validate\b\)/!p' | tr "\n" " ")
-FORCE_VALIDATE=${FORCE_VALIDATE:-false}
+VALIDATE=${VALIDATE:-false}
 VALHEIM_PLUS_ENABLED=${VALHEIM_PLUS_ENABLED:-true}
 just_started=true
 next_update=$(date +%s)
@@ -58,12 +58,12 @@ install_valheim() {
 }
 
 update_valheim() {
-    if [ ! -d /opt/valheim/valheim_server_Data ] || [ $FORCE_VALIDATE = true ]; then
+    if [ ! -d /opt/valheim/valheim_server_Data ] || [ $VALIDATE = true ]; then
         echo "Installing Valheim Server"
         args=""
-        if [ $FORCE_VALIDATE = true ]; then
+        if [ $VALIDATE = true ]; then
             args=validate
-            FORCE_VALIDATE=false
+            VALIDATE=false
         fi
         install_valheim $args
     else

@@ -63,7 +63,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
-| `FORCE_VALIDATE` | `false` | Allows to forcefully validate all server files on container start (if Valheim Plus is enabled, then it will be reinstalled if needed after validation runs) |
+| `VALIDATE` | `false` | Run Steam's validation on container start (does not affect update checks). If Valheim Plus is enabled, then it will be reinstalled |
 | `VALHEIM_PLUS_ENABLED` | `false` | Enable support for the popular [Valheim Plus](https://github.com/nxPublic/ValheimPlus) mod |
 | `BACKUPS` | `true` | Whether the server should create periodic backups (`true` or `false`) |
 | `BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
