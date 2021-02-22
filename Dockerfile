@@ -3,7 +3,7 @@ RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl
 WORKDIR /build/busybox
-RUN curl -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2
+RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2
 RUN tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox
 RUN make defconfig
 RUN make install
@@ -20,6 +20,8 @@ RUN dpkg --add-architecture i386 \
         lib32gcc1 \
         libsdl2-2.0-0 \
         libsdl2-2.0-0:i386 \
+        libcurl4 \
+        libcurl4:i386 \
         ca-certificates \
         supervisor \
         procps \
@@ -33,6 +35,7 @@ RUN dpkg --add-architecture i386 \
     && ln -s /bin/busybox /usr/sbin/crond \
     && ln -s /bin/busybox /usr/bin/crontab \
     && ln -s /bin/busybox /usr/bin/vi \
+    && ln -s /bin/busybox /usr/bin/wget \
     && locale-gen \
     && apt-get clean \
     && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/valheim_dl /opt/steamcmd /root/.config/unity3d/IronGate /config \
