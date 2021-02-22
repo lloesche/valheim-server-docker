@@ -28,6 +28,7 @@ main() {
 
 install_valheim_plus() {
     echo "Installing/Updating Valheim Plus"
+    curl -sL https://api.github.com/repos/nxPublic/ValheimPlus/releases/latest | jq -r '.assets[] | select(.name == "UnixServer.zip") | .updated_at' > "/opt/valheimplus/UnixServer.zip.last_update"
     wget -q -O /opt/valheimplus/UnixServer.zip https://github.com/nxPublic/ValheimPlus/releases/latest/download/UnixServer.zip && \
     unzip -qo /opt/valheimplus/UnixServer.zip -x changelog.txt run_bepinex.sh -d /opt/valheimplus
     if [ -f /opt/valheim/BepInEx/config/valheim_plus.cfg ]; then
@@ -38,9 +39,9 @@ install_valheim_plus() {
 }
 
 update_valheim_plus() {
-    remote_md5="$(curl -sL https://github.com/nxPublic/ValheimPlus/releases/latest/download/UnixServer.zip | md5sum | cut -d ' ' -f 1)"
-    local_md5="$(md5sum /opt/valheimplus/UnixServer.zip | cut -d ' ' -f 1)"
-    if [ "$remote_md5" != "$local_md5" ]; then
+    remote_update_date=$(curl -sL https://api.github.com/repos/nxPublic/ValheimPlus/releases/latest | jq -r '.assets[] | select(.name == "UnixServer.zip") | .updated_at')
+    local_update_date=$(cat /opt/valheimplus/UnixServer.zip.last_update)
+    if [ "$remote_update_date" != "$local_update_date" ]; then
         install_valheim_plus
     else
         echo "Valheim Plus is already the latest version"
