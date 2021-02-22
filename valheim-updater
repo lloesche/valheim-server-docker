@@ -66,9 +66,9 @@ update_valheim() {
         fi
         install_valheim $args
     else
-        local_version=$(sed -n '29p' /opt/valheim/steamapps/appmanifest_896660.acf | xargs | cut -d' ' -f2-)
+        local_version=$(awk '/"896661"/,/"manifest"/{if($1=="\"manifest\"")print $2;}' /opt/valheim/steamapps/appmanifest_896660.acf | xargs)
         ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim +app_update 896660 $STEAMCMD_ARGS +quit
-        remote_version=$(./steamcmd.sh +login anonymous +app_info_update 1 +app_info_print 896660 +quit | sed -n '/"896661"/,/"public"/ { /"896661"/!p; }' | sed -n '9p' | xargs | cut -d' ' -f2-)
+        remote_version=$(./steamcmd.sh +login anonymous +app_info_update 1 +app_info_print 896660 +quit | awk '/"896661"/,/"public"/{if($1=="\"manifest\"")print $2;}' | xargs)
         if [ "$local_version" != "$remote_version" ]; then
             echo "Updating/Validating Valheim Server"
             install_valheim -validate
