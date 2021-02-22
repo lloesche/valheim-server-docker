@@ -57,6 +57,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
 | `UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
+| `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
 | `BACKUPS` | `true` | Whether the server should create periodic backups (`true` or `false`) |
 | `BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
 | `BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
