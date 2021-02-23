@@ -21,9 +21,9 @@ main() {
 
 update() {
     local logfile="$(mktemp)"
-    echo "Updating/Validating Valheim Server"
-    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim_dl +app_update 896660 $STEAMCMD_ARGS +quit
-    rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps /opt/valheim_dl/ /opt/valheim | tee "$logfile"
+    echo "Downloading/updating/validating Valheim server from Steam"
+    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim/dl/server +app_update 896660 $STEAMCMD_ARGS +quit
+    rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps /opt/valheim/dl/server/ /opt/valheim/server | tee "$logfile"
     grep '^[*>]' "$logfile" > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         echo "Valheim Server was updated - restarting"

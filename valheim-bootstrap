@@ -22,4 +22,27 @@ else
     echo "Environment variable RESTART_CRON is empty - no automatic valheim-server restart scheduled"
 fi
 
+# Notify users of new data paths
+if [ -d "/opt/valheim_dl" -o -f "/opt/valheim/valheim_server.x86_64" ]; then
+    cat <<EOF
+!!! ATTENTION !!!
+
+You have /opt/valheim_dl mounted or old server files in /opt/valheim.
+
+The /opt/valheim_dl volume is no longer required and has been unified under
+    /opt/valheim
+
+Directories have been moved in the following way:
+    /opt/valheim/    -> /opt/valheim/server/
+    /opt/valheim_dl/ -> /opt/valheim/dl/server/
+
+You might want to (re)move existing files or create a fresh volume mount under /opt/valheim to clean things up.
+
+Nothing is going to break though if you don't. It will just consume some extra disk space.
+If required we'll download a fresh copy of the server in the new directory structure.
+
+!!! ATTENTION !!!
+EOF
+fi
+
 exit 0
