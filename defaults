@@ -1,0 +1,35 @@
+# The following are default values.
+# They can be overridden by supplying the -e VAR=value option to the containerizer.
+
+# The timezone this container is running in
+TZ=${TZ:-Etc/UTC}
+
+# Valheim dedicated server related values
+WORLD_NAME=${WORLD_NAME:-Dedicated}
+SERVER_NAME=${SERVER_NAME:-My Server}
+SERVER_PORT=${SERVER_PORT:-2456}
+SERVER_PASS=${SERVER_PASS:-secret}
+SERVER_PUBLIC=${SERVER_PUBLIC:-1}
+
+# steamcmd.sh arguments
+STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
+
+# Directory permissions
+CONFIG_DIRECTORY_PERMISSIONS=${CONFIG_DIRECTORY_PERMISSIONS:-755}
+WORLDS_DIRECTORY_PERMISSIONS=${WORLDS_DIRECTORY_PERMISSIONS:-755}
+WORLDS_FILE_PERMISSIONS=${WORLDS_FILE_PERMISSIONS:-644}
+
+# How often we check for Valheim server updates
+UPDATE_INTERVAL=${UPDATE_INTERVAL:-900}
+
+# What time we restart the valheim-server
+# This is usful to mitigate the effects of memory/resource leaks
+RESTART_CRON=${RESTART_CRON-0 5 * * *}
+
+# World backup related settings
+BACKUPS=${BACKUPS:-true}
+BACKUPS_INTERVAL=${BACKUPS_INTERVAL:-3600}
+BACKUPS_DIRECTORY=${BACKUPS_DIRECTORY:-/config/backups}
+BACKUPS_MAX_AGE=${BACKUPS_MAX_AGE:-3}
+BACKUPS_DIRECTORY_PERMISSIONS=${BACKUPS_DIRECTORY_PERMISSIONS:-755}
+BACKUPS_FILE_PERMISSIONS=${BACKUPS_FILE_PERMISSIONS:-644}

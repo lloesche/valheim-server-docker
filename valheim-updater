@@ -1,11 +1,9 @@
 #!/bin/bash
-# Fix permissions in case they were altered externaly
+
+# Include defaults
+. /usr/local/etc/valheim/defaults
+
 echo "Running Valheim Server updater as user $USER uid $UID"
-CONFIG_DIRECTORY_PERMISSIONS=${CONFIG_DIRECTORY_PERMISSIONS:-755}
-WORLDS_DIRECTORY_PERMISSIONS=${WORLDS_DIRECTORY_PERMISSIONS:-755}
-WORLDS_FILE_PERMISSIONS=${WORLDS_FILE_PERMISSIONS:-644}
-UPDATE_INTERVAL=${UPDATE_INTERVAL:-900}
-STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 just_started=true
 next_update=$(date +%s)
 

@@ -1,6 +1,7 @@
 #!/bin/bash
-RESTART_CRON=${RESTART_CRON-0 5 * * *}
-TZ=${TZ:-Etc/UTC}
+
+# Include defaults
+. /usr/local/etc/valheim/defaults
 
 if [ -f "/usr/share/zoneinfo/$TZ" ]; then
     echo "Setting timezone $TZ"

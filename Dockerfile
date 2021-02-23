@@ -11,6 +11,7 @@ RUN make install
 FROM debian:stable
 COPY --from=build-env /build/busybox/_install/bin/busybox /bin/busybox
 COPY valheim-* /usr/local/bin/
+COPY defaults /usr/local/etc/valheim/
 ADD https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz /tmp/
 RUN dpkg --add-architecture i386 \
     && apt-get update \
