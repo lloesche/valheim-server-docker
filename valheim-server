@@ -29,8 +29,8 @@ main() {
 
 shutdown() {
     if [ $valheim_server_pid -eq -1 ]; then
-        echo "Valheim server is not running yet - ignoring shutdown request"
-        return
+        echo "Valheim server is not running yet - aborting startup"
+        exit
     fi
     echo "Shutting down Valheim Server with PID $valheim_server_pid"
     kill -INT $valheim_server_pid
