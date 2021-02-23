@@ -6,6 +6,8 @@ BACKUPS_DIRECTORY=${BACKUPS_DIRECTORY:-/config/backups}
 BACKUPS_MAX_AGE=${BACKUPS_MAX_AGE:-3}
 BACKUPS_DIRECTORY_PERMISSIONS=${BACKUPS_DIRECTORY_PERMISSIONS:-755}
 BACKUPS_FILE_PERMISSIONS=${BACKUPS_FILE_PERMISSIONS:-644}
+AWS=${AWS:-false}
+S3_PATH=${S3_PATH:-s3://example-bucket}
 
 # Remove trailing slash if any
 BACKUPS_DIRECTORY=${BACKUPS_DIRECTORY%/}
@@ -31,6 +33,9 @@ backup() {
     chmod $BACKUPS_DIRECTORY_PERMISSIONS "$BACKUPS_DIRECTORY"
     zip -r "$backup_file" "worlds/"
     chmod $BACKUPS_FILE_PERMISSIONS "$backup_file"
+    if [ $AWS == true ]; then
+        aws s3 sync $backup_file $S3_PATH --no-progress
+    fi
 }
 
 flush_old() {
