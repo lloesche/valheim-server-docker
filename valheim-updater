@@ -7,7 +7,7 @@ WORLDS_FILE_PERMISSIONS=${WORLDS_FILE_PERMISSIONS:-644}
 UPDATE_INTERVAL=${UPDATE_INTERVAL:-900}
 STEAMCMD_ARGS=$(echo ${STEAMCMD_ARGS} | tr " " "\n" | sed -n '/\(-validate\b\|^validate\b\)/!p' | tr "\n" " ")
 VALIDATE=${VALIDATE:-false}
-VALHEIM_PLUS_ENABLED=${VALHEIM_PLUS_ENABLED:-true}
+VALHEIM_PLUS_ENABLED=${VALHEIM_PLUS_ENABLED:-false}
 just_started=true
 next_update=$(date +%s)
 
