@@ -4,13 +4,13 @@
 . /usr/local/etc/valheim/defaults
 
 cd /opt/valheim
-valheim_server="/opt/valheim/valheim_server.x86_64"
+valheim_server="/opt/valheim/server/valheim_server.x86_64"
 valheim_server_pid=-1
 timeout=20
 kill_signal=TERM
 
 export SteamAppId=892970
-export LD_LIBRARY_PATH="/opt/valheim/linux64/"
+export LD_LIBRARY_PATH="/opt/valheim/server/linux64/"
 
 main() {
     while :; do

@@ -11,18 +11,20 @@ The name of the Docker image is `lloesche/valheim-server`.
 Volume mount the server config directory to `/config` within the Docker container.
 
 If you have an existing world on a Windows system you can copy it from e.g.  
-  `C:\Users\Lukas\AppData\LocalLow\IronGate\Valheim\worlds`  
+  `C:\Users\Lukas\AppData\LocalLow\IronGate\Valheim\worlds`
 to e.g.  
-  `$HOME/valheim-server-config/worlds`  
-and run the image with `$HOME/valheim-server-config` volume mounted to `/config` inside the container.
+  `$HOME/valheim-server/config/worlds`
+and run the image with `$HOME/valheim-server/config` volume mounted to `/config` inside the container.
+The container directory `/opt/valheim` contains the downloaded server. It can optionally be volume mounted to avoid having to download the server on each fresh start.
 
 ```
-$ mkdir -p $HOME/valheim-server-config/worlds
+$ mkdir -p $HOME/valheim-server/config/worlds $HOME/valheim-server/data
 # copy existing world
 $ docker run -d \
     --name valheim-server \
     -p 2456-2458:2456-2458/udp \
-    -v $HOME/valheim-server-config:/config \
+    -v $HOME/valheim-server/config:/config \
+    -v $HOME/valheim-server/data:/opt/valheim \
     -e SERVER_NAME="My Server" \
     -e WORLD_NAME="Neotopia" \
     -e SERVER_PASS="secret" \
@@ -88,7 +90,7 @@ DNS_2=8.8.4.4
 
 Then enable the Docker container on system boot
 ```
-$ sudo mkdir /etc/valheim
+$ sudo mkdir -p /etc/valheim /opt/valheim
 $ sudo curl -o /etc/systemd/system/valheim-server.service https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/valheim-server.service
 $ sudo systemctl daemon-reload
 $ sudo systemctl enable valheim-server.service
