@@ -10,7 +10,7 @@ The name of the Docker image is `lloesche/valheim-server`.
 
 Volume mount the server config directory to `/config` within the Docker container.
 
-If you would also like to enable Valheim Plus, please also volume mount the server files directory `/opt/valheim_dl` so that you can modify the mod's config file.
+If you would also like to enable Valheim Plus, please also volume mount the server files directory `/opt/valheim` so that you can modify the mod's config file.
 
 If you have an existing world on a Windows system you can copy it from e.g.  
   `C:\Users\Lukas\AppData\LocalLow\IronGate\Valheim\worlds`  
@@ -25,7 +25,7 @@ $ docker run -d \
     --name valheim-server \
     -p 2456-2458:2456-2458/udp \
     -v $HOME/valheim-server/config:/config \
-    -v $HOME/valheim-server/files:/opt/valheim_dl \
+    -v $HOME/valheim-server/files:/opt/valheim \
     -e SERVER_NAME="My Server" \
     -e SERVER_PASS="secret" \
     -e WORLD_NAME="Neotopia" \
