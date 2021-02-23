@@ -22,7 +22,6 @@ RUN dpkg --add-architecture i386 \
         libsdl2-2.0-0:i386 \
         libcurl4 \
         libcurl4:i386 \
-        libc6-dev \
         ca-certificates \
         supervisor \
         procps \
@@ -30,8 +29,6 @@ RUN dpkg --add-architecture i386 \
         unzip \
         zip \
         rsync \
-        curl \
-        jq \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && ln -s /bin/busybox /sbin/syslogd \
@@ -41,7 +38,7 @@ RUN dpkg --add-architecture i386 \
     && ln -s /bin/busybox /usr/bin/wget \
     && locale-gen \
     && apt-get clean \
-    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/valheimplus /opt/steamcmd /root/.config/unity3d/IronGate /config \
+    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/valheim_dl /opt/steamcmd /root/.config/unity3d/IronGate /config \
     && ln -s /config /root/.config/unity3d/IronGate/Valheim \
     && tar xzvf /tmp/steamcmd_linux.tar.gz -C /opt/steamcmd/ \
     && chown -R root:root /opt/steamcmd \
@@ -52,7 +49,7 @@ RUN dpkg --add-architecture i386 \
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 ENV TZ=Etc/UTC
-VOLUME ["/config", "/opt/valheim", "/opt/valheimplus"]
+VOLUME ["/config", "/opt/valheim_dl"]
 EXPOSE 2456-2458/udp
 WORKDIR /
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

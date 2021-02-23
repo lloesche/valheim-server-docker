@@ -5,9 +5,7 @@ CONFIG_DIRECTORY_PERMISSIONS=${CONFIG_DIRECTORY_PERMISSIONS:-755}
 WORLDS_DIRECTORY_PERMISSIONS=${WORLDS_DIRECTORY_PERMISSIONS:-755}
 WORLDS_FILE_PERMISSIONS=${WORLDS_FILE_PERMISSIONS:-644}
 UPDATE_INTERVAL=${UPDATE_INTERVAL:-900}
-STEAMCMD_ARGS=$(echo ${STEAMCMD_ARGS} | tr " " "\n" | sed -n '/\(-validate\b\|^validate\b\)/!p' | tr "\n" " ")
-VALIDATE=${VALIDATE:-false}
-VALHEIM_PLUS_ENABLED=${VALHEIM_PLUS_ENABLED:-true}
+STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 just_started=true
 next_update=$(date +%s)
 
@@ -15,10 +13,7 @@ cd /opt/steamcmd
 main() {
     while :; do
         update_permissions
-        update_valheim
-        if [ $VALHEIM_PLUS_ENABLED = true ]; then
-            update_valheim_plus
-        fi
+        update
         next_update=$(($(date +%s)+$UPDATE_INTERVAL))
         while [ $(date +%s) -lt $next_update ]; do
             sleep 5
@@ -26,61 +21,23 @@ main() {
     done
 }
 
-install_valheim_plus() {
-    echo "Installing/Updating Valheim Plus"
-    curl -sL https://api.github.com/repos/nxPublic/ValheimPlus/releases/latest | jq -r '.assets[] | select(.name == "UnixServer.zip") | .updated_at' > "/opt/valheimplus/UnixServer.zip.last_update"
-    wget -q -O /opt/valheimplus/UnixServer.zip https://github.com/nxPublic/ValheimPlus/releases/latest/download/UnixServer.zip && \
-    unzip -qo /opt/valheimplus/UnixServer.zip -x changelog.txt run_bepinex.sh -d /opt/valheimplus
-    if [ -f /opt/valheim/BepInEx/config/valheim_plus.cfg ]; then
-        cp -a /opt/valheim/BepInEx/config/valheim_plus.cfg /opt/valheimplus/BepInEx/config/valheim_plus.cfg
-    fi
-    chmod 666 /opt/valheimplus/BepInEx/config/valheim_plus.cfg
-    rsync -a --itemize-changes --exclude UnixServer.zip /opt/valheimplus/ /opt/valheim
-}
-
-update_valheim_plus() {
-    remote_update_date=$(curl -sL https://api.github.com/repos/nxPublic/ValheimPlus/releases/latest | jq -r '.assets[] | select(.name == "UnixServer.zip") | .updated_at')
-    local_update_date=$(cat /opt/valheimplus/UnixServer.zip.last_update)
-    if [ "$remote_update_date" != "$local_update_date" ]; then
-        install_valheim_plus
+update() {
+    local logfile="$(mktemp)"
+    echo "Updating/Validating Valheim Server"
+    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim_dl +app_update 896660 $STEAMCMD_ARGS +quit
+    rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps /opt/valheim_dl/ /opt/valheim | tee "$logfile"
+    grep '^[*>]' "$logfile" > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "Valheim Server was updated - restarting"
+        supervisorctl restart valheim-server
     else
-        echo "Valheim Plus is already the latest version"
-    fi
-}
-
-install_valheim() {
-    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim +app_update 896660 $STEAMCMD_ARGS $1 +quit
-    if [ $VALHEIM_PLUS_ENABLED = true ]; then
-        install_valheim_plus
-    fi
-    echo "Valheim Server was updated - restarting"
-    supervisorctl restart valheim-server
-}
-
-update_valheim() {
-    if [ ! -d /opt/valheim/valheim_server_Data ] || [ $VALIDATE = true ]; then
-        echo "Installing Valheim Server"
-        args=""
-        if [ $VALIDATE = true ]; then
-            args=validate
-            VALIDATE=false
-        fi
-        install_valheim $args
-    else
-        local_version=$(awk '/"896661"/,/"manifest"/{if($1=="\"manifest\"")print $2;}' /opt/valheim/steamapps/appmanifest_896660.acf | xargs)
-        ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim +app_update 896660 $STEAMCMD_ARGS +quit
-        remote_version=$(./steamcmd.sh +login anonymous +app_info_update 1 +app_info_print 896660 +quit | awk '/"896661"/,/"public"/{if($1=="\"manifest\"")print $2;}' | xargs)
-        if [ "$local_version" != "$remote_version" ]; then
-            echo "Updating/Validating Valheim Server"
-            install_valheim -validate
-        else
-            echo "Valheim Server is already the latest version"
-            if [ $just_started = true ]; then
-                supervisorctl start valheim-server
-            fi
+        echo "Valheim Server is already the latest version"
+        if [ $just_started = true ]; then
+            supervisorctl start valheim-server
         fi
     fi
     just_started=false
+    rm -f "$logfile"
 }
 
 update_permissions() {

@@ -1,7 +1,7 @@
 # lloesche/valheim-server Docker image
 ![Valheim](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/Logo_valheim.png "Valheim")
 
-Valheim Server in a Docker Container (with optional [Valheim Plus](https://github.com/nxPublic/ValheimPlus) mod support)  
+Valheim Server in a Docker Container  
 
 
 # Basic Docker Usage
@@ -10,8 +10,6 @@ The name of the Docker image is `lloesche/valheim-server`.
 
 Volume mount the server config directory to `/config` within the Docker container.
 
-If you would also like to enable Valheim Plus, please also volume mount the server files directory `/opt/valheim` so that you can modify the mod's config file.
-
 If you have an existing world on a Windows system you can copy it from e.g.  
   `C:\Users\Lukas\AppData\LocalLow\IronGate\Valheim\worlds`  
 to e.g.  
@@ -19,18 +17,15 @@ to e.g.
 and run the image with `$HOME/valheim-server-config` volume mounted to `/config` inside the container.
 
 ```
-$ mkdir -p $HOME/valheim-server/config/worlds
+$ mkdir -p $HOME/valheim-server-config/worlds
 # copy existing world
 $ docker run -d \
     --name valheim-server \
     -p 2456-2458:2456-2458/udp \
-    -v $HOME/valheim-server/config:/config \
-    -v $HOME/valheim-server/files:/opt/valheim \
+    -v $HOME/valheim-server-config:/config \
     -e SERVER_NAME="My Server" \
-    -e SERVER_PASS="secret" \
     -e WORLD_NAME="Neotopia" \
-    -e PUBLIC=1 \
-    -e VALHEIM_PLUS_ENABLED=false
+    -e SERVER_PASS="secret" \
     lloesche/valheim-server
 ```
 
@@ -63,8 +58,6 @@ For more deployment options see the [Deployment section](#deployment).
 | `UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
-| `VALIDATE` | `false` | Run Steam's validation on container start (does not affect update checks). If Valheim Plus is enabled, then it will be reinstalled |
-| `VALHEIM_PLUS_ENABLED` | `false` | Enable support for the popular [Valheim Plus](https://github.com/nxPublic/ValheimPlus) mod |
 | `BACKUPS` | `true` | Whether the server should create periodic backups (`true` or `false`) |
 | `BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
 | `BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
@@ -74,7 +67,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
 | `WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
 | `WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
-| `STEAMCMD_ARGS` |  | Additional steamcmd CLI arguments |
+| `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames (systemd only) |
 | `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames (systemd only) |
 
@@ -122,7 +115,6 @@ CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and A
 By default the container will check for Valheim server updates every 15 minutes.
 If an update is found it is downloaded and the server restarted.
 This interval can be changed using the `UPDATE_INTERVAL` environment variable.
-Additionally, if Valheim Plus is enabled, it will also automatically check for updates for the mod as well.
 
 
 # Backups
