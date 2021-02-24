@@ -53,10 +53,9 @@ merge_valheim_plus() {
     mkdir -p "$vp_install_path.tmp"
     rsync -a --itemize-changes --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$vp_install_path.tmp"
     rsync -a --itemize-changes "$vp_download_path/extracted/" "$vp_install_path.tmp"
-    if [ ! -d "/config/valheimplus" ]; then
+    if [ ! -d "/config/valheimplus" -a -d "$vp_install_path.tmp/BepInEx/config" ]; then
         cp -a "$vp_install_path.tmp/BepInEx/config" "/config/valheimplus"
-        chmod $VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS /config/valheimplus
-        chmod $VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS /config/valheimplus/*
+        ensure_permissions
     fi
     rm -rf "$vp_install_path.tmp/BepInEx/config"
     ln -s /config/valheimplus "$vp_install_path.tmp/BepInEx/config"

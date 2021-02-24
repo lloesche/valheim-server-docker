@@ -5,3 +5,16 @@ vp_install_path=/opt/valheim/plus
 vp_zipfile=UnixServer.zip
 valheim_restartfile="/tmp/valheim.restart"
 vp_mergefile="$vp_download_path/merge"
+
+ensure_permissions() {
+    chmod $CONFIG_DIRECTORY_PERMISSIONS /config
+    chmod -f $CONFIG_FILE_PERMISSIONS /config/*.txt
+    if [ -d /config/worlds ]; then
+        chmod $WORLDS_DIRECTORY_PERMISSIONS /config/worlds
+        chmod $WORLDS_FILE_PERMISSIONS /config/worlds/*
+    fi
+    if [ "$VALHEIM_PLUS" = true -a -d /config/valheimplus ]; then
+        chmod $VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS /config/valheimplus
+        chmod $VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS /config/valheimplus/*
+    fi
+}
