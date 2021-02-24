@@ -64,15 +64,9 @@ For more deployment options see the [Deployment section](#deployment).
 | `BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
 | `BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
 | `BACKUPS_MAX_AGE` | `3` | Age in days after which old backups are flushed |
-| `BACKUPS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the backup directory |
-| `BACKUPS_FILE_PERMISSIONS` | `644` | Unix permissions for the backup zip files |
-| `CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
-| `WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
-| `WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
+| `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
-| `VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/valheimplus directory |
-| `VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/valheimplus |
 | `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames (systemd only) |
 | `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames (systemd only) |
 
