@@ -67,8 +67,6 @@ For more deployment options see the [Deployment section](#deployment).
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
-| `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames (systemd only) |
-| `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames (systemd only) |
 
 
 # Deployment
@@ -81,8 +79,6 @@ SERVER_PORT=2456
 WORLD_NAME=Dedicated
 SERVER_PASS=secret
 SERVER_PUBLIC=1
-DNS_1=8.8.8.8
-DNS_2=8.8.4.4
 ```
 
 Then enable the Docker container on system boot
