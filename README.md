@@ -207,6 +207,12 @@ As a user you are mainly concerned with the values in `/config/valheimplus/valhe
 For most modifications the mod has to be installed both, on the server as well as all the clients that connect to the server.
 A few modifications, like for example changing the `dataRate` can be done server only.
 
+## Updates
+ValheimPlus is automatically being updated in the same `UPDATE_INTERVAL` the Valheim server checks for updates. If an update of either
+Valheim server or ValheimPlus is found it is being downloaded, configured and the server automatically restarted.
+This also means your clients always need to run the latest ValheimPlus version or won't be able to connect. If this is undesired the interval can be set to something very high like `UPDATE_INTERVAL=31536000` (1 year) and then manually checked for updates using something like `docker exec valheim-server supervisorctl restart valheim-updater`.
+
+
 ## Server data rate
 A popular change is to increase the server send rate.
 

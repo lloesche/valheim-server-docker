@@ -64,9 +64,7 @@ merge_valheim_plus() {
         mv -f "$vp_install_path" "$vp_install_path.old"
     fi
     mv "$vp_install_path.tmp" "$vp_install_path"
-    if [ ! -f "$valheim_restartfile" ]; then
-        echo restart > "$valheim_restartfile"
-    fi
+    echo restart > "$valheim_restartfile"
 }
 
 download_valheim_plus() {
