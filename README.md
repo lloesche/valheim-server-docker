@@ -1,7 +1,7 @@
 # lloesche/valheim-server Docker image
 ![Valheim](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/Logo_valheim.png "Valheim")
 
-Valheim Server in a Docker Container  
+Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)  
 
 
 # Basic Docker Usage
