@@ -10,6 +10,10 @@ mkdir -p "$valheim_install_path"
 if [ "$VALHEIM_PLUS" = true ]; then
     mkdir -p "$vp_download_path"
     mkdir -p "$vp_install_path"
+    if [ -d /config/valheimplus ]; then
+        chmod $VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS /config/valheimplus
+        chmod $VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS /config/valheimplus/*
+    fi
 fi
 
 if [ -f "/usr/share/zoneinfo/$TZ" ]; then

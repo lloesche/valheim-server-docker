@@ -57,7 +57,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
 | `SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
 | `SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
-| `UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
+| `UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds. This also controls how often Github is checked for ValheimPlus updates. Note that Github has an API rate limit of 60 req/hour. So setting this to less than 60 will result in errors if V+ is enabled. |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
 | `BACKUPS` | `true` | Whether the server should create periodic backups (`true` or `false`) |
@@ -71,6 +71,8 @@ For more deployment options see the [Deployment section](#deployment).
 | `WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
+| `VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/valheimplus directory |
+| `VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/valheimplus |
 | `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames (systemd only) |
 | `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames (systemd only) |
 
