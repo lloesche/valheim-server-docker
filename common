@@ -1,0 +1,7 @@
+valheim_download_path=/opt/valheim/dl/server
+valheim_install_path=/opt/valheim/server
+vp_download_path=/opt/valheim/dl/plus
+vp_install_path=/opt/valheim/plus
+vp_zipfile=UnixServer.zip
+valheim_restartfile="/tmp/valheim.restart"
+vp_mergefile="$vp_download_path/merge"

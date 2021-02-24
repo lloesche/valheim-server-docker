@@ -70,6 +70,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
 | `WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
+| `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
 | `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames (systemd only) |
 | `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames (systemd only) |
 
