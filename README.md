@@ -199,6 +199,26 @@ Administrators can press ***F5*** to open the in-game console and use commands l
 ![Kick a user](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin3.png "Kick a user")
 
 
+# ValheimPlus
+[ValheimPlus](https://github.com/valheimPlus/ValheimPlus) is a popular Valheim mod.
+It has been incorporated into this container. To enable V+ provide the env variable `VALHEIM_PLUS=true`.
+Upon first start V+ will create a new directory `/config/valheimplus` where its config files are located.
+As a user you are mainly concerned with the values in `/config/valheimplus/valheim_plus.cfg`.
+For most modifications the mod has to be installed both, on the server as well as all the clients that connect to the server.
+A few modifications, like for example changing the `dataRate` can be done server only.
+
+## Server data rate
+A popular change is to increase the server send rate.
+
+To do so enable ValheimPlus (`VALHEIM_PLUS=true`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
+```
+[Server]
+enabled=true
+enforceMod=false
+dataRate=600
+```
+(Or whatever `dataRate` value you require. The value is in kb/s with a default of 60.)
+
 # Synology Help
 ## First install
 This is not an extensive tutorial, but I hope these screenshots can be helpful.
