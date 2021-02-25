@@ -20,16 +20,22 @@ else
     echo "Error: unknown timezone $TZ"
 fi
 
+crontab=$(mktemp)
+if [ -n "$UPDATE_CRON" -a "$UPDATE_INTERVAL" = "315360000" ]; then
+    echo "Creating cron to check for updates using schedule $UPDATE_CRON"
+    tmpfile=$(mktemp)
+    echo "$UPDATE_CRON [ -f /var/run/valheim-updater.pid ] && kill -HUP \$(cat /var/run/valheim-updater.pid)" >> $crontab
+fi
 
 if [ -n "$RESTART_CRON" ]; then
     echo "Creating cron to restart valheim-server using schedule $RESTART_CRON"
     tmpfile=$(mktemp)
-    echo "$RESTART_CRON /usr/bin/supervisorctl restart valheim-server" > $tmpfile
-    crontab $tmpfile
-    rm -f $tmpfile
+    echo "$RESTART_CRON /usr/bin/supervisorctl restart valheim-server" >> $crontab
 else
     echo "Environment variable RESTART_CRON is empty - no automatic valheim-server restart scheduled"
 fi
+crontab $crontab
+rm -f $crontab
 
 # Notify users of new data paths
 if [ -d "/opt/valheim_dl" -o -f "/opt/valheim/valheim_server.x86_64" ]; then
