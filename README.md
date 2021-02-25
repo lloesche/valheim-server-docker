@@ -68,6 +68,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
 
+There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
 # Deployment
 
