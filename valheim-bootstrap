@@ -2,6 +2,15 @@
 
 # Include defaults
 . /usr/local/etc/valheim/defaults
+. /usr/local/etc/valheim/common
+
+mkdir -p "$valheim_download_path"
+mkdir -p "$valheim_install_path"
+
+if [ "$VALHEIM_PLUS" = true ]; then
+    mkdir -p "$vp_download_path"
+    mkdir -p "$vp_install_path"
+fi
 
 if [ -f "/usr/share/zoneinfo/$TZ" ]; then
     echo "Setting timezone $TZ"

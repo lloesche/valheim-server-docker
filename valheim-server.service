@@ -5,8 +5,6 @@ Requires=docker.service
 
 [Service]
 TimeoutStartSec=0
-Environment="DNS_1=8.8.8.8"
-Environment="DNS_2=8.8.4.4"
 EnvironmentFile=-/etc/sysconfig/valheim-server
 ExecStartPre=-/usr/bin/docker stop %n
 ExecStartPre=-/usr/bin/docker rm %n
@@ -22,8 +20,6 @@ ExecStart=/usr/bin/docker run \
           -e WORLD_NAME \
           -e SERVER_PASS \
           -e SERVER_PUBLIC \
-          --dns $DNS_1 \
-          --dns $DNS_2 \
           lloesche/valheim-server
 ExecStop=/usr/bin/docker stop %n
 Restart=always

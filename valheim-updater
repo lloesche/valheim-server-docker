@@ -2,6 +2,7 @@
 
 # Include defaults
 . /usr/local/etc/valheim/defaults
+. /usr/local/etc/valheim/common
 
 echo "Running Valheim Server updater as user $USER uid $UID"
 just_started=true
@@ -10,8 +11,9 @@ next_update=$(date +%s)
 cd /opt/steamcmd
 main() {
     while :; do
-        update_permissions
+        ensure_permissions
         update
+        check_server_restart
         next_update=$(($(date +%s)+$UPDATE_INTERVAL))
         while [ $(date +%s) -lt $next_update ]; do
             sleep 5
@@ -22,27 +24,52 @@ main() {
 update() {
     local logfile="$(mktemp)"
     echo "Downloading/updating/validating Valheim server from Steam"
-    ./steamcmd.sh +login anonymous +force_install_dir /opt/valheim/dl/server +app_update 896660 $STEAMCMD_ARGS +quit
-    rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps /opt/valheim/dl/server/ /opt/valheim/server | tee "$logfile"
+    download_valheim
+    rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$valheim_install_path" | tee "$logfile"
     grep '^[*>]' "$logfile" > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         echo "Valheim Server was updated - restarting"
-        supervisorctl restart valheim-server
+        check_valheim_plus updated
+        echo restart > "$valheim_restartfile"
     else
         echo "Valheim Server is already the latest version"
+        check_valheim_plus just_started
         if [ $just_started = true ]; then
-            supervisorctl start valheim-server
+            echo start > "$valheim_restartfile"
         fi
     fi
     just_started=false
     rm -f "$logfile"
 }
 
-update_permissions() {
-    chmod $CONFIG_DIRECTORY_PERMISSIONS /config
-    if [ -d /config/worlds ]; then
-        chmod $WORLDS_DIRECTORY_PERMISSIONS /config/worlds
-        chmod $WORLDS_FILE_PERMISSIONS /config/worlds/*
+check_valheim_plus() {
+    if [ "$VALHEIM_PLUS" = true ]; then
+        echo "ValheimPlus is enabled - running updater"
+        if [ "$1" = updated ]; then
+            echo "Valheim Server was updated from Steam - signaling ValheimPlus updater to merge updated files"
+            touch "$vp_mergefile"
+        fi
+        /usr/local/bin/valheim-plus-updater
+    fi
+}
+
+download_valheim() {
+    ./steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
+}
+
+check_server_restart() {
+    if [ -f "$valheim_restartfile" ]; then
+        local mode=$(< "$valheim_restartfile")
+        rm -f "$valheim_restartfile"
+
+        case "$mode" in
+                start|restart)
+                    ;;
+                *)
+                    mode=restart
+        esac
+
+        supervisorctl $mode valheim-server
     fi
 }
 
