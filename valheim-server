@@ -1,4 +1,8 @@
 #!/bin/bash
+# valheim-server starts the Valheim server
+# binary either vanilla from /opt/valheim/server
+# or if VALHEIM_PLUS=true with the ValheimPlus mod
+# from /opt/valheim/plus
 
 # Include defaults and common functions
 . /usr/local/etc/valheim/defaults
@@ -7,7 +11,7 @@
 export SteamAppId=892970
 
 valheim_server_pid=-1
-timeout=20
+timeout=29
 kill_signal=TERM
 
 
@@ -26,22 +30,29 @@ else
     valheim_server="$valheim_install_path/valheim_server.x86_64"
 fi
 
+
 main() {
     wait_for_server_download
     run_server
 }
+
 
 wait_for_server_download() {
     while :; do
         if [ -f "$valheim_server" ]; then
             break
         else
-            echo "Valheim Server is not yet downloaded - waiting"
+            debug "Valheim Server is not yet downloaded - waiting"
             sleep 7
         fi
     done
 }
 
+
+# This runs after server start and waits for the
+# config files to either exist or for the server
+# to create them so their access permissions can
+# be adjusted to the proper values.
 ensure_permissions_after_start() {
     while :; do
         if [ -f "/config/adminlist.txt" ]; then
@@ -53,8 +64,9 @@ ensure_permissions_after_start() {
     done
 }
 
+
 run_server() {
-    echo "Running Valheim Server"
+    info "Running Valheim Server"
     "$valheim_server" -nographics -batchmode -name "$SERVER_NAME" -port $SERVER_PORT -world "$WORLD_NAME" -password "$SERVER_PASS" -public $SERVER_PUBLIC > >(filter stdout)  2> >(filter stderr >&2) &
     valheim_server_pid=$!
     unset LD_LIBRARY_PATH
@@ -64,6 +76,10 @@ run_server() {
     wait
 }
 
+
+# This function gets the servers stdout/stderr
+# output piped into. It allows for filtering
+# of unwanted debug log messages.
 filter() {
     unset LD_LIBRARY_PATH
     unset LD_PRELOAD
@@ -78,20 +94,21 @@ filter() {
     eval $log_filter
 }
 
+
 shutdown() {
     unset LD_LIBRARY_PATH
     unset LD_PRELOAD
     if [ $valheim_server_pid -eq -1 ]; then
-        echo "Valheim server is not running yet - aborting startup"
+        debug "Valheim server is not running yet - aborting startup"
         exit
     fi
-    echo "Shutting down Valheim Server with PID $valheim_server_pid"
+    info "Shutting down Valheim Server with PID $valheim_server_pid"
     kill -INT $valheim_server_pid
     shutdown_timeout=$(($(date +%s)+$timeout))
     while [ -d "/proc/$valheim_server_pid" ]; do
         if [ $(date +%s) -gt $shutdown_timeout ]; then
             shutdown_timeout=$(($(date +%s)+$timeout))
-            echo "Timeout while waiting for server to shutdown - sending SIG$kill_signal to PID $valheim_server_pid"
+            warn "Timeout while waiting for server to shutdown - sending SIG$kill_signal to PID $valheim_server_pid"
             kill -$kill_signal $valheim_server_pid
             case "$kill_signal" in
                 INT)
@@ -101,19 +118,20 @@ shutdown() {
                     kill_signal=KILL
             esac
         fi
-        echo "Waiting for Valheim Server with PID $valheim_server_pid to shutdown"
+        debug "Waiting for Valheim Server with PID $valheim_server_pid to shutdown"
         sleep 6
     done
     if [ -f "$valheim_server_pidfile" ]; then
         pid_from_pidfile=$(< "$valheim_server_pidfile")
         if [ "$pid_from_pidfile" = "$valheim_server_pid" ]; then
-            echo "Removing $valheim_server_pidfile"
+            debug Removing $valheim_server_pidfile
             rm -f "$valheim_server_pidfile"
         fi
     fi
-    echo "Shutdown complete"
+    info "Shutdown complete"
     exit
 }
+
 
 trap shutdown SIGINT SIGTERM
 main

@@ -22,7 +22,6 @@ UPDATE_INTERVAL=${UPDATE_INTERVAL:-315360000}
 # When we check for updates
 UPDATE_CRON=${UPDATE_CRON-*/15 * * * *}
 
-
 # What time we restart the valheim-server
 # This is usful to mitigate the effects of memory/resource leaks
 RESTART_CRON=${RESTART_CRON-0 5 * * *}

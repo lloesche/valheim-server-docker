@@ -1,40 +1,54 @@
 #!/bin/bash
+# valheim-updater runs on startup and
+# periodically checks for server updates.
+# It is also responsible for (re)starting
+# the valheim-server service.
 
 # Include defaults
 . /usr/local/etc/valheim/defaults
 . /usr/local/etc/valheim/common
 
-echo "Running Valheim Server updater as user $USER uid $UID"
+debug "Running Valheim Server updater as user $USER uid $UID"
+cd /opt/steamcmd
+pidfile=$valheim_updater_pidfile
 just_started=true
 next_update=$(date +%s)
 run=true
 
-cd /opt/steamcmd
+
 main() {
-    echo $$ > "$valheim_updater_pidfile"
-    while [ $run = true ]; do
-        ensure_permissions
-        update
-        check_server_restart
-        next_update=$(($(date +%s)+$UPDATE_INTERVAL))
-        while [ $run = true -a $(date +%s) -lt $next_update ]; do
-            sleep 5
+    if (set -o noclobber; echo $$ > "$pidfile") 2> /dev/null; then
+        trap update_now SIGHUP
+        trap shutdown SIGINT SIGTERM
+        trap 'error_handler $? $LINENO $BASH_LINENO "$BASH_COMMAND" $(printf "::%s" ${FUNCNAME[@]}); trap - ERR' ERR
+        while [ $run = true ]; do
+            ensure_permissions
+            update
+            check_server_restart
+            next_update=$(($(date +%s)+$UPDATE_INTERVAL))
+            while [ $run = true -a $(date +%s) -lt $next_update ]; do
+                sleep 5
+            done
         done
-    done
+    else
+        info "Found existing PID file - checking process"
+        check_lock $pidfile
+    fi
 }
+
 
 update() {
     local logfile="$(mktemp)"
-    echo "Downloading/updating/validating Valheim server from Steam"
+    info "Downloading/updating/validating Valheim server from Steam"
     download_valheim
     rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$valheim_install_path" | tee "$logfile"
     grep '^[*>]' "$logfile" > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo "Valheim Server was updated - restarting"
+        info "Valheim Server was updated - restarting"
         check_valheim_plus updated
         echo restart > "$valheim_restartfile"
     else
-        echo "Valheim Server is already the latest version"
+        info "Valheim Server is already the latest version"
         check_valheim_plus just_started
         if [ $just_started = true ]; then
             echo start > "$valheim_restartfile"
@@ -44,11 +58,12 @@ update() {
     rm -f "$logfile"
 }
 
+
 check_valheim_plus() {
     if [ "$VALHEIM_PLUS" = true ]; then
-        echo "ValheimPlus is enabled - running updater"
+        debug "ValheimPlus is enabled - running updater"
         if [ "$1" = updated ]; then
-            echo "Valheim Server was updated from Steam - signaling ValheimPlus updater to merge updated files"
+            info "Valheim Server was updated from Steam - signaling ValheimPlus updater to merge updated files"
             touch "$vp_mergefile"
         fi
         /usr/local/bin/valheim-plus-updater
@@ -56,10 +71,15 @@ check_valheim_plus() {
 }
 
 download_valheim() {
-    ./steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
+    /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
 }
 
+
 check_server_restart() {
+    # The control file $valheim_restartfile is either created
+    # by update() if Valheim is being installed for the first
+    # time or has been updated, or by valheim-plus-updater if
+    # a new version of the mod has been downloaded.
     if [ -f "$valheim_restartfile" ]; then
         local mode=$(< "$valheim_restartfile")
         rm -f "$valheim_restartfile"
@@ -75,16 +95,18 @@ check_server_restart() {
     fi
 }
 
+
+# This is a signal handler registered to SIGHUP
 update_now() {
-    echo "Received signal to check for update"
+    debug "Received signal to check for update"
     next_update=0
 }
 
+
 shutdown() {
-    rm -f "$valheim_updater_pidfile"
+    clear_lock $pidfile
     run=false
 }
 
-trap update_now SIGHUP
-trap shutdown SIGINT SIGTERM
+
 main
