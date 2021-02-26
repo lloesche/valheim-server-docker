@@ -7,16 +7,17 @@
 echo "Running Valheim Server updater as user $USER uid $UID"
 just_started=true
 next_update=$(date +%s)
+run=true
 
 cd /opt/steamcmd
 main() {
     echo $$ > "$valheim_updater_pidfile"
-    while :; do
+    while [ $run = true ]; do
         ensure_permissions
         update
         check_server_restart
         next_update=$(($(date +%s)+$UPDATE_INTERVAL))
-        while [ $(date +%s) -lt $next_update ]; do
+        while [ $run = true -a $(date +%s) -lt $next_update ]; do
             sleep 5
         done
     done
@@ -81,6 +82,7 @@ update_now() {
 
 shutdown() {
     rm -f "$valheim_updater_pidfile"
+    run=false
 }
 
 trap update_now SIGHUP
