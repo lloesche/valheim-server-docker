@@ -15,7 +15,7 @@ create_directory_structure() {
 
 check_for_update() {
     cd "$vp_download_path"
-    local api_response=$(curl -sL https://api.github.com/repos/nxPublic/ValheimPlus/releases/latest | jq -r ".assets[] | select(.name == \"$vp_zipfile\")")
+    local api_response=$(curl -sL https://api.github.com/repos/valheimPlus/ValheimPlus/releases/latest | jq -r ".assets[] | select(.name == \"$vp_zipfile\")")
     local download_url=$(jq -r  '.browser_download_url' <<< "${api_response}" )
     local remote_updated_at=$(jq -r  '.updated_at' <<< "${api_response}" )
     local remote_size=$(jq -r  '.size' <<< "${api_response}")
