@@ -7,7 +7,6 @@
 export SteamAppId=892970
 
 valheim_server_pid=-1
-valheim_server_pidfile=/var/run/valheim-server.pid
 timeout=20
 kill_signal=TERM
 
@@ -38,7 +37,7 @@ wait_for_server_download() {
             break
         else
             echo "Valheim Server is not yet downloaded - waiting"
-            sleep 10
+            sleep 7
         fi
     done
 }
@@ -49,7 +48,7 @@ ensure_permissions_after_start() {
             ensure_permissions
             break
         else
-            sleep 5
+            sleep 4
         fi
     done
 }
@@ -103,7 +102,7 @@ shutdown() {
             esac
         fi
         echo "Waiting for Valheim Server with PID $valheim_server_pid to shutdown"
-        sleep 3
+        sleep 6
     done
     if [ -f "$valheim_server_pidfile" ]; then
         pid_from_pidfile=$(< "$valheim_server_pidfile")

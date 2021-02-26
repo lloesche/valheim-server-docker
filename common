@@ -5,6 +5,9 @@ vp_install_path=/opt/valheim/plus
 vp_zipfile=UnixServer.zip
 valheim_restartfile="/tmp/valheim.restart"
 vp_mergefile="$vp_download_path/merge"
+valheim_server_pidfile=/var/run/valheim-server.pid
+valheim_updater_pidfile=/var/run/valheim-updater.pid
+valheim_backup_pidfile=/var/run/valheim-backup.pid
 
 ensure_permissions() {
     chmod $CONFIG_DIRECTORY_PERMISSIONS /config
