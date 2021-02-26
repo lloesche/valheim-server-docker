@@ -8,7 +8,7 @@ TZ=${TZ:-Etc/UTC}
 WORLD_NAME=${WORLD_NAME:-Dedicated}
 SERVER_NAME=${SERVER_NAME:-My Server}
 SERVER_PORT=${SERVER_PORT:-2456}
-SERVER_PASS=${SERVER_PASS:-secret}
+SERVER_PASS=${SERVER_PASS-secret}
 SERVER_PUBLIC=${SERVER_PUBLIC:-1}
 
 # steamcmd.sh arguments
@@ -21,7 +21,6 @@ STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 UPDATE_INTERVAL=${UPDATE_INTERVAL:-315360000}
 # When we check for updates
 UPDATE_CRON=${UPDATE_CRON-*/15 * * * *}
-
 
 # What time we restart the valheim-server
 # This is usful to mitigate the effects of memory/resource leaks

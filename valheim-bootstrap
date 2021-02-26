@@ -1,8 +1,12 @@
 #!/bin/bash
+# valheim-bootstrap is the first of the valheim-* scripts
+# that runs and prepares the system based on
+# environment variables.
 
 # Include defaults
 . /usr/local/etc/valheim/defaults
 . /usr/local/etc/valheim/common
+
 
 mkdir -p "$valheim_download_path"
 mkdir -p "$valheim_install_path"
@@ -13,32 +17,32 @@ if [ "$VALHEIM_PLUS" = true ]; then
 fi
 
 if [ -f "/usr/share/zoneinfo/$TZ" ]; then
-    echo "Setting timezone $TZ"
+    info "Setting timezone $TZ"
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
     echo "$TZ" > /etc/timezone
 else
-    echo "Error: unknown timezone $TZ"
+    error "Error: unknown timezone $TZ"
 fi
 
 crontab=$(mktemp)
 if [ "$BACKUPS" = true -a -n "$BACKUPS_CRON" -a "$BACKUPS_INTERVAL" = "315360000" ]; then
-    echo "Creating cron to do world backups using schedule $BACKUPS_CRON"
+    debug "Creating cron to do world backups using schedule $BACKUPS_CRON"
     tmpfile=$(mktemp)
     echo "$BACKUPS_CRON [ -f $valheim_backup_pidfile ] && kill -HUP \$(cat $valheim_backup_pidfile)" >> $crontab
 fi
 
 if [ -n "$UPDATE_CRON" -a "$UPDATE_INTERVAL" = "315360000" ]; then
-    echo "Creating cron to check for updates using schedule $UPDATE_CRON"
+    debug "Creating cron to check for updates using schedule $UPDATE_CRON"
     tmpfile=$(mktemp)
     echo "$UPDATE_CRON [ -f $valheim_updater_pidfile ] && kill -HUP \$(cat $valheim_updater_pidfile)" >> $crontab
 fi
 
 if [ -n "$RESTART_CRON" ]; then
-    echo "Creating cron to restart valheim-server using schedule $RESTART_CRON"
+    debug "Creating cron to restart valheim-server using schedule $RESTART_CRON"
     tmpfile=$(mktemp)
     echo "$RESTART_CRON /usr/bin/supervisorctl restart valheim-server" >> $crontab
 else
-    echo "Environment variable RESTART_CRON is empty - no automatic valheim-server restart scheduled"
+    debug "Environment variable RESTART_CRON is empty - no automatic valheim-server restart scheduled"
 fi
 crontab $crontab
 rm -f $crontab

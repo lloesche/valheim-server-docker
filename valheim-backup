@@ -1,4 +1,6 @@
 #!/bin/bash
+# valheim-backups runs permanently if BACKUPS=true
+# and creates backups of the /config/worlds directory.
 
 # Include defaults
 . /usr/local/etc/valheim/defaults
@@ -6,61 +8,73 @@
 
 # Remove trailing slash if any
 BACKUPS_DIRECTORY=${BACKUPS_DIRECTORY%/}
+pidfile=$valheim_backup_pidfile
 next_backup=$(date +%s)
 run=true
 
+
 main() {
-    echo $$ > "$valheim_backup_pidfile"
-    cd /config
-    while [ $run = true ]; do
-        backup
-        flush_old
-        next_backup=$(($(date +%s)+$BACKUPS_INTERVAL))
-        while [ $run = true -a $(date +%s) -lt $next_backup ]; do
-            sleep 8
+    if (set -o noclobber; echo $$ > "$pidfile") 2> /dev/null; then
+        trap backup_now SIGHUP
+        trap shutdown SIGINT SIGTERM
+        trap 'error_handler $? $LINENO $BASH_LINENO "$BASH_COMMAND" $(printf "::%s" ${FUNCNAME[@]}); trap - ERR' ERR
+
+        cd /config
+        while [ $run = true ]; do
+            backup
+            flush_old
+            next_backup=$(($(date +%s)+$BACKUPS_INTERVAL))
+            while [ $run = true -a $(date +%s) -lt $next_backup ]; do
+                sleep 8
+            done
         done
-    done
+    else
+        info "Found existing pid file - checking process"
+        check_lock $pidfile
+    fi
 }
+
 
 backup() {
     if [ ! -d "/config/worlds" ]; then
-        echo "No Valheim worlds to backup"
+        debug "No Valheim worlds to backup"
         return
     fi
     local backup_file="$BACKUPS_DIRECTORY/worlds-$(date +%Y%m%d-%H%M%S).zip"
-    echo "Backing up Valheim server worlds to $backup_file"
+    info "Backing up Valheim server worlds to $backup_file"
     mkdir -p "$BACKUPS_DIRECTORY"
     chmod $BACKUPS_DIRECTORY_PERMISSIONS "$BACKUPS_DIRECTORY"
     zip -r "$backup_file" "worlds/"
     chmod $BACKUPS_FILE_PERMISSIONS "$backup_file"
 }
 
+
 flush_old() {
     if [ ! -d "$BACKUPS_DIRECTORY" ]; then
-        echo "No old backups to remove"
+        debug "No old backups to remove"
         return
     fi
-    echo "Removing backups older than $BACKUPS_MAX_AGE days"
+    info Removing backups older than $BACKUPS_MAX_AGE days
     find "$BACKUPS_DIRECTORY" -type f -mtime +$BACKUPS_MAX_AGE -name 'worlds-*.zip' -print -exec rm -f "{}" \;
 }
 
 
+# This is a signal handler registered to SIGHUP
 backup_now() {
-    echo "Received signal to backup world"
+    debug "Received signal to backup world"
     next_backup=0
 }
 
+
 shutdown() {
-    rm -f "$valheim_backup_pidfile"
+    clear_lock $pidfile
     run=false
 }
 
 
-if [ "X$BACKUPS" = Xtrue ]; then
-    trap backup_now SIGHUP
-    trap shutdown SIGINT SIGTERM
+if [ "$BACKUPS" = true ]; then
     main
 else
-    echo "Backups have been turned off by env BACKUPS=$BACKUPS"
+    info "Backups have been turned off by env BACKUPS=$BACKUPS"
     supervisorctl stop valheim-backup
 fi

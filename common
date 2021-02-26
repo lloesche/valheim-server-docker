@@ -1,13 +1,74 @@
-valheim_download_path=/opt/valheim/dl/server
-valheim_install_path=/opt/valheim/server
-vp_download_path=/opt/valheim/dl/plus
-vp_install_path=/opt/valheim/plus
-vp_zipfile=UnixServer.zip
-valheim_restartfile="/tmp/valheim.restart"
-vp_mergefile="$vp_download_path/merge"
+# trap SIGUSR1 as it is being used to check
+# for process aliveness when an existing
+# pidfile is found
+trap ':' USR1
+
+# We are creating the following directory structure
+# /opt/valheim/
+#         |___/dl/            <= downloads happen in here
+#         |     |___/server/  <= vanilla server download
+#         |     |___/plus/    <= ValheimPlus mod download
+#         |___/server/        <= vanilla server installation
+#         |___/plus/          <= merge of vanilla server and ValheimPlus mod
+#
+valheim_download_path=/opt/valheim/dl/server    # Valheim server download directory
+valheim_install_path=/opt/valheim/server        # Valheim server installation directory
+vp_download_path=/opt/valheim/dl/plus           # ValheimPlus download directory
+vp_install_path=/opt/valheim/plus               # ValheimPlus installation directory
+vp_zipfile=UnixServer.zip                       # Name of the ValheimPlus archive
+valheim_restartfile="/tmp/valheim.restart"      # Signaling file created by valheim-updater
+                                                # or valheim-plus-updater that describes
+                                                # if and how to restart the server
+vp_mergefile="$vp_download_path/merge"          # Signaling file created by valheim-updater
+                                                # that tells valheim-plus-updater that Valheim
+                                                # server was updated and needs to be merged
+                                                # with ValheimPlus
+# Collection of PID files
 valheim_server_pidfile=/var/run/valheim-server.pid
 valheim_updater_pidfile=/var/run/valheim-updater.pid
 valheim_backup_pidfile=/var/run/valheim-backup.pid
+
+# log levels
+debug=50
+info=40
+warn=30
+error=20
+critical=10
+log_level=${log_level:-$debug}
+
+
+debug()    { logstd $debug    "$*"; }
+info()     { logstd $info     "$*"; }
+warn()     { logstd $warn     "$*"; }
+error()    { logerr $error    "$*"; }
+critical() { logerr $critical "$*"; }
+
+
+logstd() {
+    local log_at_level="$1"; shift
+    printline $log_at_level "$*"
+}
+
+
+logerr() {
+    local log_at_level="$1"; shift
+    printline $log_at_level "$*" >&2
+}
+
+
+printline() {
+    local log_at_level="$1"; shift
+    local log_data="$*"
+
+    if [ $log_at_level -le $log_level ]; then
+        printf "%s [%i] (%i) %s\n" \
+            "$(date +'%Y-%m-%d %H:%M:%S')" \
+            $$ \
+            $log_at_level \
+            "$log_data"
+    fi
+}
+
 
 ensure_permissions() {
     chmod $CONFIG_DIRECTORY_PERMISSIONS /config
@@ -20,4 +81,46 @@ ensure_permissions() {
         chmod $VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS /config/valheimplus
         chmod $VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS /config/valheimplus/*
     fi
+}
+
+
+check_lock() {
+    local pidfile=$1
+    local predecessor_pid=$(<"$pidfile")
+    local numre='^[0-9]+$'
+    if [[ "$predecessor_pid" =~ $numre ]] ; then
+        debug "Sending SIGUSR1 to PID $predecessor_pid"
+        kill -USR1 "$predecessor_pid" &> /dev/null \
+        && warn "Process with PID $predecessor_pid already running - exiting" \
+        || (info "Removing stale PID file and starting run";
+            clear_lock_and_run $pidfile)
+    else
+        warn "Predecessor PID is corrupt - clearing lock and running"
+        clear_lock_and_run $pidfile
+    fi
+}
+
+
+clear_lock_and_run() {
+    local pidfile=$1
+    clear_lock $pidfile
+    main
+}
+
+
+clear_lock() {
+    local pidfile=$1
+    info "Releasing PID file $pidfile"
+    rm -f "$1"
+}
+
+
+error_handler() {
+    local ec=$1
+    local line_no=$2
+    local func_call_line=$3
+    local command="$4"
+    local stack="$5"
+    error "Error in line $line_no command '$command' exited with code $ec in $stack called in line $func_call_line"
+    exit $ec
 }
