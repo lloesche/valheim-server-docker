@@ -1,7 +1,7 @@
 # lloesche/valheim-server Docker image
 ![Valheim](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/Logo_valheim.png "Valheim")
 
-Valheim Server in a Docker Container  
+Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)  
 
 
 # Basic Docker Usage
@@ -57,22 +57,18 @@ For more deployment options see the [Deployment section](#deployment).
 | `WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
 | `SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
 | `SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
-| `UPDATE_INTERVAL` | `900` | How often we check Steam for an updated server version in seconds |
+| `UPDATE_CRON` | `*/15 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for update checks (disabled if set to an empty string or if the legacy `UPDATE_INTERVAL` is set) |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
 | `BACKUPS` | `true` | Whether the server should create periodic backups (`true` or `false`) |
-| `BACKUPS_INTERVAL` | `3600` | Interval in seconds between backup runs |
+| `BACKUPS_CRON` | `0 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for world backups (disabled if set to an empty string or if the legacy `BACKUPS_INTERVAL` is set) |
 | `BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
 | `BACKUPS_MAX_AGE` | `3` | Age in days after which old backups are flushed |
-| `BACKUPS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the backup directory |
-| `BACKUPS_FILE_PERMISSIONS` | `644` | Unix permissions for the backup zip files |
-| `CONFIG_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config directory |
-| `WORLDS_DIRECTORY_PERMISSIONS` | `755` | Unix permissions for the /config/worlds directory |
-| `WORLDS_FILE_PERMISSIONS` | `644` | Unix permissions for the files in /config/worlds |
+| `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
-| `DNS_1` | `8.8.8.8` | First DNS server to use for the container to resolve hostnames (systemd only) |
-| `DNS_2` | `8.8.4.4` | Second DNS server to use for the container to resolve hostnames (systemd only) |
+| `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
 
+There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
 # Deployment
 
@@ -84,8 +80,6 @@ SERVER_PORT=2456
 WORLD_NAME=Dedicated
 SERVER_PASS=secret
 SERVER_PUBLIC=1
-DNS_1=8.8.8.8
-DNS_2=8.8.4.4
 ```
 
 Then enable the Docker container on system boot
@@ -195,6 +189,32 @@ or in the server logs when a user connects.
 Administrators can press ***F5*** to open the in-game console and use commands like `ban` and `kick`.
 ![Kick a user](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin3.png "Kick a user")
 
+
+# ValheimPlus
+[ValheimPlus](https://github.com/valheimPlus/ValheimPlus) is a popular Valheim mod.
+It has been incorporated into this container. To enable V+ provide the env variable `VALHEIM_PLUS=true`.
+Upon first start V+ will create a new directory `/config/valheimplus` where its config files are located.
+As a user you are mainly concerned with the values in `/config/valheimplus/valheim_plus.cfg`.
+For most modifications the mod has to be installed both, on the server as well as all the clients that connect to the server.
+A few modifications, like for example changing the `dataRate` can be done server only.
+
+## Updates
+ValheimPlus is automatically being updated in the same `UPDATE_INTERVAL` the Valheim server checks for updates. If an update of either
+Valheim server or ValheimPlus is found it is being downloaded, configured and the server automatically restarted.
+This also means your clients always need to run the latest ValheimPlus version or won't be able to connect. If this is undesired the interval can be set to something very high like `UPDATE_INTERVAL=31536000` (1 year) and then manually checked for updates using something like `docker exec valheim-server supervisorctl restart valheim-updater`.
+
+
+## Server data rate
+A popular change is to increase the server send rate.
+
+To do so enable ValheimPlus (`VALHEIM_PLUS=true`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
+```
+[Server]
+enabled=true
+enforceMod=false
+dataRate=600
+```
+(Or whatever `dataRate` value you require. The value is in kb/s with a default of 60.)
 
 # Synology Help
 ## First install

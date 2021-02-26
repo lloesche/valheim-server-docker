@@ -12,15 +12,18 @@ FROM debian:stable
 COPY --from=build-env /build/busybox/_install/bin/busybox /bin/busybox
 COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
+COPY common /usr/local/etc/valheim/
 ADD https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz /tmp/
 RUN dpkg --add-architecture i386 \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils \
     && DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install \
+        libc6-dev \
         lib32gcc1 \
         libsdl2-2.0-0 \
         libsdl2-2.0-0:i386 \
+        curl \
         libcurl4 \
         libcurl4:i386 \
         ca-certificates \
@@ -30,6 +33,7 @@ RUN dpkg --add-architecture i386 \
         unzip \
         zip \
         rsync \
+        jq \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && ln -s /bin/busybox /sbin/syslogd \
@@ -37,9 +41,12 @@ RUN dpkg --add-architecture i386 \
     && ln -s /bin/busybox /usr/bin/crontab \
     && ln -s /bin/busybox /usr/bin/vi \
     && ln -s /bin/busybox /usr/bin/wget \
+    && ln -s /bin/busybox /usr/bin/less \
+    && rm -f /bin/sh \
+    && ln -s /bin/bash /bin/sh \
     && locale-gen \
     && apt-get clean \
-    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim/server /opt/valheim/dl/server /opt/steamcmd /root/.config/unity3d/IronGate /config \
+    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
     && ln -s /config /root/.config/unity3d/IronGate/Valheim \
     && tar xzvf /tmp/steamcmd_linux.tar.gz -C /opt/steamcmd/ \
     && chown -R root:root /opt/steamcmd \

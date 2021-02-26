@@ -2,17 +2,23 @@
 
 # Include defaults
 . /usr/local/etc/valheim/defaults
+. /usr/local/etc/valheim/common
 
 # Remove trailing slash if any
 BACKUPS_DIRECTORY=${BACKUPS_DIRECTORY%/}
+next_backup=$(date +%s)
+run=true
 
 main() {
+    echo $$ > "$valheim_backup_pidfile"
     cd /config
-    while :; do
+    while [ $run = true ]; do
         backup
         flush_old
-        echo "Waiting $BACKUPS_INTERVAL seconds before next backup run"
-        sleep $BACKUPS_INTERVAL
+        next_backup=$(($(date +%s)+$BACKUPS_INTERVAL))
+        while [ $run = true -a $(date +%s) -lt $next_backup ]; do
+            sleep 8
+        done
     done
 }
 
@@ -38,7 +44,21 @@ flush_old() {
     find "$BACKUPS_DIRECTORY" -type f -mtime +$BACKUPS_MAX_AGE -name 'worlds-*.zip' -print -exec rm -f "{}" \;
 }
 
+
+backup_now() {
+    echo "Received signal to backup world"
+    next_backup=0
+}
+
+shutdown() {
+    rm -f "$valheim_backup_pidfile"
+    run=false
+}
+
+
 if [ "X$BACKUPS" = Xtrue ]; then
+    trap backup_now SIGHUP
+    trap shutdown SIGINT SIGTERM
     main
 else
     echo "Backups have been turned off by env BACKUPS=$BACKUPS"

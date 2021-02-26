@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# Include defaults and common functions
+. /usr/local/etc/valheim/defaults
+. /usr/local/etc/valheim/common
+
+main() {
+    create_directory_structure
+    check_for_update
+}
+
+create_directory_structure() {
+    mkdir -p "$vp_download_path" "$vp_install_path"
+}
+
+check_for_update() {
+    cd "$vp_download_path"
+    local api_response=$(curl -sL https://api.github.com/repos/valheimPlus/ValheimPlus/releases/latest | jq -r ".assets[] | select(.name == \"$vp_zipfile\")")
+    local download_url=$(jq -r  '.browser_download_url' <<< "${api_response}" )
+    local remote_updated_at=$(jq -r  '.updated_at' <<< "${api_response}" )
+    local remote_size=$(jq -r  '.size' <<< "${api_response}")
+
+    if [ -f "$vp_zipfile" -a -f "$vp_zipfile.updated_at" ]; then
+        local_updated_at=$(< "$vp_zipfile.updated_at")
+        local_size=$(stat --format="%s" "$vp_zipfile")
+        if [ "$local_updated_at" = "$remote_updated_at" -a "$local_size" = "$remote_size" ]; then
+            echo "Local ValheimPlus archive is identical to remote archive - no update required"
+        else
+            echo "Local ValheimPlus archive with size $local_size and update date $local_updated_at differs from remote size $remote_size and date $remote_updated_at - updating"
+            prepare_valheim_plus "$download_url" "$remote_updated_at"
+        fi
+    else
+        echo "Fresh ValheimPlus install"
+        prepare_valheim_plus "$download_url" "$remote_updated_at"
+    fi
+    if [ -f "$vp_mergefile" ]; then
+        echo "Valheim dedicated server or ValheimPlus got updated - merging installation files"
+        rm -f "$vp_mergefile"
+        merge_valheim_plus
+    fi
+}
+
+prepare_valheim_plus() {
+    local download_url="$1"
+    local updated_at="$2"
+    download_valheim_plus "$download_url" $updated_at \
+        && extract_valheim_plus \
+        && touch "$vp_mergefile"
+}
+
+merge_valheim_plus() {
+    rm -rf "$vp_install_path.tmp" "$vp_install_path.old"
+    mkdir -p "$vp_install_path.tmp"
+    rsync -a --itemize-changes --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$vp_install_path.tmp"
+    rsync -a --itemize-changes "$vp_download_path/extracted/" "$vp_install_path.tmp"
+    if [ ! -d "/config/valheimplus" -a -d "$vp_install_path.tmp/BepInEx/config" ]; then
+        cp -a "$vp_install_path.tmp/BepInEx/config" "/config/valheimplus"
+        ensure_permissions
+    fi
+    rm -rf "$vp_install_path.tmp/BepInEx/config"
+    ln -s /config/valheimplus "$vp_install_path.tmp/BepInEx/config"
+    if [ -d "$vp_install_path" ]; then
+        mv -f "$vp_install_path" "$vp_install_path.old"
+    fi
+    mv "$vp_install_path.tmp" "$vp_install_path"
+    echo restart > "$valheim_restartfile"
+}
+
+download_valheim_plus() {
+    local download_url="$1"
+    local updated_at="$2"
+    local download_path="$vp_download_path/$vp_zipfile"
+    echo "Downloading $download_url to $download_path"
+    curl -L -o "$download_path" "$download_url" \
+        && echo "$updated_at" > "$download_path.updated_at"
+}
+
+extract_valheim_plus() {
+    cd "$vp_download_path"
+    echo "Extracting downloaded ValheimPlus ZIP archive"
+    rm -rf extracted
+    mkdir -p extracted
+    unzip -d extracted/ $vp_zipfile
+}
+
+main
