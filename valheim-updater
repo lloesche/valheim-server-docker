@@ -67,8 +67,16 @@ check_valheim_plus() {
             touch "$vp_mergefile"
         fi
         /usr/local/bin/valheim-plus-updater
+    else
+        if [ "$1" = updated -a -d "$vp_install_path" ]; then
+            debug "ValheimPlus currently disabled but previously installed - keeping installation fresh"
+            debug "If this is unwanted remove $vp_install_path"
+            touch "$vp_mergefile"
+            /usr/local/bin/valheim-plus-updater
+        fi
     fi
 }
+
 
 download_valheim() {
     /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
