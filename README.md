@@ -129,14 +129,13 @@ CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and A
 # Updates
 By default the container will check for Valheim server updates every 15 minutes.
 If an update is found it is downloaded and the server restarted.
-This interval can be changed using the `UPDATE_INTERVAL` environment variable.
+This update schedule can be changed using the `UPDATE_CRON` environment variable.
 
 
 # Backups
 The container will on startup and periodically create a backup of the `worlds/` directory.
 
-The default is once per hour but can be changed using the `BACKUPS_INTERVAL` environment variable.
-The number is in seconds. Meaning for hourly backups set `BACKUPS_INTERVAL=3600`.
+The default is once per hour but can be changed using the `BACKUPS_CRON` environment variable.
 
 Default backup directory is `/config/backups/` within the container. A different directory can be set using the `BACKUPS_DIRECTORY` environment variable.
 It makes sense to have this directory be a volume mount from the host.
@@ -218,9 +217,9 @@ For most modifications the mod has to be installed both, on the server as well a
 A few modifications, like for example changing the `dataRate` can be done server only.
 
 ## Updates
-ValheimPlus is automatically being updated in the same `UPDATE_INTERVAL` the Valheim server checks for updates. If an update of either
+ValheimPlus is automatically being updated using the same `UPDATE_CRON` schedule the Valheim server uses to check for updates. If an update of either
 Valheim server or ValheimPlus is found it is being downloaded, configured and the server automatically restarted.
-This also means your clients always need to run the latest ValheimPlus version or won't be able to connect. If this is undesired the interval can be set to something very high like `UPDATE_INTERVAL=31536000` (1 year) and then manually checked for updates using something like `docker exec valheim-server supervisorctl restart valheim-updater`.
+This also means your clients always need to run the latest ValheimPlus version or won't be able to connect. If this is undesired the schedule could be changed to only check for updates once per day. Example  `UPDATE_CRON='0 6 * * *'` would only check at 6 AM.
 
 ## Configuration
 See [ValheimPlus config from Environment Variables](#valheimplus-config-from-environment-variables)
