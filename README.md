@@ -56,7 +56,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `SERVER_PORT` | `2456` | UDP start port that the server will listen on |
 | `WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
 | `SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
-| `SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
+| `SERVER_PUBLIC` | `true` | Whether the server should be listed in the server browser (`true`) or not (`false`) |
 | `UPDATE_CRON` | `*/15 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for update checks (disabled if set to an empty string or if the legacy `UPDATE_INTERVAL` is set) |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
@@ -79,7 +79,7 @@ SERVER_NAME="My Server"
 SERVER_PORT=2456
 WORLD_NAME=Dedicated
 SERVER_PASS=secret
-SERVER_PUBLIC=1
+SERVER_PUBLIC=true
 ```
 
 Then enable the Docker container on system boot
@@ -220,7 +220,7 @@ dataRate=600
 ## Disable server password
 Another popular mod for LAN play that does not require the clients to run ValheimPlus is to turn off password authentication.
 
-To do so enable ValheimPlus (`VALHEIM_PLUS=true`), make the server non-public (`SERVER_PUBLIC=0`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
+To do so enable ValheimPlus (`VALHEIM_PLUS=true`), make the server non-public (`SERVER_PUBLIC=false`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
 ```
 [Server]
 enabled=true
