@@ -10,8 +10,7 @@ RUN make defconfig
 RUN make install
 COPY ./vpenvconf/ /build/vpenvconf/
 WORKDIR /build/vpenvconf
-RUN pip3 install --upgrade pip
-RUN if [ "${TESTS:-true}" = true ]; then pip3 install tox flake8 && tox; fi
+RUN if [ "${TESTS:-true}" = true ]; then pip3 install tox && tox; fi
 RUN python3 setup.py bdist --format=gztar
 
 FROM debian:stable

@@ -37,7 +37,6 @@ setup(
         # Extra metadata
         "Environment :: Console",
         "Natural Language :: English",
-        "Topic :: Security",
         "Topic :: Utilities",
     ],
     keywords="valheim valheimplus",

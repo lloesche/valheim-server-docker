@@ -57,7 +57,7 @@ def get_env(prefix: str) -> Dict:
     return dict(env_config)
 
 
-def get_config(config_file: str) -> None:
+def get_config(config_file: str) -> ConfigParser:
     config = ConfigParser(comment_prefixes="/", allow_no_value=True)
     config.optionxform = str
     if os.path.isfile(config_file):
