@@ -22,7 +22,7 @@ create_directory_structure() {
 
 
 check_for_update() {
-    cd "$vp_download_path" || exit
+    cd "$vp_download_path" || fatal "Could not cd $vp_download_path"
     local api_response
     local download_url
     local remote_updated_at
