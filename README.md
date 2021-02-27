@@ -222,8 +222,10 @@ ValheimPlus is automatically being updated in the same `UPDATE_INTERVAL` the Val
 Valheim server or ValheimPlus is found it is being downloaded, configured and the server automatically restarted.
 This also means your clients always need to run the latest ValheimPlus version or won't be able to connect. If this is undesired the interval can be set to something very high like `UPDATE_INTERVAL=31536000` (1 year) and then manually checked for updates using something like `docker exec valheim-server supervisorctl restart valheim-updater`.
 
+## Configuration
+See [ValheimPlus config from Environment Variables](#valheimplus-config-from-environment-variables)
 
-## Server data rate
+### Server data rate
 A popular change is to increase the server send rate.
 
 To do so enable ValheimPlus (`VALHEIM_PLUS=true`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
@@ -235,8 +237,9 @@ dataRate=600
 ```
 (Or whatever `dataRate` value you require. The value is in kb/s with a default of 60.)
 
+Alternatively `-e VPCFG_Server_enabled=true -e VPCFG_Server_enforceMod=false -e VPCFG_Server_dataRate=600`
 
-## Disable server password
+### Disable server password
 Another popular mod for LAN play that does not require the clients to run ValheimPlus is to turn off password authentication.
 
 To do so enable ValheimPlus (`VALHEIM_PLUS=true`), make the server non-public (`SERVER_PUBLIC=false`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
@@ -246,6 +249,7 @@ enabled=true
 enforceMod=false
 disableServerPassword=true
 ```
+Alternatively `-e VPCFG_Server_enabled=true -e VPCFG_Server_enforceMod=false -e VPCFG_Server_disableServerPassword=true`
 
 Ensure that the server can not be accessed from the public Internet. If you like to have the LAN experience but over the Internet I can highly recommend [ZeroTier](https://www.zerotier.com/). It is an open source VPN service where you can create a virtual network switch that you and your friends can join. It is like Hamachi but free and open source. They do have a paid product for Businesses with more than 50 users. So for more than 50 users you could either get their Business product or alternatively would have to host the VPN controller yourself.
 
