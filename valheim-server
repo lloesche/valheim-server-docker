@@ -16,7 +16,7 @@ kill_signal=TERM
 password_args=(-password "$SERVER_PASS")
 
 if [ "$VALHEIM_PLUS" = true ]; then
-    cd "$vp_install_path"
+    cd "$vp_install_path" || fatal "Could not cd $vp_install_path"
     rm -rf "$vp_install_path.old"
     export DOORSTOP_ENABLE=TRUE
     export DOORSTOP_INVOKE_DLL_PATH="./BepInEx/core/BepInEx.Preloader.dll"
@@ -26,7 +26,7 @@ if [ "$VALHEIM_PLUS" = true ]; then
     valheim_server="$vp_install_path/valheim_server.x86_64"
     [ -z "$SERVER_PASS" ] && password_args=()
 else
-    cd "$valheim_install_path"
+    cd "$valheim_install_path" || fatal "Could not cd $valheim_install_path"
     export LD_LIBRARY_PATH="$valheim_install_path/linux64/"
     valheim_server="$valheim_install_path/valheim_server.x86_64"
 fi
@@ -96,7 +96,7 @@ filter() {
             log_filter=$SERVER_LOG_STDERR_FILTER
             ;;
     esac
-    eval $log_filter
+    eval "$log_filter"
 }
 
 
@@ -109,10 +109,10 @@ shutdown() {
     fi
     info "Shutting down Valheim Server with PID $valheim_server_pid"
     kill -INT $valheim_server_pid
-    shutdown_timeout=$(($(date +%s)+$timeout))
+    shutdown_timeout=$(($(date +%s)+timeout))
     while [ -d "/proc/$valheim_server_pid" ]; do
-        if [ $(date +%s) -gt $shutdown_timeout ]; then
-            shutdown_timeout=$(($(date +%s)+$timeout))
+        if [ "$(date +%s)" -gt $shutdown_timeout ]; then
+            shutdown_timeout=$(($(date +%s)+timeout))
             warn "Timeout while waiting for server to shutdown - sending SIG$kill_signal to PID $valheim_server_pid"
             kill -$kill_signal $valheim_server_pid
             case "$kill_signal" in

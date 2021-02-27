@@ -104,10 +104,10 @@ SERVER_PUBLIC=true
 Then enable the Docker container on system boot
 ```
 $ sudo mkdir -p /etc/valheim /opt/valheim
-$ sudo curl -o /etc/systemd/system/valheim-server.service https://raw.githubusercontent.com/lloesche/valheim-server-docker/master/valheim-server.service
+$ sudo curl -o /etc/systemd/system/valheim.service https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/valheim.service
 $ sudo systemctl daemon-reload
-$ sudo systemctl enable valheim-server.service
-$ sudo systemctl start valheim-server.service
+$ sudo systemctl enable valheim.service
+$ sudo systemctl start valheim.service
 ```
 
 ## Deploying to Kubernetes

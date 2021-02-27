@@ -2,7 +2,7 @@ FROM debian:stable as build-env
 ARG TESTS
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl python3 python3-pip
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl python3 python3-pip shellcheck
 WORKDIR /build/busybox
 RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2
 RUN tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox
@@ -12,6 +12,10 @@ COPY ./vpenvconf/ /build/vpenvconf/
 WORKDIR /build/vpenvconf
 RUN if [ "${TESTS:-true}" = true ]; then pip3 install tox && tox; fi
 RUN python3 setup.py bdist --format=gztar
+COPY valheim-* /usr/local/bin/
+COPY defaults /usr/local/etc/valheim/
+COPY common /usr/local/etc/valheim/
+RUN if [ "${TESTS:-true}" = true ]; then shellcheck -a -x -s bash -e SC2034 /usr/local/bin/valheim-*; fi
 
 FROM debian:stable
 COPY --from=build-env /build/busybox/_install/bin/busybox /bin/busybox

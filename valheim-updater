@@ -9,7 +9,7 @@
 . /usr/local/etc/valheim/common
 
 debug "Running Valheim Server updater as user $USER uid $UID"
-cd /opt/steamcmd
+cd /opt/steamcmd || fatal "Could not cd /opt/steamcmd"
 pidfile=$valheim_updater_pidfile
 just_started=true
 next_update=$(date +%s)
@@ -25,8 +25,8 @@ main() {
             ensure_permissions
             update
             check_server_restart
-            next_update=$(($(date +%s)+$UPDATE_INTERVAL))
-            while [ $run = true -a $(date +%s) -lt $next_update ]; do
+            next_update=$(($(date +%s)+UPDATE_INTERVAL))
+            while [ $run = true ] && [ "$(date +%s)" -lt $next_update ]; do
                 sleep 5
             done
         done
@@ -38,12 +38,12 @@ main() {
 
 
 update() {
-    local logfile="$(mktemp)"
+    local logfile
+    logfile="$(mktemp)"
     info "Downloading/updating/validating Valheim server from Steam"
     download_valheim
     rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$valheim_install_path" | tee "$logfile"
-    grep '^[*>]' "$logfile" > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
+    if grep '^[*>]' "$logfile" > /dev/null 2>&1; then
         info "Valheim Server was updated - restarting"
         check_valheim_plus updated
         echo restart > "$valheim_restartfile"
@@ -68,7 +68,7 @@ check_valheim_plus() {
         fi
         /usr/local/bin/valheim-plus-updater
     else
-        if [ "$1" = updated -a -d "$vp_install_path" ]; then
+        if [ "$1" = updated ] && [ -d "$vp_install_path" ]; then
             debug "ValheimPlus currently disabled but previously installed - keeping installation fresh"
             debug "If this is unwanted remove $vp_install_path"
             touch "$vp_mergefile"
@@ -79,17 +79,18 @@ check_valheim_plus() {
 
 
 download_valheim() {
-    /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
+    /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 "$STEAMCMD_ARGS" +quit
 }
 
 
 check_server_restart() {
+    local mode
     # The control file $valheim_restartfile is either created
     # by update() if Valheim is being installed for the first
     # time or has been updated, or by valheim-plus-updater if
     # a new version of the mod has been downloaded.
     if [ -f "$valheim_restartfile" ]; then
-        local mode=$(< "$valheim_restartfile")
+        mode=$(< "$valheim_restartfile")
         rm -f "$valheim_restartfile"
 
         case "$mode" in
@@ -112,7 +113,7 @@ update_now() {
 
 
 shutdown() {
-    clear_lock $pidfile
+    clear_lock "$pidfile"
     run=false
 }
 
