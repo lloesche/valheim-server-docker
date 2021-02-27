@@ -68,6 +68,24 @@ For more deployment options see the [Deployment section](#deployment).
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
 
+## ValheimPlus config from Environment Variables
+ValheimPlus config can be specified in environment variables using the syntax `VPCFG_<section>_<variable>=<value>`.
+
+Example:
+```
+-e VPCFG_Server_enabled=true -e VPCFG_Server_enforceMod=false -e VPCFG_Server_dataRate=500
+```
+
+turns into
+```
+[Server]
+enabled=true
+enforceMod=false
+dataRate=60
+```
+All existing configuration in /config/valheimplus/valheim_plus.cfg is retained and a backup of the old config is created as /config/valheimplus/valheim_plus.old before writing the new config file.
+
+
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
 # Deployment
