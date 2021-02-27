@@ -8,15 +8,15 @@ RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1
 RUN tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox
 RUN make defconfig
 RUN make install
-COPY ./vpenvconf/ /usr/src/vpenvconf/
-WORKDIR /usr/src/vpenvconf/
+COPY ./vpenvconf/ /build/vpenvconf/
+WORKDIR /build/vpenvconf
 RUN pip3 install --upgrade pip
 RUN if [ "${TESTS:-true}" = true ]; then pip3 install tox flake8 && tox; fi
 RUN python3 setup.py bdist --format=gztar
 
 FROM debian:stable
 COPY --from=build-env /build/busybox/_install/bin/busybox /bin/busybox
-COPY --from=build-env /usr/src/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz /tmp/vpenvconf.tar.gz
+COPY --from=build-env /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz /tmp/vpenvconf.tar.gz
 COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
