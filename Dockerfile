@@ -1,15 +1,22 @@
 FROM debian:stable as build-env
+ARG TESTS
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl python3 python3-pip
 WORKDIR /build/busybox
 RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2
 RUN tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox
 RUN make defconfig
 RUN make install
+COPY ./vpenvconf/ /usr/src/vpenvconf/
+WORKDIR /usr/src/vpenvconf/
+RUN pip3 install --upgrade pip
+RUN if [ "${TESTS:-true}" = true ]; then pip3 install tox flake8 && tox; fi
+RUN python3 setup.py bdist --format=gztar
 
 FROM debian:stable
 COPY --from=build-env /build/busybox/_install/bin/busybox /bin/busybox
+COPY --from=build-env /usr/src/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz /tmp/vpenvconf.tar.gz
 COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
@@ -34,6 +41,8 @@ RUN dpkg --add-architecture i386 \
         zip \
         rsync \
         jq \
+        python3-minimal \
+        python3-pkg-resources \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && ln -s /bin/busybox /sbin/syslogd \
@@ -44,6 +53,8 @@ RUN dpkg --add-architecture i386 \
     && ln -s /bin/busybox /usr/bin/less \
     && rm -f /bin/sh \
     && ln -s /bin/bash /bin/sh \
+    && cd / \
+    && tar xzvf /tmp/vpenvconf.tar.gz \
     && locale-gen \
     && apt-get clean \
     && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \

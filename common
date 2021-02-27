@@ -23,6 +23,8 @@ vp_mergefile="$vp_download_path/merge"          # Signaling file created by valh
                                                 # that tells valheim-plus-updater that Valheim
                                                 # server was updated and needs to be merged
                                                 # with ValheimPlus
+vp_config_path="/config/valheimplus"
+
 # Collection of PID files
 valheim_server_pidfile=/var/run/valheim-server.pid
 valheim_updater_pidfile=/var/run/valheim-updater.pid
@@ -123,4 +125,14 @@ error_handler() {
     local stack="$5"
     error "Error in line $line_no command '$command' exited with code $ec in $stack called in line $func_call_line"
     exit $ec
+}
+
+
+write_valheim_plus_config() {
+    if [ -d "$vp_config_path" ]; then
+        env | grep "^$VALHEIM_PLUS_CFG_ENV_PREFIX" > /dev/null
+        if [ $? -eq 0 ]; then
+            /usr/local/bin/vpenvconf --verbose --config "$vp_config_path/valheim_plus.cfg" --env-prefix "$VALHEIM_PLUS_CFG_ENV_PREFIX"
+        fi
+    fi
 }

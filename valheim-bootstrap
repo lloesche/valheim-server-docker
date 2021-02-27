@@ -14,6 +14,7 @@ mkdir -p "$valheim_install_path"
 if [ "$VALHEIM_PLUS" = true ]; then
     mkdir -p "$vp_download_path"
     mkdir -p "$vp_install_path"
+    write_valheim_plus_config
 fi
 
 if [ -f "/usr/share/zoneinfo/$TZ" ]; then
