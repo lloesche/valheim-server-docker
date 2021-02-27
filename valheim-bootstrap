@@ -14,41 +14,39 @@ mkdir -p "$valheim_install_path"
 if [ "$VALHEIM_PLUS" = true ]; then
     mkdir -p "$vp_download_path"
     mkdir -p "$vp_install_path"
+    write_valheim_plus_config
 fi
 
 if [ -f "/usr/share/zoneinfo/$TZ" ]; then
     info "Setting timezone $TZ"
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
+    ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime
     echo "$TZ" > /etc/timezone
 else
     error "Error: unknown timezone $TZ"
 fi
 
 crontab=$(mktemp)
-if [ "$BACKUPS" = true -a -n "$BACKUPS_CRON" -a "$BACKUPS_INTERVAL" = "315360000" ]; then
+if [ "$BACKUPS" = true ] && [ -n "$BACKUPS_CRON" ] && [ "$BACKUPS_INTERVAL" = "315360000" ]; then
     debug "Creating cron to do world backups using schedule $BACKUPS_CRON"
-    tmpfile=$(mktemp)
-    echo "$BACKUPS_CRON [ -f $valheim_backup_pidfile ] && kill -HUP \$(cat $valheim_backup_pidfile)" >> $crontab
+    echo "$BACKUPS_CRON [ -f \"$valheim_backup_pidfile\" ] && kill -HUP \$(cat $valheim_backup_pidfile)" >> "$crontab"
 fi
 
-if [ -n "$UPDATE_CRON" -a "$UPDATE_INTERVAL" = "315360000" ]; then
+if [ -n "$UPDATE_CRON" ] && [ "$UPDATE_INTERVAL" = "315360000" ]; then
     debug "Creating cron to check for updates using schedule $UPDATE_CRON"
-    tmpfile=$(mktemp)
-    echo "$UPDATE_CRON [ -f $valheim_updater_pidfile ] && kill -HUP \$(cat $valheim_updater_pidfile)" >> $crontab
+    echo "$UPDATE_CRON [ -f \"$valheim_updater_pidfile\" ] && kill -HUP \$(cat $valheim_updater_pidfile)" >> "$crontab"
 fi
 
 if [ -n "$RESTART_CRON" ]; then
     debug "Creating cron to restart valheim-server using schedule $RESTART_CRON"
-    tmpfile=$(mktemp)
-    echo "$RESTART_CRON /usr/bin/supervisorctl restart valheim-server" >> $crontab
+    echo "$RESTART_CRON /usr/bin/supervisorctl restart valheim-server" >> "$crontab"
 else
     debug "Environment variable RESTART_CRON is empty - no automatic valheim-server restart scheduled"
 fi
-crontab $crontab
-rm -f $crontab
+crontab "$crontab"
+rm -f "$crontab"
 
 # Notify users of new data paths
-if [ -d "/opt/valheim_dl" -o -f "/opt/valheim/valheim_server.x86_64" ]; then
+if [ -d "/opt/valheim_dl" ] || [ -f "/opt/valheim/valheim_server.x86_64" ]; then
     cat <<EOF
 !!! ATTENTION !!!
 

@@ -23,6 +23,8 @@ vp_mergefile="$vp_download_path/merge"          # Signaling file created by valh
                                                 # that tells valheim-plus-updater that Valheim
                                                 # server was updated and needs to be merged
                                                 # with ValheimPlus
+vp_config_path="/config/valheimplus"
+
 # Collection of PID files
 valheim_server_pidfile=/var/run/valheim-server.pid
 valheim_updater_pidfile=/var/run/valheim-updater.pid
@@ -34,93 +36,119 @@ info=40
 warn=30
 error=20
 critical=10
+fatal=5
 log_level=${log_level:-$debug}
 
 
-debug()    { logstd $debug    "$*"; }
-info()     { logstd $info     "$*"; }
-warn()     { logstd $warn     "$*"; }
-error()    { logerr $error    "$*"; }
-critical() { logerr $critical "$*"; }
+debug()    { logstd $debug    "(DEBUG) $*"; }
+info()     { logstd $info     "(INFO) $*"; }
+warn()     { logstd $warn     "(WARN) $*"; }
+error()    { logerr $error    "(ERROR) $*"; }
+critical() { logerr $critical "(CRITIAL) $*"; }
+fatal()    { logerr $fatal    "(FATAL) $*"; exit; }
 
 
 logstd() {
-    local log_at_level="$1"; shift
-    printline $log_at_level "$*"
+    local log_at_level
+    log_at_level="$1"; shift
+    printline "$log_at_level" "$*"
 }
 
 
 logerr() {
-    local log_at_level="$1"; shift
-    printline $log_at_level "$*" >&2
+    local log_at_level
+    log_at_level="$1"; shift
+    printline "$log_at_level" "$*" >&2
 }
 
 
 printline() {
-    local log_at_level="$1"; shift
-    local log_data="$*"
+    local log_at_level
+    local log_data
+    log_at_level="$1"; shift
+    log_data="$*"
 
-    if [ $log_at_level -le $log_level ]; then
-        printf "%s [%i] (%i) %s\n" \
+    if [ "$log_at_level" -le "$log_level" ]; then
+        printf "%s [%i] %s\\n" \
             "$(date +'%Y-%m-%d %H:%M:%S')" \
             $$ \
-            $log_at_level \
             "$log_data"
     fi
 }
 
 
 ensure_permissions() {
-    chmod $CONFIG_DIRECTORY_PERMISSIONS /config
-    chmod -f $CONFIG_FILE_PERMISSIONS /config/*.txt
+    chmod "$CONFIG_DIRECTORY_PERMISSIONS" /config
+    chmod -f "$CONFIG_FILE_PERMISSIONS" /config/*.txt
     if [ -d /config/worlds ]; then
-        chmod $WORLDS_DIRECTORY_PERMISSIONS /config/worlds
-        chmod $WORLDS_FILE_PERMISSIONS /config/worlds/*
+        chmod "$WORLDS_DIRECTORY_PERMISSIONS" /config/worlds
+        chmod "$WORLDS_FILE_PERMISSIONS" /config/worlds/*
     fi
-    if [ "$VALHEIM_PLUS" = true -a -d /config/valheimplus ]; then
-        chmod $VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS /config/valheimplus
-        chmod $VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS /config/valheimplus/*
+    if [ "$VALHEIM_PLUS" = true ] && [ -d /config/valheimplus ]; then
+        chmod "$VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS" /config/valheimplus
+        chmod "$VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS" /config/valheimplus/*
     fi
 }
 
 
 check_lock() {
-    local pidfile=$1
-    local predecessor_pid=$(<"$pidfile")
-    local numre='^[0-9]+$'
+    local pidfile
+    local predecessor_pid
+    local numre
+    pidfile=$1
+    predecessor_pid=$(<"$pidfile")
+    numre='^[0-9]+$'
     if [[ "$predecessor_pid" =~ $numre ]] ; then
         debug "Sending SIGUSR1 to PID $predecessor_pid"
-        kill -USR1 "$predecessor_pid" &> /dev/null \
-        && warn "Process with PID $predecessor_pid already running - exiting" \
-        || (info "Removing stale PID file and starting run";
-            clear_lock_and_run $pidfile)
+        if kill -USR1 "$predecessor_pid" &> /dev/null; then
+            fatal "Process with PID $predecessor_pid already running - exiting"
+        else
+            info "Removing stale PID file and starting run"
+            clear_lock_and_run "$pidfile"
+        fi
     else
         warn "Predecessor PID is corrupt - clearing lock and running"
-        clear_lock_and_run $pidfile
+        clear_lock_and_run "$pidfile"
     fi
 }
 
 
 clear_lock_and_run() {
-    local pidfile=$1
-    clear_lock $pidfile
+    local pidfile
+    pidfile=$1
+    clear_lock "$pidfile"
     main
 }
 
 
 clear_lock() {
-    local pidfile=$1
+    local pidfile
+    pidfile=$1
     info "Releasing PID file $pidfile"
     rm -f "$1"
 }
 
 
 error_handler() {
-    local ec=$1
-    local line_no=$2
-    local func_call_line=$3
-    local command="$4"
-    local stack="$5"
+    local ec
+    local line_no
+    local func_call_line
+    local command
+    local stack
+    ec=$1
+    line_no=$2
+    func_call_line=$3
+    command="$4"
+    stack="$5"
     error "Error in line $line_no command '$command' exited with code $ec in $stack called in line $func_call_line"
-    exit $ec
+    exit "$ec"
+}
+
+
+write_valheim_plus_config() {
+    if [ -d "$vp_config_path" ]; then
+        if env | grep "^$VALHEIM_PLUS_CFG_ENV_PREFIX" > /dev/null; then
+            /usr/local/bin/vpenvconf --verbose --config "$vp_config_path/valheim_plus.cfg" --env-prefix "$VALHEIM_PLUS_CFG_ENV_PREFIX"
+        fi
+    fi
 }
