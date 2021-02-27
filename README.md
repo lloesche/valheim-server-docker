@@ -56,7 +56,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `SERVER_PORT` | `2456` | UDP start port that the server will listen on |
 | `WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
 | `SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
-| `SERVER_PUBLIC` | `1` | Whether the server should be listed in the server browser (`1`) or not (`0`) |
+| `SERVER_PUBLIC` | `true` | Whether the server should be listed in the server browser (`true`) or not (`false`) |
 | `UPDATE_CRON` | `*/15 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for update checks (disabled if set to an empty string or if the legacy `UPDATE_INTERVAL` is set) |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
@@ -79,7 +79,7 @@ SERVER_NAME="My Server"
 SERVER_PORT=2456
 WORLD_NAME=Dedicated
 SERVER_PASS=secret
-SERVER_PUBLIC=1
+SERVER_PUBLIC=true
 ```
 
 Then enable the Docker container on system boot
@@ -215,6 +215,21 @@ enforceMod=false
 dataRate=600
 ```
 (Or whatever `dataRate` value you require. The value is in kb/s with a default of 60.)
+
+
+## Disable server password
+Another popular mod for LAN play that does not require the clients to run ValheimPlus is to turn off password authentication.
+
+To do so enable ValheimPlus (`VALHEIM_PLUS=true`), make the server non-public (`SERVER_PUBLIC=false`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
+```
+[Server]
+enabled=true
+enforceMod=false
+disableServerPassword=true
+```
+
+Ensure that the server can not be accessed from the public Internet. If you like to have the LAN experience but over the Internet I can highly recommend [ZeroTier](https://www.zerotier.com/). It is an open source VPN service where you can create a virtual network switch that you and your friends can join. It is like Hamachi but free and open source. They do have a paid product for Businesses with more than 50 users. So for more than 50 users you could either get their Business product or alternatively would have to host the VPN controller yourself.
+
 
 # Synology Help
 ## First install
