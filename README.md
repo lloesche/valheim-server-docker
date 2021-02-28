@@ -64,6 +64,12 @@ For more deployment options see the [Deployment section](#deployment).
 | `BACKUPS_CRON` | `0 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for world backups (disabled if set to an empty string or if the legacy `BACKUPS_INTERVAL` is set) |
 | `BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
 | `BACKUPS_MAX_AGE` | `3` | Age in days after which old backups are flushed |
+| `BACKUPS_SFTP_ENABLE` | `0 (false)` | Enable/Disable SFTP Remote Backup |
+| `BACKUPS_SFTP_TARGET_HOST` | No Default | Remote Host for SSH Rsync |
+| `BACKUPS_SFTP_TARGET_PORT` | `22` | SSH Port on remote host |
+| `BACKUPS_SFTP_TARGET_USER` | No Default | User for remote host |
+| `BACKUPS_SFTP_TARGET_FOLDER` | `/` | Folder on remote host (aka where to save the `backups` folder |
+| `BACKUPS_SFTP_TARGET_SSHKEY` | `/config/.ssh/<BACKUPS_SFTP_TARGET_USER>` | Where is the ssh key for passwordless authentication saved (you must save it in the config bindmount) |
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |

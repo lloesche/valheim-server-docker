@@ -53,7 +53,7 @@ backup() {
 
 rsync_to_sftp() {
     info "Backing up your backup zip files onto the specified sftp server: ${BACKUPS_SFTP_TARGET_HOST}"
-    rsync -vtpr --delete --ignore-existing -e "ssh -o StrictHostKeyChecking=no -p ${BACKUPS_SFTP_TARGET_PORT} -i ${BACKUPS_SFTP_TARGET_SSHKEY}" /config/backups ${BACKUPS_SFTP_TARGET_USER}@${BACKUPS_SFTP_TARGET_HOST}:${BACKUPS_SFTP_TARGET_FOLDER}/
+    rsync -vtpr --delete --ignore-existing -e "ssh -o StrictHostKeyChecking=no -p ${BACKUPS_SFTP_TARGET_PORT} -i ${BACKUPS_SFTP_TARGET_SSHKEY}" /config/backups "${BACKUPS_SFTP_TARGET_USER}@${BACKUPS_SFTP_TARGET_HOST}:${BACKUPS_SFTP_TARGET_FOLDER}/"
 }
 
 
