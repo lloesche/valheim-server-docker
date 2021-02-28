@@ -23,6 +23,8 @@ main() {
         while [ $run = true ]; do
             backup
             flush_old
+	    sleep 2
+	    rsync_to_sftp
             next_backup=$(($(date +%s)+BACKUPS_INTERVAL))
             while [ $run = true ] && [ "$(date +%s)" -lt $next_backup ]; do
                 sleep 8
@@ -47,6 +49,11 @@ backup() {
     chmod "$BACKUPS_DIRECTORY_PERMISSIONS" "$BACKUPS_DIRECTORY"
     zip -r "$backup_file" "worlds/"
     chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
+}
+
+rsync_to_sftp() {
+    info "Backing up your backup zip files onto the specified sftp server: ${BACKUPS_SFTP_TARGET_HOST}"
+    rsync -vtpr --delete --ignore-existing -e "ssh -o StrictHostKeyChecking=no -p ${BACKUPS_SFTP_TARGET_PORT} -i ${BACKUPS_SFTP_TARGET_SSHKEY}" /config/backups ${BACKUPS_SFTP_TARGET_USER}@${BACKUPS_SFTP_TARGET_HOST}:${BACKUPS_SFTP_TARGET_FOLDER}/
 }
 
 
