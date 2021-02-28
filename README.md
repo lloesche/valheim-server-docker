@@ -69,7 +69,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `BACKUPS_SFTP_TARGET_PORT` | `22` | SSH Port on remote host |
 | `BACKUPS_SFTP_TARGET_USER` | No Default | User for remote host |
 | `BACKUPS_SFTP_TARGET_FOLDER` | `/` | Folder on remote host (aka where to save the `backups` folder |
-| `BACKUPS_SFTP_TARGET_SSHKEY` | `/config/.ssh/<BACKUPS_SFTP_TARGET_USER>` | Where is the ssh key for passwordless authentication saved (you must save it in the config bindmount) |
+| `BACKUPS_SFTP_TARGET_SSHKEY` | `/config/.ssh/<username>` | Where is the ssh key for passwordless authentication saved (you must save it in the config bindmount) |
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
