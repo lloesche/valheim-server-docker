@@ -163,7 +163,11 @@ After a backup ZIP has been created the command specified by `$POST_BACKUP_HOOK`
 Within that command the string `@BACKUP_FILE@` will be replaced by the full path to the just created ZIP file.
 
 Example:
-`-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa -e POST_BACKUP_HOOK='scp -o StrictHostKeyChecking=no @BACKUP_FILE@ myself@my.server.example.com:~/backups/$(basename @BACKUP_FILE@)'`
+```
+-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa \
+-v $HOME/.ssh/known_hosts:/root/.ssh/known_hosts \
+-e POST_BACKUP_HOOK='timeout 300 scp @BACKUP_FILE@ myself@example.com:~/backups/$(basename @BACKUP_FILE@)'
+```
 
 If the post backup hook requires additional packages like e.g. `awscli` the `POST_BOOTSTRAP_HOOK` environment variable could be used to install those.
 
