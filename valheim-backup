@@ -56,7 +56,7 @@ flush_old() {
         return
     fi
     info "Removing backups older than $BACKUPS_MAX_AGE days"
-    find "$BACKUPS_DIRECTORY" -type f -mtime "+$BACKUPS_MAX_AGE" -name 'worlds-*.zip' -print -exec rm -f "{}" \;
+    find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name 'worlds-*.zip' -print -exec rm -f "{}" \;
 }
 
 
