@@ -101,6 +101,22 @@ check_server_restart() {
         esac
 
         supervisorctl $mode valheim-server
+
+        if [ "$mode" = restart ]; then
+            # mode is 'restart' if code was updated
+            # when mode is 'start' it just means the
+            # server was started and we checked for
+            # updates but did not find any
+            post_hook
+        fi
+    fi
+}
+
+
+post_hook() {
+    if [ -n "$POST_UPDATE_HOOK" ]; then
+        info "Running post update hook: $POST_UPDATE_HOOK"
+        eval "$POST_UPDATE_HOOK"
     fi
 }
 

@@ -47,6 +47,19 @@ backup() {
     chmod "$BACKUPS_DIRECTORY_PERMISSIONS" "$BACKUPS_DIRECTORY"
     zip -r "$backup_file" "worlds/"
     chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
+    post_hook "$backup_file"
+}
+
+
+post_hook() {
+    local backup_file
+    local post_hook_cmd
+    if [ -n "$POST_BACKUP_HOOK" ]; then
+        backup_file=$1
+        post_hook_cmd=${POST_BACKUP_HOOK//@BACKUP_FILE@/$backup_file}
+        info "Running post backup hook: $post_hook_cmd"
+        eval "$post_hook_cmd"
+    fi
 }
 
 

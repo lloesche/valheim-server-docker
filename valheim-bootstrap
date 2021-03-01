@@ -68,4 +68,14 @@ If required we'll download a fresh copy of the server in the new directory struc
 EOF
 fi
 
+if [ -n "$POST_BOOTSTRAP_HOOK" ]; then
+    info "Running post bootstrap hook: $POST_BOOTSTRAP_HOOK"
+    eval "$POST_BOOTSTRAP_HOOK"
+fi
+
+supervisorctl start syslogd
+supervisorctl start crond
+supervisorctl start valheim-updater
+supervisorctl start valheim-backup
+
 exit 0

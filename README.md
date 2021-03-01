@@ -67,6 +67,9 @@ For more deployment options see the [Deployment section](#deployment).
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
+| `POST_BOOTSTRAP_HOOK` |  | Command to be executed after bootstrapping is done and before any servers or scripts are started. Can be used to install additional packages or setup the system in a certain way. Startup is blocked until this command returns. |
+| `POST_BACKUP_HOOK` |  | Command to be executed after a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path to the backup zip file. Backups are blocked until this command returns. |
+| `POST_UPDATE_HOOK` |  | Command to be executed after an update was performed. Updates are blocked until this command returns. |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
@@ -154,6 +157,15 @@ By default 3 days worth of backups will be kept. A different number can be confi
 
 Beware that backups are performed while the server is running. As such files might be in an open state when the backup runs.
 However the `worlds/` directory also contains a `.db.old` file for each world which should always be closed and in a consistent state.
+
+## Post backup hook
+After a backup ZIP has been created the command specified by `$POST_BACKUP_HOOK` will be executed if set to a non-zero string.
+Within that command the string `@BACKUP_FILE@` will be replaced by the full path to the just created ZIP file.
+
+Example:
+`-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa -e POST_BACKUP_HOOK='scp -o StrictHostKeyChecking=no @BACKUP_FILE@ myself@my.server.example.com:~/backups/$(basename @BACKUP_FILE@)'`
+
+If the post backup hook requires additional packages like e.g. `awscli` the `POST_BOOTSTRAP_HOOK` environment variable could be used to install those.
 
 
 # Finding Your Server
