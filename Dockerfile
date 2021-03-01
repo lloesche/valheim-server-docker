@@ -18,7 +18,7 @@ COPY common /usr/local/etc/valheim/
 RUN if [ "${TESTS:-true}" = true ]; then shellcheck -a -x -s bash -e SC2034 /usr/local/bin/valheim-*; fi
 
 FROM debian:stable
-COPY --from=build-env /build/busybox/_install/bin/busybox /bin/busybox
+COPY --from=build-env /build/busybox/_install/bin/busybox /usr/local/bin/busybox
 COPY --from=build-env /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz /tmp/vpenvconf.tar.gz
 COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
@@ -43,17 +43,18 @@ RUN dpkg --add-architecture i386 \
         unzip \
         zip \
         rsync \
+        openssh-client \
         jq \
         python3-minimal \
         python3-pkg-resources \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
-    && ln -s /bin/busybox /sbin/syslogd \
-    && ln -s /bin/busybox /usr/sbin/crond \
-    && ln -s /bin/busybox /usr/bin/crontab \
-    && ln -s /bin/busybox /usr/bin/vi \
-    && ln -s /bin/busybox /usr/bin/wget \
-    && ln -s /bin/busybox /usr/bin/less \
+    && ln -s /usr/local/bin/busybox /usr/local/sbin/syslogd \
+    && ln -s /usr/local/bin/busybox /usr/local/sbin/crond \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/crontab \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/vi \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/wget \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/less \
     && rm -f /bin/sh \
     && ln -s /bin/bash /bin/sh \
     && cd / \
