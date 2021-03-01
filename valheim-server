@@ -87,6 +87,8 @@ run_server() {
 # output piped into. It allows for filtering
 # of unwanted debug log messages.
 filter() {
+    unset LD_LIBRARY_PATH
+    unset LD_PRELOAD
     case $1 in
         stdout)
             log_filter=$SERVER_LOG_STDOUT_FILTER
