@@ -67,8 +67,8 @@ For more deployment options see the [Deployment section](#deployment).
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
-| `POST_BOOTSTRAP_HOOK` |  | Command to be executed after bootstrapping is done and before any servers or scripts are started. Can be used to install additional packages or setup the system in a certain way. Startup is blocked until this command returns. |
-| `POST_BACKUP_HOOK` |  | Command to be executed after a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path to the backup zip file. Backups are blocked until this command returns. |
+| `POST_BOOTSTRAP_HOOK` |  | Command to be executed after bootstrapping is done and before the server or any services are started. Can be used to install additional packages or perform additional system setup. Startup is blocked until this command returns. |
+| `POST_BACKUP_HOOK` |  | Command to be executed after a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path to the backup zip file. Backups are blocked until this command returns. See [Post backup hook](#post-backup-hook) for details. |
 | `POST_UPDATE_HOOK` |  | Command to be executed after an update was performed. Updates are blocked until this command returns. |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
