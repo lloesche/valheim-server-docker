@@ -22,12 +22,13 @@ if [ "$VALHEIM_PLUS" = true ]; then
     export DOORSTOP_INVOKE_DLL_PATH="./BepInEx/core/BepInEx.Preloader.dll"
     export DOORSTOP_CORLIB_OVERRIDE_PATH="./unstripped_corlib"
     export LD_LIBRARY_PATH="$vp_install_path/linux64/:$vp_install_path/doorstop_libs/"
-    export LD_PRELOAD=libdoorstop_x64.so
+    SERVER_LD_PRELOAD=libdoorstop_x64.so
     valheim_server="$vp_install_path/valheim_server.x86_64"
     [ -z "$SERVER_PASS" ] && password_args=()
 else
     cd "$valheim_install_path" || fatal "Could not cd $valheim_install_path"
     export LD_LIBRARY_PATH="$valheim_install_path/linux64/"
+    SERVER_LD_PRELOAD=""
     valheim_server="$valheim_install_path/valheim_server.x86_64"
 fi
 
@@ -68,7 +69,7 @@ ensure_permissions_after_start() {
 
 run_server() {
     info "Running Valheim Server"
-    "$valheim_server" -nographics -batchmode -name "$SERVER_NAME" -port "$SERVER_PORT" -world "$WORLD_NAME" -public "$SERVER_PUBLIC" "${password_args[@]}" > >(filter stdout)  2> >(filter stderr >&2) &
+    LD_PRELOAD=$SERVER_LD_PRELOAD "$valheim_server" -nographics -batchmode -name "$SERVER_NAME" -port "$SERVER_PORT" -world "$WORLD_NAME" -public "$SERVER_PUBLIC" "${password_args[@]}" > >(filter stdout)  2> >(filter stderr >&2) &
     valheim_server_pid=$!
     unset LD_LIBRARY_PATH
     unset LD_PRELOAD
@@ -101,8 +102,6 @@ filter() {
 
 
 shutdown() {
-    unset LD_LIBRARY_PATH
-    unset LD_PRELOAD
     if [ $valheim_server_pid -eq -1 ]; then
         debug "Valheim server is not running yet - aborting startup"
         exit
