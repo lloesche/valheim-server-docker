@@ -2,7 +2,7 @@ FROM debian:stable as build-env
 ARG TESTS
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl python3 python3-pip shellcheck
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl python3 python3-pip shellcheck netcat
 WORKDIR /build/busybox
 RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2
 RUN tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox
@@ -69,6 +69,8 @@ RUN dpkg --add-architecture i386 \
     && ./steamcmd.sh +login anonymous +quit \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+
+HEALTHCHECK CMD (nc -z -v -u localhost 2456 | grep open) && (nc -z -v -u localhost 2457 | grep open) && (nc -z -v -u localhost 2458 | grep open)
 
 ENV TZ=Etc/UTC
 VOLUME ["/config", "/opt/valheim"]
