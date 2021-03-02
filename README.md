@@ -162,7 +162,7 @@ However the `worlds/` directory also contains a `.db.old` file for each world wh
 After a backup ZIP has been created the command specified by `$POST_BACKUP_HOOK` will be executed if set to a non-zero string.
 Within that command the string `@BACKUP_FILE@` will be replaced by the full path to the just created ZIP file.
 
-Example:
+### Example
 ```
 -v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa \
 -v $HOME/.ssh/known_hosts:/root/.ssh/known_hosts \
