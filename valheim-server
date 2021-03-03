@@ -76,8 +76,8 @@ run_server() {
     echo $valheim_server_pid > "$valheim_server_pidfile"
     ensure_permissions_after_start &
     permissions_wait_pid=$!
-    serverip=$(dig +short myip.opendns.com @resolver1.opendns.com)
-    discord "Valheim server started at $serverip on port $SERVER_PORT. Enjoy."
+    serverip=$(curl ifconfig.me.)
+    discord "Valheim server $SERVER_NAME started at $serverip on port $SERVER_PORT. Enjoy."
     wait $valheim_server_pid
     [ -d "/proc/$permissions_wait_pid" ] && kill -TERM $permissions_wait_pid
     clear_lock "$valheim_server_pidfile"
