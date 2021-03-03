@@ -19,6 +19,8 @@
 # e.g. /config/backups/worlds-20210303-144536.zip
 backup_file=$1
 
+: "${BACKUP_SCP_USER:=}" "${BACKUP_SCP_HOST:=}" "${BACKUP_SCP_PATH:=}"
+
 if [ -z "$BACKUP_SCP_USER" ] || [ -z "$BACKUP_SCP_HOST" ] || [ -z "$BACKUP_SCP_PATH" ]; then
     echo "One of BACKUP_SCP_USER, BACKUP_SCP_HOST or BACKUP_SCP_PATH not set - quitting"
     exit 1
@@ -36,7 +38,7 @@ fi
 # remove trailing slash if any
 BACKUP_SCP_PATH=${BACKUP_SCP_PATH%/}
 
-destination="$BACKUP_SCP_USER@$BACKUP_SCP_HOST:$BACKUP_SCP_PATH/$(basename $backup_file)"
+destination="$BACKUP_SCP_USER@$BACKUP_SCP_HOST:$BACKUP_SCP_PATH/$(basename "$backup_file")"
 
 echo "Using scp to copy $backup_file to $destination"
-timeout 300 scp -e "$ssh_args" $backup_file $destination
+timeout 300 scp -e "$ssh_args" "$backup_file" "$destination"

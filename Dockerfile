@@ -15,7 +15,8 @@ RUN python3 setup.py bdist --format=gztar
 COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
-RUN if [ "${TESTS:-true}" = true ]; then shellcheck -a -x -s bash -e SC2034 /usr/local/bin/valheim-*; fi
+COPY contrib/* /usr/local/share/valheim/contrib/
+RUN if [ "${TESTS:-true}" = true ]; then shellcheck -a -x -s bash -e SC2034 /usr/local/bin/valheim-* /usr/local/share/valheim/contrib/*.sh; fi
 
 FROM debian:stable
 COPY --from=build-env /build/busybox/_install/bin/busybox /usr/local/bin/busybox
