@@ -1,9 +1,9 @@
 # lloesche/valheim-server Docker image
-<a href="https://hub.docker.com/r/lloesche/valheim-server"><img style="float: right;" src="https://img.shields.io/docker/pulls/lloesche/valheim-server.svg"></a>
 ![Valheim](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/Logo_valheim.png "Valheim")
 
 Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)  
 
+[![Docker Badge](https://img.shields.io/docker/pulls/lloesche/valheim-server.svg)](https://hub.docker.com/r/lloesche/valheim-server)
 
 # Basic Docker Usage
 
