@@ -24,6 +24,7 @@ vp_mergefile="$vp_download_path/merge"          # Signaling file created by valh
                                                 # server was updated and needs to be merged
                                                 # with ValheimPlus
 vp_config_path="/config/valheimplus"
+just_started=${just_started:-true}
 
 # Collection of PID files
 valheim_server_pidfile=/var/run/valheim-server.pid
@@ -150,5 +151,19 @@ write_valheim_plus_config() {
         if env | grep "^$VALHEIM_PLUS_CFG_ENV_PREFIX" > /dev/null; then
             /usr/local/bin/vpenvconf --verbose --config "$vp_config_path/valheim_plus.cfg" --env-prefix "$VALHEIM_PLUS_CFG_ENV_PREFIX"
         fi
+    fi
+}
+
+
+write_restart_file() {
+    local mode
+    if [ "$just_started" = true ]; then
+        mode="start"
+    else
+        mode="restart"
+    fi
+    if [ ! -f "$valheim_restartfile" ]; then
+        debug "Writing file to $mode Valheim server"
+        echo "$mode" > "$valheim_restartfile"
     fi
 }

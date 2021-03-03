@@ -9,7 +9,6 @@
 . /usr/local/etc/valheim/defaults
 . /usr/local/etc/valheim/common
 
-
 main() {
     create_directory_structure
     check_for_update
@@ -87,7 +86,7 @@ merge_valheim_plus() {
         mv -f "$vp_install_path" "$vp_install_path.old"
     fi
     mv "$vp_install_path.tmp" "$vp_install_path"
-    echo restart > "$valheim_restartfile"
+    write_restart_file
 }
 
 
