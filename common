@@ -47,6 +47,14 @@ error()    { logerr $error    "(ERROR) $*"; }
 critical() { logerr $critical "(CRITIAL) $*"; }
 fatal()    { logerr $fatal    "(FATAL) $*"; exit; }
 
+# send discord message if DISCORD_WEBHOOK is not empty
+discord() {
+    set -x
+    if [ "$DISCORD_WEBHOOK" != "" ]; then
+        serverip=$()
+        curl  -X POST -H "Content-Type: application/json" -d "{\"username\":\"valheim-server\",\"content\":\"$*\"}" "$DISCORD_WEBHOOK"
+    fi
+}
 
 logstd() {
     local log_at_level

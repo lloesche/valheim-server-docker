@@ -42,9 +42,18 @@ update() {
     logfile="$(mktemp)"
     info "Downloading/updating/validating Valheim server from Steam"
     download_valheim
-    rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$valheim_install_path" | tee "$logfile"
+    ## Attempt to dry-run to check if update is required
+    rsync --dry-run -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$valheim_install_path" | tee "$logfile"
     if grep '^[*>]' "$logfile" > /dev/null 2>&1; then
+    ## If DISCORD_WEBHOOK is not empty and this is not the first time the server runs send notification and wait for 5 minutes
+        if [ -f /opt/valheim/firstruncompleted ] && [ "$DISCORD_WEBHOOK" != "" ]; then
+            discord "Server will be updated in 5 minutes."
+            sleep 300
+        fi
+        rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$valheim_install_path"
         info "Valheim Server was updated - restarting"
+        discord "Valheim Server was updated - restarting"
+        touch /opt/valheim/firstruncompleted
         check_valheim_plus updated
         echo restart > "$valheim_restartfile"
     else
