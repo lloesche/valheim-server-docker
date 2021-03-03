@@ -11,7 +11,6 @@
 debug "Running Valheim Server updater as user $USER uid $UID"
 cd /opt/steamcmd || fatal "Could not cd /opt/steamcmd"
 pidfile=$valheim_updater_pidfile
-just_started=true
 next_update=$(date +%s)
 run=true
 
@@ -23,7 +22,9 @@ main() {
         trap 'error_handler $? $LINENO $BASH_LINENO "$BASH_COMMAND" $(printf "::%s" ${FUNCNAME[@]}); trap - ERR' ERR
         while [ $run = true ]; do
             ensure_permissions
+            pre_update_check_hook
             update
+            post_update_check_hook
             check_server_restart
             next_update=$(($(date +%s)+UPDATE_INTERVAL))
             while [ $run = true ] && [ "$(date +%s)" -lt $next_update ]; do
@@ -46,12 +47,12 @@ update() {
     if grep '^[*>]' "$logfile" > /dev/null 2>&1; then
         info "Valheim Server was updated - restarting"
         check_valheim_plus updated
-        echo restart > "$valheim_restartfile"
+        write_restart_file
     else
         info "Valheim Server is already the latest version"
-        check_valheim_plus just_started
-        if [ $just_started = true ]; then
-            echo start > "$valheim_restartfile"
+        check_valheim_plus uptodate
+        if [ "$just_started" = true ]; then
+            write_restart_file
         fi
     fi
     just_started=false
@@ -66,20 +67,21 @@ check_valheim_plus() {
             info "Valheim Server was updated from Steam - signaling ValheimPlus updater to merge updated files"
             touch "$vp_mergefile"
         fi
-        /usr/local/bin/valheim-plus-updater
+        just_started=$just_started /usr/local/bin/valheim-plus-updater
     else
         if [ "$1" = updated ] && [ -d "$vp_install_path" ]; then
             debug "ValheimPlus currently disabled but previously installed - keeping installation fresh"
             debug "If this is unwanted remove $vp_install_path"
             touch "$vp_mergefile"
-            /usr/local/bin/valheim-plus-updater
+            just_started=$just_started /usr/local/bin/valheim-plus-updater
         fi
     fi
 }
 
 
 download_valheim() {
-    /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 "$STEAMCMD_ARGS" +quit
+    # shellcheck disable=SC2086
+    /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
 }
 
 
@@ -100,23 +102,51 @@ check_server_restart() {
                     mode=restart
         esac
 
-        supervisorctl $mode valheim-server
+        pre_hook "$mode"
+        supervisorctl "$mode" valheim-server
+        post_hook "$mode"
+    fi
+}
 
-        if [ "$mode" = restart ]; then
-            # mode is 'restart' if code was updated
-            # when mode is 'start' it just means the
-            # server was started and we checked for
-            # updates but did not find any
-            post_hook
-        fi
+
+pre_hook() {
+    local mode
+    mode=$1
+    if [ "$mode" = restart ] && [ -n "$PRE_RESTART_HOOK" ]; then
+        info "Running pre restart hook: $PRE_RESTART_HOOK"
+        eval "$PRE_RESTART_HOOK"
+    elif [ "$mode" = start ] && [ -n "$PRE_START_HOOK" ]; then
+        info "Running pre start hook: $PRE_START_HOOK"
+        eval "$PRE_START_HOOK"
     fi
 }
 
 
 post_hook() {
-    if [ -n "$POST_UPDATE_HOOK" ]; then
-        info "Running post update hook: $POST_UPDATE_HOOK"
-        eval "$POST_UPDATE_HOOK"
+    local mode
+    mode=$1
+    if [ "$mode" = restart ] && [ -n "$POST_RESTART_HOOK" ]; then
+        info "Running post restart hook: $POST_RESTART_HOOK"
+        eval "$POST_RESTART_HOOK"
+    elif [ "$mode" = start ] && [ -n "$POST_START_HOOK" ]; then
+        info "Running post restart hook: $POST_START_HOOK"
+        eval "$POST_START_HOOK"
+    fi
+}
+
+
+pre_update_check_hook() {
+    if [ -n "$PRE_UPDATE_CHECK_HOOK" ]; then
+        info "Running pre update check hook: $PRE_UPDATE_CHECK_HOOK"
+        eval "$PRE_UPDATE_CHECK_HOOK"
+    fi
+}
+
+
+post_update_check_hook() {
+    if [ -n "$POST_UPDATE_CHECK_HOOK" ]; then
+        info "Running post update check hook: $POST_UPDATE_CHECK_HOOK"
+        eval "$POST_UPDATE_CHECK_HOOK"
     fi
 }
 
