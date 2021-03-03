@@ -23,6 +23,7 @@ COPY --from=build-env /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz /tmp
 COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
+COPY contrib/* /usr/local/share/valheim/contrib/
 ADD https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz /tmp/
 RUN dpkg --add-architecture i386 \
     && apt-get update \
@@ -65,7 +66,10 @@ RUN dpkg --add-architecture i386 \
     && ln -s /config /root/.config/unity3d/IronGate/Valheim \
     && tar xzvf /tmp/steamcmd_linux.tar.gz -C /opt/steamcmd/ \
     && chown -R root:root /opt/steamcmd \
-    && chmod 755 /opt/steamcmd/steamcmd.sh /opt/steamcmd/linux32/steamcmd /opt/steamcmd/linux32/steamerrorreporter /usr/local/bin/valheim-* \
+    && chmod 755 /opt/steamcmd/steamcmd.sh \
+        /opt/steamcmd/linux32/steamcmd \
+        /opt/steamcmd/linux32/steamerrorreporter \
+        /usr/local/bin/valheim-* \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
