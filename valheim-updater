@@ -103,15 +103,17 @@ check_server_restart() {
                     mode=restart
         esac
 
-        [ "$mode" = restart ] && pre_restart_hook
+        pre_restart_hook "$mode"
         supervisorctl "$mode" valheim-server
-        [ "$mode" = restart ] && post_restart_hook
+        post_restart_hook "$mode"
     fi
 }
 
 
 pre_restart_hook() {
-    if [ -n "$PRE_RESTART_HOOK" ]; then
+    local mode
+    mode=$1
+    if [ "$mode" = restart ] && [ -n "$PRE_RESTART_HOOK" ]; then
         info "Running pre restart hook: $PRE_RESTART_HOOK"
         eval "$PRE_RESTART_HOOK"
     fi
@@ -119,7 +121,9 @@ pre_restart_hook() {
 
 
 post_restart_hook() {
-    if [ -n "$POST_RESTART_HOOK" ]; then
+    local mode
+    mode=$1
+    if [ "$mode" = restart ] && [ -n "$POST_RESTART_HOOK" ]; then
         info "Running post restart hook: $POST_RESTART_HOOK"
         eval "$POST_RESTART_HOOK"
     fi
