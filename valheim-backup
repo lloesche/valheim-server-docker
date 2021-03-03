@@ -42,16 +42,29 @@ backup() {
         return
     fi
     backup_file="$BACKUPS_DIRECTORY/worlds-$(date +%Y%m%d-%H%M%S).zip"
+    pre_backup_hook "$backup_file"
     info "Backing up Valheim server worlds to $backup_file"
     mkdir -p "$BACKUPS_DIRECTORY"
     chmod "$BACKUPS_DIRECTORY_PERMISSIONS" "$BACKUPS_DIRECTORY"
     zip -r "$backup_file" "worlds/"
     chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
-    post_hook "$backup_file"
+    post_backup_hook "$backup_file"
 }
 
 
-post_hook() {
+pre_backup_hook() {
+    local backup_file
+    local pre_hook_cmd
+    if [ -n "$PRE_BACKUP_HOOK" ]; then
+        backup_file=$1
+        pre_hook_cmd=${PRE_BACKUP_HOOK//@BACKUP_FILE@/$backup_file}
+        info "Running pre backup hook: $pre_hook_cmd"
+        eval "$pre_hook_cmd"
+    fi
+}
+
+
+post_backup_hook() {
     local backup_file
     local post_hook_cmd
     if [ -n "$POST_BACKUP_HOOK" ]; then

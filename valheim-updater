@@ -23,7 +23,9 @@ main() {
         trap 'error_handler $? $LINENO $BASH_LINENO "$BASH_COMMAND" $(printf "::%s" ${FUNCNAME[@]}); trap - ERR' ERR
         while [ $run = true ]; do
             ensure_permissions
+            pre_update_check_hook
             update
+            post_update_check_hook
             check_server_restart
             next_update=$(($(date +%s)+UPDATE_INTERVAL))
             while [ $run = true ] && [ "$(date +%s)" -lt $next_update ]; do
@@ -100,23 +102,41 @@ check_server_restart() {
                     mode=restart
         esac
 
-        supervisorctl $mode valheim-server
-
-        if [ "$mode" = restart ]; then
-            # mode is 'restart' if code was updated
-            # when mode is 'start' it just means the
-            # server was started and we checked for
-            # updates but did not find any
-            post_hook
-        fi
+        [ "$mode" = restart ] && pre_restart_hook
+        supervisorctl "$mode" valheim-server
+        [ "$mode" = restart ] && post_restart_hook
     fi
 }
 
 
-post_hook() {
-    if [ -n "$POST_UPDATE_HOOK" ]; then
-        info "Running post update hook: $POST_UPDATE_HOOK"
-        eval "$POST_UPDATE_HOOK"
+pre_restart_hook() {
+    if [ -n "$PRE_RESTART_HOOK" ]; then
+        info "Running pre restart hook: $PRE_RESTART_HOOK"
+        eval "$PRE_RESTART_HOOK"
+    fi
+}
+
+
+post_restart_hook() {
+    if [ -n "$POST_RESTART_HOOK" ]; then
+        info "Running post restart hook: $POST_RESTART_HOOK"
+        eval "$POST_RESTART_HOOK"
+    fi
+}
+
+
+pre_update_check_hook() {
+    if [ -n "$PRE_UPDATE_CHECK_HOOK" ]; then
+        info "Running pre update check hook: $PRE_UPDATE_CHECK_HOOK"
+        eval "$PRE_UPDATE_CHECK_HOOK"
+    fi
+}
+
+
+post_update_check_hook() {
+    if [ -n "$POST_UPDATE_CHECK_HOOK" ]; then
+        info "Running post update check hook: $POST_UPDATE_CHECK_HOOK"
+        eval "$POST_UPDATE_CHECK_HOOK"
     fi
 }
 

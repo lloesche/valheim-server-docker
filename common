@@ -45,7 +45,7 @@ info()     { logstd $info     "(INFO) $*"; }
 warn()     { logstd $warn     "(WARN) $*"; }
 error()    { logerr $error    "(ERROR) $*"; }
 critical() { logerr $critical "(CRITIAL) $*"; }
-fatal()    { logerr $fatal    "(FATAL) $*"; exit; }
+fatal()    { logerr $fatal    "(FATAL) $*"; exit 1; }
 
 
 logstd() {
@@ -141,7 +141,7 @@ error_handler() {
     command="$4"
     stack="$5"
     error "Error in line $line_no command '$command' exited with code $ec in $stack called in line $func_call_line"
-    exit "$ec"
+    return "$ec"
 }
 
 

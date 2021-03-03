@@ -8,6 +8,12 @@
 . /usr/local/etc/valheim/common
 
 
+if [ -n "$PRE_BOOTSTRAP_HOOK" ]; then
+    info "Running pre bootstrap hook: $PRE_BOOTSTRAP_HOOK"
+    eval "$PRE_BOOTSTRAP_HOOK"
+fi
+
+
 mkdir -p "$valheim_download_path"
 mkdir -p "$valheim_install_path"
 
