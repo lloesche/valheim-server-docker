@@ -86,7 +86,7 @@ The following environment variables can be populated to run commands whenever sp
 | `PRE_RESTART_HOOK` |  | Command to be executed before a server restart is performed. Current restart is blocked until this command returns. |
 | `POST_RESTART_HOOK` |  | Command to be executed after a server restart was performed. Future restarts and update checks are blocked until this command returns. |
 | `PRE_SERVER_RUN_HOOK` |  | Command to be executed before the server is started. Server startup is blocked until this command returns. |
-| `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered. |
+| `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered after 29 seconds. |
 
 
 ## ValheimPlus config from Environment Variables
