@@ -69,7 +69,13 @@ For more deployment options see the [Deployment section](#deployment).
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
 
-# Event hooks
+There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
+
+
+## Event hooks
+The following environment variables can be populated to run commands whenever specific events happen.
+
+| Name | Default | Purpose |
 | `PRE_BOOTSTRAP_HOOK` |  | Command to be executed before bootstrapping is done. Startup is blocked until this command returns. |
 | `POST_BOOTSTRAP_HOOK` |  | Command to be executed after bootstrapping is done and before the server or any services are started. Can be used to install additional packages or perform additional system setup. Startup is blocked until this command returns. |
 | `PRE_BACKUP_HOOK` |  | Command to be executed before a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path of the future backup zip file. Backups are blocked until this command returns. See [Post backup hook](#post-backup-hook) for details. |
@@ -80,9 +86,6 @@ For more deployment options see the [Deployment section](#deployment).
 | `POST_RESTART_HOOK` |  | Command to be executed after a server restart was performed. Future restarts and update checks are blocked until this command returns. |
 | `PRE_SERVER_RUN_HOOK` |  | Command to be executed before the server is started. Server startup is blocked until this command returns. |
 | `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered. |
-
-
-There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
 
 ## ValheimPlus config from Environment Variables
