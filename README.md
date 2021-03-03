@@ -41,8 +41,6 @@ Do not forget to modify `WORLD_NAME` to reflect the name of your world! For exis
 If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2458 are forwarded to the container host.
 Also ensure they are publicly accessible in any firewall.
 
-If your server name does not show up in the server list  a couple of minutes after startup you likely have a firewall issue.
-
 There is more info in section [Finding Your Server](#finding-your-server).
 
 For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
