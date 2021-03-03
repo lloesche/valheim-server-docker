@@ -17,6 +17,7 @@ ExecStart=/usr/bin/docker run \
           -p 2456-2458:2456-2458/udp \
           -e SERVER_NAME \
           -e SERVER_PORT \
+          -e QUERY_PORT \
           -e WORLD_NAME \
           -e SERVER_PASS \
           -e SERVER_PUBLIC \
