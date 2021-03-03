@@ -54,6 +54,7 @@ For more deployment options see the [Deployment section](#deployment).
 |----------|----------|-------|
 | `SERVER_NAME` | `My Server` | Name that will be shown in the server browser |
 | `SERVER_PORT` | `2456` | UDP start port that the server will listen on |
+| `QUERY_PORT` | `27015` |  Query port that the server will use should be between 27015-27030 |
 | `WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
 | `SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
 | `SERVER_PUBLIC` | `true` | Whether the server should be listed in the server browser (`true`) or not (`false`) |
