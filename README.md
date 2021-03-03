@@ -57,6 +57,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `WORLD_NAME` | `Dedicated` | Name of the world without `.db/.fwl` file extension |
 | `SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
 | `SERVER_PUBLIC` | `true` | Whether the server should be listed in the server browser (`true`) or not (`false`) |
+| `SERVER_ARGS` |  | Additional Valheim server CLI arguments |
 | `UPDATE_CRON` | `*/15 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for update checks (disabled if set to an empty string or if the legacy `UPDATE_INTERVAL` is set) |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
@@ -71,11 +72,11 @@ For more deployment options see the [Deployment section](#deployment).
 # Event hooks
 | `PRE_BOOTSTRAP_HOOK` |  | Command to be executed before bootstrapping is done. Startup is blocked until this command returns. |
 | `POST_BOOTSTRAP_HOOK` |  | Command to be executed after bootstrapping is done and before the server or any services are started. Can be used to install additional packages or perform additional system setup. Startup is blocked until this command returns. |
-| `PRE_BACKUP_HOOK` |  | Command to be executed before a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path to the future backup zip file. Backups are blocked until this command returns. See [Post backup hook](#post-backup-hook) for details. |
-| `POST_BACKUP_HOOK` |  | Command to be executed after a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path to the backup zip file. Backups are blocked until this command returns. See [Post backup hook](#post-backup-hook) for details. |
-| `PRE_UPDATE_CHECK_HOOK` |  | Command to be executed before an update check is performed. Updates are blocked until this command returns. |
-| `POST_UPDATE_CHECK_HOOK` |  | Command to be executed after an update check was performed. Updates are blocked until this command returns. |
-| `PRE_RESTART_HOOK` |  | Command to be executed before a server restart is performed. Restart is blocked until this command returns. |
+| `PRE_BACKUP_HOOK` |  | Command to be executed before a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path of the future backup zip file. Backups are blocked until this command returns. See [Post backup hook](#post-backup-hook) for details. |
+| `POST_BACKUP_HOOK` |  | Command to be executed after a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path of the backup zip file. Backups are blocked until this command returns. See [Post backup hook](#post-backup-hook) for details. |
+| `PRE_UPDATE_CHECK_HOOK` |  | Command to be executed before an update check is performed. Current updates are blocked until this command returns. |
+| `POST_UPDATE_CHECK_HOOK` |  | Command to be executed after an update check was performed. Future updates are blocked until this command returns. |
+| `PRE_RESTART_HOOK` |  | Command to be executed before a server restart is performed. Current restart is blocked until this command returns. |
 | `POST_RESTART_HOOK` |  | Command to be executed after a server restart was performed. Future restarts and update checks are blocked until this command returns. |
 | `PRE_SERVER_RUN_HOOK` |  | Command to be executed before the server is started. Server startup is blocked until this command returns. |
 | `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered. |
