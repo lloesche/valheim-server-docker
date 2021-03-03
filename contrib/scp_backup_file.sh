@@ -30,9 +30,9 @@ BACKUP_SCP_STRICT_KEY_CHECK=${BACKUP_SCP_STRICT_KEY_CHECK:-yes}
 BACKUP_SCP_PORT=${BACKUP_SCP_PORT:-22}
 BACKUP_SCP_KEY=${BACKUP_SCP_KEY:-}
 
-ssh_args="ssh -o StrictHostKeyChecking=$BACKUP_SCP_STRICT_KEY_CHECK -p $BACKUP_SCP_PORT"
+scp_args=(-o "StrictHostKeyChecking=$BACKUP_SCP_STRICT_KEY_CHECK" -p "$BACKUP_SCP_PORT")
 if [ -n "$BACKUP_SCP_KEY" ]; then
-    ssh_args="$ssh_args -i $BACKUP_SCP_KEY"
+    scp_args+=(-i "$BACKUP_SCP_KEY")
 fi
 
 # remove trailing slash if any
@@ -41,4 +41,4 @@ BACKUP_SCP_PATH=${BACKUP_SCP_PATH%/}
 destination="$BACKUP_SCP_USER@$BACKUP_SCP_HOST:$BACKUP_SCP_PATH/$(basename "$backup_file")"
 
 echo "Using scp to copy $backup_file to $destination"
-timeout 300 scp -e "$ssh_args" "$backup_file" "$destination"
+timeout 300 scp "${scp_args[@]}" "$backup_file" "$destination"
