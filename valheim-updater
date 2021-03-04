@@ -117,13 +117,14 @@ is_idle() {
             debug "Valheim updater was just started - skipping connected players check"
             return 0
         fi
-        if timeout 3 tcpdump udp port "$SERVER_PORT" -n -s 84 -c 1 > /dev/null 2>&1; then
-            debug "Players connected to Valheim server - skipping update check"
-            return 1
-        else
+        if server_is_idle; then
             debug "No players connected to Valheim server"
             return 0
+        else
+            debug "Players connected to Valheim server - skipping update check"
+            return 1
         fi
+
     fi
     return 0
 }
