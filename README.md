@@ -58,6 +58,7 @@ For more deployment options see the [Deployment section](#deployment).
 | `SERVER_PUBLIC` | `true` | Whether the server should be listed in the server browser (`true`) or not (`false`) |
 | `SERVER_ARGS` |  | Additional Valheim server CLI arguments |
 | `UPDATE_CRON` | `*/15 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for update checks (disabled if set to an empty string or if the legacy `UPDATE_INTERVAL` is set) |
+| `UPDATE_IF_IDLE` | `false` | Only run update check if no players are connected to the server |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
 | `BACKUPS` | `true` | Whether the server should create periodic backups (`true` or `false`) |

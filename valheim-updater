@@ -22,9 +22,7 @@ main() {
         trap 'error_handler $? $LINENO $BASH_LINENO "$BASH_COMMAND" $(printf "::%s" ${FUNCNAME[@]}); trap - ERR' ERR
         while [ $run = true ]; do
             ensure_permissions
-            pre_update_check_hook
             update
-            post_update_check_hook
             check_server_restart
             next_update=$(($(date +%s)+UPDATE_INTERVAL))
             while [ $run = true ] && [ "$(date +%s)" -lt $next_update ]; do
@@ -37,9 +35,12 @@ main() {
     fi
 }
 
-
 update() {
     local logfile
+    if ! is_idle; then
+        return 1
+    fi
+    pre_update_check_hook
     logfile="$(mktemp)"
     info "Downloading/updating/validating Valheim server from Steam"
     download_valheim
@@ -57,6 +58,7 @@ update() {
     fi
     just_started=false
     rm -f "$logfile"
+    post_update_check_hook
 }
 
 
@@ -106,6 +108,20 @@ check_server_restart() {
         supervisorctl "$mode" valheim-server
         post_hook "$mode"
     fi
+}
+
+
+is_idle() {
+    if [ "$UPDATE_IF_IDLE" = true]; then
+        if timeout 3 tcpdump udp port "$SERVER_PORT" -n -s 84 -c 1 > /dev/null 2>&1; then
+            debug "Players connected to Valheim server - skipping update check"
+            return 1
+        else
+            debug "No players connected to Valheim server"
+            return 0
+        fi
+    fi
+    return 0
 }
 
 
