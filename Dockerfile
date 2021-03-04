@@ -38,6 +38,7 @@ RUN dpkg --add-architecture i386 \
         curl \
         libcurl4 \
         libcurl4:i386 \
+        tcpdump \
         ca-certificates \
         supervisor \
         procps \

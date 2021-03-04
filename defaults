@@ -24,6 +24,7 @@ STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 UPDATE_INTERVAL=${UPDATE_INTERVAL:-315360000}
 # When we check for updates
 UPDATE_CRON=${UPDATE_CRON-*/15 * * * *}
+UPDATE_IF_IDLE=${UPDATE_IF_IDLE:-true}
 
 # What time we restart the valheim-server
 # This is usful to mitigate the effects of memory/resource leaks
