@@ -112,7 +112,7 @@ check_server_restart() {
 
 
 is_idle() {
-    if [ "$UPDATE_IF_IDLE" = true]; then
+    if [ "$UPDATE_IF_IDLE" = true ]; then
         if timeout 3 tcpdump udp port "$SERVER_PORT" -n -s 84 -c 1 > /dev/null 2>&1; then
             debug "Players connected to Valheim server - skipping update check"
             return 1
