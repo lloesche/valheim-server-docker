@@ -4,7 +4,7 @@ services:
   valheim: 
     image: lloesche/valheim-server
     volumes: 
-      - $HOME/valheim/settings:/config
+      - $HOME/valheim/config:/config
       - $HOME/valheim/data:/opt/valheim
     ports: 
       - "2456-2458:2456-2458/udp" 
