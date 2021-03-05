@@ -91,11 +91,11 @@ The following environment variables can be populated to run commands whenever sp
 | `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered after 29 seconds. |
 
 ### Event hook examples
-#### Notify about restarts on Discord and delay restart by 1 minute
+#### Delay restarts by 1 minute and notify on Discord
 ```
 -e DISCORD_WEBHOOK="https://discord.com/api/webhooks/8171522530..." \
 -e DISCORD_MESSAGE="Restarting Valheim server in one minute!" \
--e PRE_RESTART_HOOK='curl  -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$DISCORD_MESSAGE\"}" "$DISCORD_WEBHOOK" && sleep 60' \
+-e PRE_RESTART_HOOK='curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$DISCORD_MESSAGE\"}" "$DISCORD_WEBHOOK" && sleep 60' \
 ```
 
 #### Copy backups to another location
