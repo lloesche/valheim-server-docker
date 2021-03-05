@@ -1,13 +1,13 @@
-version: "3.9"
+version: "3"
+
 services: 
   valheim: 
     image: lloesche/valheim-server
     volumes: 
-      - /path/to/valheim/settings:/config
-      - /path/to/valheim/data:/opt/valheim
+      - $HOME/valheim/settings:/config
+      - $HOME/valheim/data:/opt/valheim
     ports: 
       - "2456-2458:2456-2458/udp" 
-    environment: 
-      - SERVER_NAME=Server Name
-      - SERVER_PASS=secret
-      - SERVER_PUBLIC=1
+    env_file:
+      - $HOME/valheim/valheim.env
+    restart: always

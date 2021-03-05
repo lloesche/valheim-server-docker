@@ -20,6 +20,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 * [System requirements](#system-requirements)
 * [Deployment](#deployment)
 	* [Deploying with Docker and systemd](#deploying-with-docker-and-systemd)
+	* [Deploying with docker-compose](#deploying-with-docker-compose)
 	* [Deploying to Kubernetes](#deploying-to-kubernetes)
 	* [Deploying to AWS ECS](#deploying-to-aws-ecs)
 * [Updates](#updates)
@@ -196,6 +197,21 @@ $ sudo curl -o /etc/systemd/system/valheim.service https://raw.githubusercontent
 $ sudo systemctl daemon-reload
 $ sudo systemctl enable valheim.service
 $ sudo systemctl start valheim.service
+```
+
+## Deploying with docker-compose
+Copy'paste the following into your shell
+```
+mkdir -p $HOME/valheim/config $HOME/valheim/data
+cd $HOME/valheim/
+cat > $HOME/valheim/valheim.env << EOF
+SERVER_NAME="My Server"
+WORLD_NAME=Dedicated
+SERVER_PASS=secret
+SERVER_PUBLIC=true
+EOF
+curl -o $HOME/valheim/docker-compose.yaml https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/docker-compose.yaml
+docker-compose up
 ```
 
 ## Deploying to Kubernetes
