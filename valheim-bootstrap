@@ -14,6 +14,7 @@ if [ -n "$PRE_BOOTSTRAP_HOOK" ]; then
 fi
 
 
+# Create paths
 mkdir -p "$valheim_download_path"
 mkdir -p "$valheim_install_path"
 
@@ -23,6 +24,8 @@ if [ "$VALHEIM_PLUS" = true ]; then
     write_valheim_plus_config
 fi
 
+
+# Configure timezone
 if [ -f "/usr/share/zoneinfo/$TZ" ]; then
     info "Setting timezone $TZ"
     ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime
@@ -31,6 +34,8 @@ else
     error "Error: unknown timezone $TZ"
 fi
 
+
+# Create crontabs
 crontab=$(mktemp)
 if [ "$BACKUPS" = true ] && [ -n "$BACKUPS_CRON" ] && [ "$BACKUPS_INTERVAL" = "315360000" ]; then
     debug "Creating cron to do world backups using schedule $BACKUPS_CRON"
@@ -50,6 +55,7 @@ else
 fi
 crontab "$crontab"
 rm -f "$crontab"
+
 
 # Notify users of new data paths
 if [ -d "/opt/valheim_dl" ] || [ -f "/opt/valheim/valheim_server.x86_64" ]; then
@@ -79,6 +85,8 @@ if [ -n "$POST_BOOTSTRAP_HOOK" ]; then
     eval "$POST_BOOTSTRAP_HOOK"
 fi
 
+
+# Start all services
 supervisorctl start syslogd
 supervisorctl start crond
 supervisorctl start valheim-updater

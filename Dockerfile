@@ -12,15 +12,17 @@ COPY ./vpenvconf/ /build/vpenvconf/
 WORKDIR /build/vpenvconf
 RUN if [ "${TESTS:-true}" = true ]; then pip3 install tox && tox; fi
 RUN python3 setup.py bdist --format=gztar
+COPY bootstrap /usr/local/sbin/
 COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
 COPY contrib/* /usr/local/share/valheim/contrib/
-RUN if [ "${TESTS:-true}" = true ]; then shellcheck -a -x -s bash -e SC2034 /usr/local/bin/valheim-* /usr/local/share/valheim/contrib/*.sh; fi
+RUN if [ "${TESTS:-true}" = true ]; then shellcheck -a -x -s bash -e SC2034 /usr/local/sbin/bootstrap /usr/local/bin/valheim-* /usr/local/share/valheim/contrib/*.sh; fi
 
 FROM debian:stable
 COPY --from=build-env /build/busybox/_install/bin/busybox /usr/local/bin/busybox
 COPY --from=build-env /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz /tmp/vpenvconf.tar.gz
+COPY bootstrap /usr/local/sbin/
 COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
@@ -71,6 +73,7 @@ RUN dpkg --add-architecture i386 \
     && chmod 755 /opt/steamcmd/steamcmd.sh \
         /opt/steamcmd/linux32/steamcmd \
         /opt/steamcmd/linux32/steamerrorreporter \
+        /usr/local/sbin/bootstrap \
         /usr/local/bin/valheim-* \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
@@ -81,4 +84,4 @@ ENV TZ=Etc/UTC
 VOLUME ["/config", "/opt/valheim"]
 EXPOSE 2456-2458/udp
 WORKDIR /
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+CMD ["/usr/local/sbin/bootstrap"]

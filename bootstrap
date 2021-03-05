@@ -1,0 +1,32 @@
+#!/bin/bash
+# Bootstraps supervisor config
+
+# Include defaults
+. /usr/local/etc/valheim/defaults
+. /usr/local/etc/valheim/common
+
+
+main() {
+    setup_supervisor_http_server
+    exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+}
+
+
+# Enable/disable supervisor http server
+setup_supervisor_http_server() {
+    rm -f "$supervisor_http_server_conf"
+    if [ "$SUPERVISOR_HTTP" = true ]; then
+        if [ -n "$SUPERVISOR_HTTP_PASS" ]; then
+            cat > "$supervisor_http_server_conf" <<EOF
+[inet_http_server]
+port = :9001
+username = $SUPERVISOR_HTTP_USER
+password = $SUPERVISOR_HTTP_PASS
+EOF
+        else
+            error "SUPERVISOR_HTTP enabled but SUPERVISOR_HTTP_PASS is empty - ignoring request to run supervisor http server"
+        fi
+    fi
+}
+
+main

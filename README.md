@@ -105,6 +105,9 @@ For more deployment options see the [Deployment section](#deployment).
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
+| `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server on port `:9001` |
+| `SUPERVISOR_HTTP_USER` | `admin` | Supervisor http server username |
+| `SUPERVISOR_HTTP_PASS` |  | Supervisor http server password. http server will not be started if password is not set! |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
@@ -233,7 +236,7 @@ CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and A
 
 
 # Updates
-By default the container will check for Valheim server updates every 15 minutes.
+By default the container will check for Valheim server updates every 15 minutes if no players are currently connected to the server.
 If an update is found it is downloaded and the server restarted.
 This update schedule can be changed using the `UPDATE_CRON` environment variable.
 
