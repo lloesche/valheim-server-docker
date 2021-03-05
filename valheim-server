@@ -145,8 +145,8 @@ shutdown() {
         debug "Waiting for Valheim Server with PID $valheim_server_pid to shutdown"
         sleep 6
     done
-    info "Shutdown complete"
     post_server_shutdown_hook
+    info "Shutdown complete"
     exit
 }
 
