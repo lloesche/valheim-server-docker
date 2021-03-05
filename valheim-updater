@@ -150,7 +150,7 @@ post_hook() {
         info "Running post restart hook: $POST_RESTART_HOOK"
         eval "$POST_RESTART_HOOK"
     elif [ "$mode" = start ] && [ -n "$POST_START_HOOK" ]; then
-        info "Running post restart hook: $POST_START_HOOK"
+        info "Running post start hook: $POST_START_HOOK"
         eval "$POST_START_HOOK"
     fi
 }
