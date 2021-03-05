@@ -31,6 +31,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 	* [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
 * [Admin Commands](#admin-commands)
 * [Supervisor](#supervisor)
+  * [Supervisor API](#supervisor-api)
 * [ValheimPlus](#valheimplus)
 	* [Updates](#updates-1)
 	* [Configuration](#configuration)
@@ -330,6 +331,9 @@ The default `SUPERVISOR_HTTP_USER` is `admin` but can be changed to anything els
 ![Supervisor](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/supervisor.png "Supervisor")
 
 Since log files are written to stdout/stderr they can not be viewed from within this interface. This is mainly useful for manual service restarts and health checking.
+
+## Supervisor API
+If Supervisor's http server is enabled it also provides an XML-RPC API at `/RPC2`. Details can be found in [the official documentation](http://supervisord.org/api.html).
 
 
 # ValheimPlus
