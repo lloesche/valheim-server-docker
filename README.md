@@ -5,6 +5,43 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 
 [![Docker Badge](https://img.shields.io/docker/pulls/lloesche/valheim-server.svg)](https://hub.docker.com/r/lloesche/valheim-server)
 
+
+# Table of contents
+<!-- vim-markdown-toc GFM -->
+
+* [Basic Docker Usage](#basic-docker-usage)
+* [Environment Variables](#environment-variables)
+	* [Event hooks](#event-hooks)
+		* [Event hook examples](#event-hook-examples)
+			* [Install extra packages](#install-extra-packages)
+			* [Copy backups to another location](#copy-backups-to-another-location)
+			* [Delay restarts by 1 minute and notify on Discord](#delay-restarts-by-1-minute-and-notify-on-discord)
+	* [ValheimPlus config from Environment Variables](#valheimplus-config-from-environment-variables)
+* [System requirements](#system-requirements)
+* [Deployment](#deployment)
+	* [Deploying with Docker and systemd](#deploying-with-docker-and-systemd)
+	* [Deploying with docker-compose](#deploying-with-docker-compose)
+	* [Deploying to Kubernetes](#deploying-to-kubernetes)
+	* [Deploying to AWS ECS](#deploying-to-aws-ecs)
+* [Updates](#updates)
+* [Backups](#backups)
+* [Finding Your Server](#finding-your-server)
+	* [In-game](#in-game)
+	* [Steam Server Browser](#steam-server-browser)
+	* [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
+* [Admin Commands](#admin-commands)
+* [ValheimPlus](#valheimplus)
+	* [Updates](#updates-1)
+	* [Configuration](#configuration)
+		* [Server data rate](#server-data-rate)
+		* [Disable server password](#disable-server-password)
+* [Synology Help](#synology-help)
+	* [First install](#first-install)
+	* [Updating the container image to the latest version](#updating-the-container-image-to-the-latest-version)
+
+<!-- vim-markdown-toc -->
+
+
 # Basic Docker Usage
 
 The name of the Docker image is `lloesche/valheim-server`.
@@ -90,6 +127,29 @@ The following environment variables can be populated to run commands whenever sp
 | `PRE_SERVER_RUN_HOOK` |  | Command to be executed before the server is started. Server startup is blocked until this command returns. |
 | `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered after 29 seconds. |
 
+### Event hook examples
+#### Install extra packages
+```
+POST_BOOTSTRAP_HOOK="apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install awscli"
+```
+
+#### Copy backups to another location
+After a backup ZIP has been created the command specified by `$POST_BACKUP_HOOK` will be executed if set to a non-zero string.
+Within that command the string `@BACKUP_FILE@` will be replaced by the full path to the just created ZIP file.
+
+```
+-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa \
+-v $HOME/.ssh/known_hosts:/root/.ssh/known_hosts \
+-e POST_BACKUP_HOOK='timeout 300 scp @BACKUP_FILE@ myself@example.com:~/backups/$(basename @BACKUP_FILE@)'
+```
+
+#### Delay restarts by 1 minute and notify on Discord
+```
+DISCORD_WEBHOOK="https://discord.com/api/webhooks/8171522530..."
+DISCORD_MESSAGE="Restarting Valheim server in one minute!"
+PRE_RESTART_HOOK='curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$DISCORD_MESSAGE\"}" "$DISCORD_WEBHOOK" && sleep 60'
+```
+
 
 ## ValheimPlus config from Environment Variables
 ValheimPlus config can be specified in environment variables using the syntax `VPCFG_<section>_<variable>=<value>`.
@@ -121,7 +181,7 @@ This holds especially true the more players are connected to the system.
 # Deployment
 
 ## Deploying with Docker and systemd
-Create an optional config file `/etc/sysconfig/valheim-server`
+Create a config file `/etc/sysconfig/valheim-server`
 ```
 SERVER_NAME="My Server"
 SERVER_PORT=2456
@@ -137,6 +197,21 @@ $ sudo curl -o /etc/systemd/system/valheim.service https://raw.githubusercontent
 $ sudo systemctl daemon-reload
 $ sudo systemctl enable valheim.service
 $ sudo systemctl start valheim.service
+```
+
+## Deploying with docker-compose
+Copy'paste the following into your shell
+```
+mkdir -p $HOME/valheim/config $HOME/valheim/data
+cd $HOME/valheim/
+cat > $HOME/valheim/valheim.env << EOF
+SERVER_NAME="My Server"
+WORLD_NAME=Dedicated
+SERVER_PASS=secret
+SERVER_PUBLIC=true
+EOF
+curl -o $HOME/valheim/docker-compose.yaml https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/docker-compose.yaml
+docker-compose up
 ```
 
 ## Deploying to Kubernetes
@@ -175,18 +250,7 @@ By default 3 days worth of backups will be kept. A different number can be confi
 Beware that backups are performed while the server is running. As such files might be in an open state when the backup runs.
 However the `worlds/` directory also contains a `.db.old` file for each world which should always be closed and in a consistent state.
 
-## Post backup hook
-After a backup ZIP has been created the command specified by `$POST_BACKUP_HOOK` will be executed if set to a non-zero string.
-Within that command the string `@BACKUP_FILE@` will be replaced by the full path to the just created ZIP file.
-
-### Example
-```
--v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa \
--v $HOME/.ssh/known_hosts:/root/.ssh/known_hosts \
--e POST_BACKUP_HOOK='timeout 300 scp @BACKUP_FILE@ myself@example.com:~/backups/$(basename @BACKUP_FILE@)'
-```
-
-If the post backup hook requires additional packages like e.g. `awscli` the `POST_BOOTSTRAP_HOOK` environment variable could be used to install those.
+See [Copy backups to another location](#copy-backups-to-another-location) for an example of how to copy backups offsite.
 
 
 # Finding Your Server

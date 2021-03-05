@@ -2,10 +2,10 @@
 Description=Valheim Server
 After=docker.service
 Requires=docker.service
+ConditionPathExists=/etc/sysconfig/valheim-server
 
 [Service]
 TimeoutStartSec=0
-EnvironmentFile=-/etc/sysconfig/valheim-server
 ExecStartPre=-/usr/bin/docker stop %n
 ExecStartPre=-/usr/bin/docker rm %n
 ExecStartPre=/usr/bin/docker pull lloesche/valheim-server
@@ -15,11 +15,7 @@ ExecStart=/usr/bin/docker run \
           -v /etc/valheim:/config:Z \
           -v /opt/valheim:/opt/valheim:Z \
           -p 2456-2458:2456-2458/udp \
-          -e SERVER_NAME \
-          -e SERVER_PORT \
-          -e WORLD_NAME \
-          -e SERVER_PASS \
-          -e SERVER_PUBLIC \
+          --env-file /etc/sysconfig/valheim-server \
           lloesche/valheim-server
 ExecStop=/usr/bin/docker stop %n
 Restart=always
