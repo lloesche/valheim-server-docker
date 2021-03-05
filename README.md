@@ -5,6 +5,39 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 
 [![Docker Badge](https://img.shields.io/docker/pulls/lloesche/valheim-server.svg)](https://hub.docker.com/r/lloesche/valheim-server)
 
+
+# Table of contents
+* [Basic Docker Usage](#basic-docker-usage)
+* [copy existing world](#copy-existing-world)
+* [Environment Variables](#environment-variables)
+    * [Event hooks](#event-hooks)
+        * [Event hook examples](#event-hook-examples)
+            * [Install extra packages](#install-extra-packages)
+            * [Copy backups to another location](#copy-backups-to-another-location)
+            * [Delay restarts by 1 minute and notify on Discord](#delay-restarts-by-1-minute-and-notify-on-discord)
+    * [ValheimPlus config from Environment Variables](#valheimplus-config-from-environment-variables)
+* [System requirements](#system-requirements)
+* [Deployment](#deployment)
+    * [Deploying with Docker and systemd](#deploying-with-docker-and-systemd)
+    * [Deploying to Kubernetes](#deploying-to-kubernetes)
+    * [Deploying to AWS ECS](#deploying-to-aws-ecs)
+* [Updates](#updates)
+* [Backups](#backups)
+* [Finding Your Server](#finding-your-server)
+    * [In-game](#in-game)
+    * [Steam Server Browser](#steam-server-browser)
+    * [Steam Server Favorites & LAN Play](#steam-server-favorites-&-lan-play)
+* [Admin Commands](#admin-commands)
+* [ValheimPlus](#valheimplus)
+    * [Updates](#updates)
+    * [Configuration](#configuration)
+        * [Server data rate](#server-data-rate)
+        * [Disable server password](#disable-server-password)
+* [Synology Help](#synology-help)
+    * [First install](#first-install)
+    * [Updating the container image to the latest version](#updating-the-container-image-to-the-latest-version)
+
+
 # Basic Docker Usage
 
 The name of the Docker image is `lloesche/valheim-server`.
