@@ -48,12 +48,12 @@ update() {
     if grep '^[*>]' "$logfile" > /dev/null 2>&1; then
         info "Valheim Server was updated - restarting"
         check_valheim_plus updated
-        write_restart_file
+        write_restart_file updated
     else
         info "Valheim Server is already the latest version"
         check_valheim_plus uptodate
         if [ "$just_started" = true ]; then
-            write_restart_file
+            write_restart_file just_started
         fi
     fi
     just_started=false
@@ -98,7 +98,13 @@ check_server_restart() {
         rm -f "$valheim_restartfile"
 
         case "$mode" in
-                start|restart)
+                start)
+                    if server_is_running; then
+                        debug "Valheim server is already running - no need to start it"
+                        return
+                    fi
+                    ;;
+                restart)
                     ;;
                 *)
                     mode=restart
@@ -113,7 +119,7 @@ check_server_restart() {
 
 is_idle() {
     if [ "$UPDATE_IF_IDLE" = true ]; then
-        if [ "$just_started" = true ]; then
+        if [ "$just_started" = true ] && ! server_is_running; then
             debug "Valheim updater was just started - skipping connected players check"
             return 0
         fi
@@ -180,6 +186,7 @@ update_now() {
 
 
 shutdown() {
+    debug "Received signal to shut down valheim-updater"
     clear_lock "$pidfile"
     run=false
 }

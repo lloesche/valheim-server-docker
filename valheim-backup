@@ -94,6 +94,7 @@ backup_now() {
 
 
 shutdown() {
+    debug "Received signal to shut down valheim-backup"
     clear_lock "$pidfile"
     run=false
 }

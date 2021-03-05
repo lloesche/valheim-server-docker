@@ -31,6 +31,9 @@ valheim_server_pidfile=/var/run/valheim-server.pid
 valheim_updater_pidfile=/var/run/valheim-updater.pid
 valheim_backup_pidfile=/var/run/valheim-backup.pid
 
+# Supervisor config files
+supervisor_http_server_conf=/etc/supervisor/conf.d/http_server.conf
+
 # log levels
 debug=50
 info=40
@@ -101,6 +104,11 @@ server_is_idle() {
 }
 
 
+server_is_running() {
+    test "$(supervisorctl status valheim-server | awk '{print $2}')" = RUNNING
+}
+
+
 check_lock() {
     local pidfile
     local predecessor_pid
@@ -166,7 +174,9 @@ write_valheim_plus_config() {
 
 write_restart_file() {
     local mode
-    if [ "$just_started" = true ]; then
+    local reason
+    reason=$1
+    if [ "$just_started" = true ] && [ "$reason" = just_started ]; then
         mode="start"
     else
         mode="restart"

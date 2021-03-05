@@ -30,6 +30,8 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 	* [Steam Server Browser](#steam-server-browser)
 	* [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
 * [Admin Commands](#admin-commands)
+* [Supervisor](#supervisor)
+  * [Supervisor API](#supervisor-api)
 * [ValheimPlus](#valheimplus)
 	* [Updates](#updates-1)
 	* [Configuration](#configuration)
@@ -105,6 +107,9 @@ For more deployment options see the [Deployment section](#deployment).
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
+| `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server on port `:9001` |
+| `SUPERVISOR_HTTP_USER` | `admin` | Supervisor http server username |
+| `SUPERVISOR_HTTP_PASS` |  | Supervisor http server password. http server will not be started if password is not set! |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
@@ -233,7 +238,7 @@ CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and A
 
 
 # Updates
-By default the container will check for Valheim server updates every 15 minutes.
+By default the container will check for Valheim server updates every 15 minutes if no players are currently connected to the server.
 If an update is found it is downloaded and the server restarted.
 This update schedule can be changed using the `UPDATE_CRON` environment variable.
 
@@ -314,6 +319,21 @@ or in the server logs when a user connects.
 
 Administrators can press ***F5*** to open the in-game console and use commands like `ban` and `kick`.
 ![Kick a user](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin3.png "Kick a user")
+
+
+# Supervisor
+This container uses a process supervisor aptly named [`supervisor`](http://supervisord.org/).
+Within the container processes can be started and restarted using the command `supervisorctl`. For instance `supervisorctl restart valheim-server` would restart the server.
+
+Supervisor provides a very simple http interface which can be optionally turned on by supplying `SUPERVISOR_HTTP=true` and a password in `SUPERVISOR_HTTP_PASS`.
+The default `SUPERVISOR_HTTP_USER` is `admin` but can be changed to anything else. Once activated the http server will listen on tcp port `9001`.
+
+![Supervisor](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/supervisor.png "Supervisor")
+
+Since log files are written to stdout/stderr they can not be viewed from within this interface. This is mainly useful for manual service restarts and health checking.
+
+## Supervisor API
+If Supervisor's http server is enabled it also provides an XML-RPC API at `/RPC2`. Details can be found in [the official documentation](http://supervisord.org/api.html).
 
 
 # ValheimPlus

@@ -121,18 +121,19 @@ post_server_run_hook() {
 
 
 shutdown() {
+    debug "Received signal to shut down valheim-server"
     if [ $valheim_server_pid -eq -1 ]; then
         debug "Valheim server is not running yet - aborting startup"
         exit
     fi
     pre_server_shutdown_hook
-    info "Shutting down Valheim Server with PID $valheim_server_pid"
+    info "Shutting down Valheim server with PID $valheim_server_pid"
     kill -INT $valheim_server_pid
     shutdown_timeout=$(($(date +%s)+timeout))
     while [ -d "/proc/$valheim_server_pid" ]; do
         if [ "$(date +%s)" -gt $shutdown_timeout ]; then
             shutdown_timeout=$(($(date +%s)+timeout))
-            warn "Timeout while waiting for server to shutdown - sending SIG$kill_signal to PID $valheim_server_pid"
+            warn "Timeout while waiting for server to shut down - sending SIG$kill_signal to PID $valheim_server_pid"
             kill -$kill_signal $valheim_server_pid
             case "$kill_signal" in
                 INT)
@@ -142,7 +143,7 @@ shutdown() {
                     kill_signal=KILL
             esac
         fi
-        debug "Waiting for Valheim Server with PID $valheim_server_pid to shutdown"
+        debug "Waiting for Valheim Server with PID $valheim_server_pid to shut down"
         sleep 6
     done
     post_server_shutdown_hook
