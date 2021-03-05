@@ -90,6 +90,26 @@ The following environment variables can be populated to run commands whenever sp
 | `PRE_SERVER_RUN_HOOK` |  | Command to be executed before the server is started. Server startup is blocked until this command returns. |
 | `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered after 29 seconds. |
 
+### Event hook examples
+#### Notify about restarts on Discord and delay restart by 1 minute
+```
+-e DISCORD_WEBHOOK="https://discord.com/api/webhooks/8171522530..." \
+-e DISCORD_MESSAGE="Restarting Valheim server in one minute!" \
+-e PRE_RESTART_HOOK='curl  -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$DISCORD_MESSAGE\"}" "$DISCORD_WEBHOOK" && sleep 60' \
+```
+
+#### Copy backups to another location
+After a backup ZIP has been created the command specified by `$POST_BACKUP_HOOK` will be executed if set to a non-zero string.
+Within that command the string `@BACKUP_FILE@` will be replaced by the full path to the just created ZIP file.
+
+```
+-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa \
+-v $HOME/.ssh/known_hosts:/root/.ssh/known_hosts \
+-e POST_BACKUP_HOOK='timeout 300 scp @BACKUP_FILE@ myself@example.com:~/backups/$(basename @BACKUP_FILE@)' \
+```
+
+If the post backup hook requires additional packages like e.g. `awscli` the `POST_BOOTSTRAP_HOOK` environment variable could be used to install those.
+
 
 ## ValheimPlus config from Environment Variables
 ValheimPlus config can be specified in environment variables using the syntax `VPCFG_<section>_<variable>=<value>`.
@@ -175,18 +195,7 @@ By default 3 days worth of backups will be kept. A different number can be confi
 Beware that backups are performed while the server is running. As such files might be in an open state when the backup runs.
 However the `worlds/` directory also contains a `.db.old` file for each world which should always be closed and in a consistent state.
 
-## Post backup hook
-After a backup ZIP has been created the command specified by `$POST_BACKUP_HOOK` will be executed if set to a non-zero string.
-Within that command the string `@BACKUP_FILE@` will be replaced by the full path to the just created ZIP file.
-
-### Example
-```
--v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa \
--v $HOME/.ssh/known_hosts:/root/.ssh/known_hosts \
--e POST_BACKUP_HOOK='timeout 300 scp @BACKUP_FILE@ myself@example.com:~/backups/$(basename @BACKUP_FILE@)'
-```
-
-If the post backup hook requires additional packages like e.g. `awscli` the `POST_BOOTSTRAP_HOOK` environment variable could be used to install those.
+See [Copy backups to another location](#copy-backups-to-another-location) for an example of how to copy backups offsite.
 
 
 # Finding Your Server
