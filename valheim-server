@@ -145,6 +145,8 @@ shutdown() {
         debug "Waiting for Valheim Server with PID $valheim_server_pid to shutdown"
         sleep 6
     done
+    info "Shutdown complete"
+    post_server_shutdown_hook
     exit
 }
 
@@ -153,6 +155,14 @@ pre_server_shutdown_hook() {
     if [ -n "$PRE_SERVER_SHUTDOWN_HOOK" ]; then
         info "Running pre server shutdown hook: $PRE_SERVER_SHUTDOWN_HOOK"
         eval "$PRE_SERVER_SHUTDOWN_HOOK"
+    fi
+}
+
+
+post_server_shutdown_hook() {
+    if [ -n "$POST_SERVER_SHUTDOWN_HOOK" ]; then
+        info "Running post server shutdown hook: $POST_SERVER_SHUTDOWN_HOOK"
+        eval "$POST_SERVER_SHUTDOWN_HOOK"
     fi
 }
 
