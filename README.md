@@ -144,7 +144,7 @@ This holds especially true the more players are connected to the system.
 # Deployment
 
 ## Deploying with Docker and systemd
-Create an optional config file `/etc/sysconfig/valheim-server`
+Create a config file `/etc/sysconfig/valheim-server`
 ```
 SERVER_NAME="My Server"
 SERVER_PORT=2456
