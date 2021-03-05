@@ -325,7 +325,7 @@ This container uses a process supervisor aptly named [`supervisor`](http://super
 Within the container processes can be started and restarted using the command `supervisorctl`. For instance `supervisorctl restart valheim-server` would restart the server.
 
 Supervisor provides a very simple http interface which can be optionally turned on by supplying `SUPERVISOR_HTTP=true` and a password in `SUPERVISOR_HTTP_PASS`.
-The default `SUPERVISOR_HTTP_USER` is `admin` but can be changed to anything else.
+The default `SUPERVISOR_HTTP_USER` is `admin` but can be changed to anything else. Once activated the http server will listen on tcp port `9001`.
 
 ![Supervisor](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/supervisor.png "Supervisor")
 
