@@ -30,6 +30,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 	* [Steam Server Browser](#steam-server-browser)
 	* [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
 * [Admin Commands](#admin-commands)
+* [Supervisor](#supervisor)
 * [ValheimPlus](#valheimplus)
 	* [Updates](#updates-1)
 	* [Configuration](#configuration)
@@ -317,6 +318,18 @@ or in the server logs when a user connects.
 
 Administrators can press ***F5*** to open the in-game console and use commands like `ban` and `kick`.
 ![Kick a user](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin3.png "Kick a user")
+
+
+# Supervisor
+This container uses a process supervisor aptly named [`supervisor`](http://supervisord.org/).
+Within the container processes can be started and restarted using the command `supervisorctl`. For instance `supervisorctl restart valheim-server` would restart the server.
+
+Supervisor provides a very simple http interface which can be optionally turned on by supplying `SUPERVISOR_HTTP=true` and a password in `SUPERVISOR_HTTP_PASS`.
+The default `SUPERVISOR_HTTP_USER` is `admin` but can be changed to anything else.
+
+![Supervisor](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/supervisor.png "Supervisor")
+
+Since log files are written to stdout/stderr they can not be viewed from within this interface. This is mainly useful for manual service restarts and health checking.
 
 
 # ValheimPlus
