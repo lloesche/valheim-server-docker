@@ -62,6 +62,7 @@ $ mkdir -p $HOME/valheim-server/config/worlds $HOME/valheim-server/data
 # copy existing world
 $ docker run -d \
     --name valheim-server \
+    --cap-add=sys_nice \
     -p 2456-2458:2456-2458/udp \
     -v $HOME/valheim-server/config:/config \
     -v $HOME/valheim-server/data:/opt/valheim \

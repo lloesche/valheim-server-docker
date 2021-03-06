@@ -12,6 +12,7 @@ ExecStartPre=/usr/bin/docker pull lloesche/valheim-server
 ExecStart=/usr/bin/docker run \
           --name %n \
           --rm \
+          --cap-add=sys_nice \
           -v /etc/valheim:/config:Z \
           -v /opt/valheim:/opt/valheim:Z \
           -p 2456-2458:2456-2458/udp \
