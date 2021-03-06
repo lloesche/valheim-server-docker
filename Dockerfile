@@ -1,4 +1,4 @@
-FROM debian:stable as build-env
+FROM debian:stable-slim as build-env
 ARG TESTS
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils
@@ -19,7 +19,7 @@ COPY common /usr/local/etc/valheim/
 COPY contrib/* /usr/local/share/valheim/contrib/
 RUN if [ "${TESTS:-true}" = true ]; then shellcheck -a -x -s bash -e SC2034 /usr/local/sbin/bootstrap /usr/local/bin/valheim-* /usr/local/share/valheim/contrib/*.sh; fi
 
-FROM debian:stable
+FROM debian:stable-slim
 COPY --from=build-env /build/busybox/_install/bin/busybox /usr/local/bin/busybox
 COPY --from=build-env /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz /tmp/vpenvconf.tar.gz
 COPY bootstrap /usr/local/sbin/
@@ -56,10 +56,27 @@ RUN dpkg --add-architecture i386 \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/syslogd \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/crond \
+    && ln -s /usr/local/bin/busybox /usr/local/sbin/mkpasswd \
     && ln -s /usr/local/bin/busybox /usr/local/bin/crontab \
     && ln -s /usr/local/bin/busybox /usr/local/bin/vi \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/patch \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/unix2dos \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/dos2unix \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/makemime \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/xxd \
     && ln -s /usr/local/bin/busybox /usr/local/bin/wget \
     && ln -s /usr/local/bin/busybox /usr/local/bin/less \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/lsof \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/httpd \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/ssl_client \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/ip \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/ipcalc \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/ping \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/ping6 \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/iostat \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/setuidgid \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/ftpget \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/ftpput \
     && rm -f /bin/sh \
     && ln -s /bin/bash /bin/sh \
     && cd / \
