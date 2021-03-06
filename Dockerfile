@@ -83,5 +83,6 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 ENV TZ=Etc/UTC
 VOLUME ["/config", "/opt/valheim"]
 EXPOSE 2456-2458/udp
+EXPOSE 9001/tcp
 WORKDIR /
 CMD ["/usr/local/sbin/bootstrap"]
