@@ -4,10 +4,11 @@ services:
   valheim: 
     image: lloesche/valheim-server
     volumes: 
-      - $HOME/valheim/config:/config
-      - $HOME/valheim/data:/opt/valheim
+      - $HOME/valheim-server/config:/config
+      - $HOME/valheim-server/data:/opt/valheim
     ports: 
-      - "2456-2458:2456-2458/udp" 
+      - "2456-2458:2456-2458/udp"
+      - "9001/tcp"
     env_file:
-      - $HOME/valheim/valheim.env
+      - $HOME/valheim-server/valheim.env
     restart: always

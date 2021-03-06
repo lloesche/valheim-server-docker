@@ -209,15 +209,15 @@ $ sudo systemctl start valheim.service
 ## Deploying with docker-compose
 Copy'paste the following into your shell
 ```
-mkdir -p $HOME/valheim/config $HOME/valheim/data
-cd $HOME/valheim/
-cat > $HOME/valheim/valheim.env << EOF
+mkdir -p $HOME/valheim-server/config $HOME/valheim-server/data
+cd $HOME/valheim-server/
+cat > $HOME/valheim-server/valheim.env << EOF
 SERVER_NAME="My Server"
 WORLD_NAME=Dedicated
 SERVER_PASS=secret
 SERVER_PUBLIC=true
 EOF
-curl -o $HOME/valheim/docker-compose.yaml https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/docker-compose.yaml
+curl -o $HOME/valheim-server/docker-compose.yaml https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/docker-compose.yaml
 docker-compose up
 ```
 
