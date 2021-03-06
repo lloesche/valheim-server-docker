@@ -87,6 +87,12 @@ For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-
 
 For more deployment options see the [Deployment section](#deployment). 
 
+Granting `CAP_SYS_NICE` to the container is optional. It allows the Steam networking library that Valheim uses to give itself more CPU cycles.
+Without it you will see a message `Warning: failed to set thread priority` in the startup log. On highly loaded systems it also helps with
+```
+src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp (1276) : Assertion Failed: SDR service thread gave up on lock after waiting 60ms. This directly adds to delay of processing of network packets!
+```
+
 
 # Environment Variables
 | Name | Default | Purpose |
