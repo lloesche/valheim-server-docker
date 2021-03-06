@@ -26,12 +26,13 @@ check_for_update() {
     local download_url
     local remote_updated_at
     local remote_size
-    if ! api_response=$(curl -sL https://api.github.com/repos/valheimPlus/ValheimPlus/releases/latest | jq -r ".assets[] | select(.name == \"$vp_zipfile\")"); then
+    if ! api_response=$(curl -sfSL https://api.github.com/repos/valheimPlus/ValheimPlus/releases/latest); then
         fatal "Error: could not retrieve ValheimPlus release info from Github API"
     fi
-    download_url=$(jq -r  '.browser_download_url' <<< "${api_response}" )
-    remote_updated_at=$(jq -r  '.updated_at' <<< "${api_response}" )
-    remote_size=$(jq -r  '.size' <<< "${api_response}")
+    api_response=$(jq -r ".assets[] | select(.name == \"$vp_zipfile\")" <<< "$api_response" )
+    download_url=$(jq -r  ".browser_download_url" <<< "$api_response" )
+    remote_updated_at=$(jq -r  ".updated_at" <<< "$api_response" )
+    remote_size=$(jq -r  ".size" <<< "$api_response")
 
     if [ -f "$vp_zipfile" ] && [ -f "$vp_zipfile.updated_at" ]; then
         local_updated_at=$(< "$vp_zipfile.updated_at")
