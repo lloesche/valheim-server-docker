@@ -62,6 +62,7 @@ $ mkdir -p $HOME/valheim-server/config/worlds $HOME/valheim-server/data
 # copy existing world
 $ docker run -d \
     --name valheim-server \
+    --cap-add=sys_nice \
     -p 2456-2458:2456-2458/udp \
     -v $HOME/valheim-server/config:/config \
     -v $HOME/valheim-server/data:/opt/valheim \
@@ -85,6 +86,12 @@ There is more info in section [Finding Your Server](#finding-your-server).
 For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
 
 For more deployment options see the [Deployment section](#deployment). 
+
+Granting `CAP_SYS_NICE` to the container is optional. It allows the Steam networking library that Valheim uses to give itself more CPU cycles.
+Without it you will see a message `Warning: failed to set thread priority` in the startup log. On highly loaded systems it also helps with
+```
+src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp (1276) : Assertion Failed: SDR service thread gave up on lock after waiting 60ms. This directly adds to delay of processing of network packets!
+```
 
 
 # Environment Variables
@@ -326,7 +333,7 @@ This container uses a process supervisor aptly named [`supervisor`](http://super
 Within the container processes can be started and restarted using the command `supervisorctl`. For instance `supervisorctl restart valheim-server` would restart the server.
 
 Supervisor provides a very simple http interface which can be optionally turned on by supplying `SUPERVISOR_HTTP=true` and a password in `SUPERVISOR_HTTP_PASS`.
-The default `SUPERVISOR_HTTP_USER` is `admin` but can be changed to anything else. Once activated the http server will listen on tcp port `9001`.
+The default `SUPERVISOR_HTTP_USER` is `admin` but can be changed to anything else. Once activated the http server will listen on tcp port `9001` which has to be exposed (`-p 9001:9001/tcp`).
 
 ![Supervisor](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/supervisor.png "Supervisor")
 
