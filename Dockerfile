@@ -19,16 +19,22 @@ COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
 COPY contrib/* /usr/local/share/valheim/contrib/
 RUN if [ "${TESTS:-true}" = true ]; then shellcheck -a -x -s bash -e SC2034 /usr/local/sbin/bootstrap /usr/local/bin/valheim-* /usr/local/share/valheim/contrib/*.sh; fi
+RUN mkdir -p \
+        /artifacts/bin \
+        /artifacts/tmp
+WORKDIR /artifacts
+RUN mv /build/busybox/_install/bin/busybox ./bin/busybox
+RUN mv /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz ./tmp/vpenvconf.tar.gz
+COPY bootstrap ./sbin/
+COPY valheim-* ./bin/
+COPY defaults ./etc/valheim/
+COPY common ./etc/valheim/
+COPY contrib/* ./share/valheim/contrib/
+
 
 FROM debian:stable-slim
 ENV DEBIAN_FRONTEND=noninteractive
-COPY --from=build-env /build/busybox/_install/bin/busybox /usr/local/bin/busybox
-COPY --from=build-env /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz /tmp/vpenvconf.tar.gz
-COPY bootstrap /usr/local/sbin/
-COPY valheim-* /usr/local/bin/
-COPY defaults /usr/local/etc/valheim/
-COPY common /usr/local/etc/valheim/
-COPY contrib/* /usr/local/share/valheim/contrib/
+COPY --from=build-env /artifacts/ /usr/local/
 RUN dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get -y install --no-install-recommends apt-utils \
@@ -82,7 +88,7 @@ RUN dpkg --add-architecture i386 \
     && rm -f /bin/sh \
     && ln -s /bin/bash /bin/sh \
     && cd / \
-    && tar xzvf /tmp/vpenvconf.tar.gz \
+    && tar xzvf /usr/local/tmp/vpenvconf.tar.gz \
     && locale-gen \
     && apt-get clean \
     && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
@@ -97,7 +103,7 @@ RUN dpkg --add-architecture i386 \
         /usr/local/bin/valheim-* \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/local/tmp
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 EXPOSE 2456-2458/udp
