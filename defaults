@@ -18,7 +18,7 @@ SERVER_PUBLIC=${SERVER_PUBLIC:-1}
 STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 
 # Flag to wipe all downloaded server data on startup (config is untouched)
-START_FRESH=${START_FRESH:-false}
+DEBUG_START_FRESH=${DEBUG_START_FRESH:-false}
 
 # How often we check for Valheim server updates
 # This used to be 900 (15 min) and is here for backwards
