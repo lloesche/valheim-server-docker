@@ -13,6 +13,7 @@ if [ -n "$PRE_BOOTSTRAP_HOOK" ]; then
     eval "$PRE_BOOTSTRAP_HOOK"
 fi
 
+update_server_status bootstrapping
 
 # Create paths
 mkdir -p "$valheim_download_path"
