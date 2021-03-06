@@ -59,7 +59,6 @@ RUN dpkg --add-architecture i386 \
         jq \
         python3-minimal \
         python3-pkg-resources \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/syslogd \
