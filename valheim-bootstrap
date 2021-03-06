@@ -8,12 +8,23 @@
 . /usr/local/etc/valheim/common
 
 
+# Update server status before anything else
+update_server_status bootstrapping
+
 if [ -n "$PRE_BOOTSTRAP_HOOK" ]; then
     info "Running pre bootstrap hook: $PRE_BOOTSTRAP_HOOK"
     eval "$PRE_BOOTSTRAP_HOOK"
 fi
 
-update_server_status bootstrapping
+
+# check if we are supposed to wipe our data directories
+if [ "$START_FRESH" = true ]; then
+    warning "Wiping all data directories (START_FRESH: true)"
+    rm -rf "$valheim_download_path"
+    rm -rf "$valheim_install_path"
+    rm -rf "$vp_download_path"
+    rm -rf "$vp_install_path"
+fi
 
 # Create paths
 mkdir -p "$valheim_download_path"

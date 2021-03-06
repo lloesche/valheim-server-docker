@@ -117,6 +117,7 @@ src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp (1276) 
 | `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server on port `:9001` |
 | `SUPERVISOR_HTTP_USER` | `admin` | Supervisor http server username |
 | `SUPERVISOR_HTTP_PASS` |  | Supervisor http server password. http server will not be started if password is not set! |
+| `START_FRESH` | `false` | If set to `true` will wipe all downloaded/installed server files on startup. Config is untouched. |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
