@@ -38,9 +38,9 @@ COPY --from=build-env /artifacts/ /usr/local/
 COPY supervisord.conf /etc/supervisor/supervisord.conf.valheim
 RUN dpkg --add-architecture i386 \
     && apt-get update \
-    && apt-get -y install --no-install-recommends apt-utils \
+    && apt-get -y --no-install-recommends install apt-utils \
     && apt-get -y dist-upgrade \
-    && apt-get -y install --no-install-recommends \
+    && apt-get -y --no-install-recommends install \
         libc6-dev \
         lib32gcc1 \
         libsdl2-2.0-0 \
