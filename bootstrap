@@ -7,9 +7,22 @@
 
 
 main() {
-    export TZ
+    configure_timezone
     setup_supervisor_http_server
     exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+}
+
+
+# Configure timezone
+configure_timezone() {
+    export TZ
+    if [ -f "/usr/share/zoneinfo/$TZ" ]; then
+        ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime
+        echo "$TZ" > /etc/timezone
+        info "Setting timezone $TZ"
+    else
+        fatal "Unknown timezone $TZ - aborting container start"
+    fi
 }
 
 
