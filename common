@@ -109,6 +109,28 @@ server_is_running() {
 }
 
 
+server_is_listening() {
+    awk -v server_port="$SERVER_PORT" '
+        BEGIN {
+            exit_code = 1
+        }
+        {
+            if ($1 ~ /^[0-9]/) {
+                split($2, local_bind, ":")
+                listening_port = sprintf("%d", "0x" local_bind[2])
+                if (listening_port == server_port) {
+                    exit_code = 0
+                    exit
+                }
+            }
+        }
+        END {
+            exit exit_code
+        }
+    ' /proc/net/udp*
+}
+
+
 check_lock() {
     local pidfile
     local predecessor_pid
@@ -185,4 +207,11 @@ write_restart_file() {
         debug "Writing file to $mode Valheim server"
         echo "$mode" > "$valheim_restartfile"
     fi
+}
+
+
+update_server_status() {
+    local status
+    status=$1
+    echo "$status" > "$SERVER_STATUS_FILE"
 }

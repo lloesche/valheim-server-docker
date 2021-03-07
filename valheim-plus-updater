@@ -26,12 +26,13 @@ check_for_update() {
     local download_url
     local remote_updated_at
     local remote_size
-    if ! api_response=$(curl -sL https://api.github.com/repos/valheimPlus/ValheimPlus/releases/latest | jq -r ".assets[] | select(.name == \"$vp_zipfile\")"); then
+    if ! api_response=$(curl -sfSL https://api.github.com/repos/valheimPlus/ValheimPlus/releases/latest); then
         fatal "Error: could not retrieve ValheimPlus release info from Github API"
     fi
-    download_url=$(jq -r  '.browser_download_url' <<< "${api_response}" )
-    remote_updated_at=$(jq -r  '.updated_at' <<< "${api_response}" )
-    remote_size=$(jq -r  '.size' <<< "${api_response}")
+    api_response=$(jq -r ".assets[] | select(.name == \"$vp_zipfile\")" <<< "$api_response" )
+    download_url=$(jq -r  ".browser_download_url" <<< "$api_response" )
+    remote_updated_at=$(jq -r  ".updated_at" <<< "$api_response" )
+    remote_size=$(jq -r  ".size" <<< "$api_response")
 
     if [ -f "$vp_zipfile" ] && [ -f "$vp_zipfile.updated_at" ]; then
         local_updated_at=$(< "$vp_zipfile.updated_at")
@@ -71,20 +72,34 @@ prepare_valheim_plus() {
 
 merge_valheim_plus() {
     debug "Merging Valheim server and ValheimPlus mod"
+    # remove any old ValheimPlus install directories
     rm -rf "$vp_install_path.tmp" "$vp_install_path.old"
+    # create a new install directory where we will stage the new version
     mkdir -p "$vp_install_path.tmp"
+    # rsync all Valheim dedicated server files
     rsync -a --itemize-changes --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$vp_install_path.tmp"
+    # rsync all ValheimPlus mod files on top of the dedicated server files
     rsync -a --itemize-changes "$vp_download_path/extracted/" "$vp_install_path.tmp"
+    # if /config/valheimplus/ does not exist copy the default config from the ZIP archive
     if [ ! -d "$vp_config_path" ] && [ -d "$vp_install_path.tmp/BepInEx/config" ]; then
         cp -a "$vp_install_path.tmp/BepInEx/config" "$vp_config_path"
-        ensure_permissions
+        # generate config from env variables
         write_valheim_plus_config
     fi
+    # always copy the config that came with the latest ZIP archive to valheim_plus.cfg.default
+    if [ -f "$vp_install_path.tmp/BepInEx/config/valheim_plus.cfg" ]; then
+        cp -f "$vp_install_path.tmp/BepInEx/config/valheim_plus.cfg" "$vp_config_path/valheim_plus.cfg.default"
+    fi
+    # ensure config file permissions
+    ensure_permissions
+    # remove the config folder within the server directory and symlink it to /config
     rm -rf "$vp_install_path.tmp/BepInEx/config"
     ln -s "$vp_config_path" "$vp_install_path.tmp/BepInEx/config"
+    # move an existing copy of ValheimPlus to the .old extension
     if [ -d "$vp_install_path" ]; then
         mv -f "$vp_install_path" "$vp_install_path.old"
     fi
+    # move the staging folder to the live folder and signal valheim-updater to restart the server
     mv "$vp_install_path.tmp" "$vp_install_path"
     write_restart_file updated
 }

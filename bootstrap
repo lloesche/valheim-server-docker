@@ -7,9 +7,22 @@
 
 
 main() {
-    export TZ
+    configure_timezone
     setup_supervisor_http_server
     exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+}
+
+
+# Configure timezone
+configure_timezone() {
+    export TZ
+    if [ ! -f "/usr/share/zoneinfo/$TZ" ]; then
+        warn "Unknown timezone $TZ - defaulting to Etc/UTC"
+        TZ="Etc/UTC"
+    fi
+    ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime
+    echo "$TZ" > /etc/timezone
+    info "Setting timezone $TZ"
 }
 
 
@@ -24,6 +37,7 @@ port = :9001
 username = $SUPERVISOR_HTTP_USER
 password = $SUPERVISOR_HTTP_PASS
 EOF
+            chmod 600 "$supervisor_http_server_conf"
         else
             error "SUPERVISOR_HTTP enabled but SUPERVISOR_HTTP_PASS is empty - ignoring request to run supervisor http server"
         fi

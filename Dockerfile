@@ -35,11 +35,12 @@ COPY contrib/* ./share/valheim/contrib/
 FROM debian:stable-slim
 ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build-env /artifacts/ /usr/local/
+COPY supervisord.conf /etc/supervisor/supervisord.conf.valheim
 RUN dpkg --add-architecture i386 \
     && apt-get update \
-    && apt-get -y install --no-install-recommends apt-utils \
+    && apt-get -y --no-install-recommends install apt-utils \
     && apt-get -y dist-upgrade \
-    && apt-get -y install --no-install-recommends \
+    && apt-get -y --no-install-recommends install \
         libc6-dev \
         lib32gcc1 \
         libsdl2-2.0-0 \
@@ -84,6 +85,9 @@ RUN dpkg --add-architecture i386 \
     && ln -s /usr/local/bin/busybox /usr/local/bin/setuidgid \
     && ln -s /usr/local/bin/busybox /usr/local/bin/ftpget \
     && ln -s /usr/local/bin/busybox /usr/local/bin/ftpput \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/bzip2 \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/xz \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/pstree \
     && rm -f /bin/sh \
     && ln -s /bin/bash /bin/sh \
     && cd / \
@@ -100,10 +104,11 @@ RUN dpkg --add-architecture i386 \
         /opt/steamcmd/linux32/steamerrorreporter \
         /usr/local/sbin/bootstrap \
         /usr/local/bin/valheim-* \
+    && mv -f /etc/supervisor/supervisord.conf.valheim /etc/supervisor/supervisord.conf \
+    && chmod 600 /etc/supervisor/supervisord.conf \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/local/tmp
-COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 EXPOSE 2456-2458/udp
 EXPOSE 9001/tcp

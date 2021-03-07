@@ -8,9 +8,23 @@
 . /usr/local/etc/valheim/common
 
 
+# Update server status before anything else
+update_server_status bootstrapping
+
+
 if [ -n "$PRE_BOOTSTRAP_HOOK" ]; then
     info "Running pre bootstrap hook: $PRE_BOOTSTRAP_HOOK"
     eval "$PRE_BOOTSTRAP_HOOK"
+fi
+
+
+# check if we are supposed to wipe our data directories
+if [ "$DEBUG_START_FRESH" = true ]; then
+    warn "Wiping all data directories (DEBUG_START_FRESH: $DEBUG_START_FRESH)"
+    rm -rf "$valheim_download_path"
+    rm -rf "$valheim_install_path"
+    rm -rf "$vp_download_path"
+    rm -rf "$vp_install_path"
 fi
 
 
@@ -22,16 +36,6 @@ if [ "$VALHEIM_PLUS" = true ]; then
     mkdir -p "$vp_download_path"
     mkdir -p "$vp_install_path"
     write_valheim_plus_config
-fi
-
-
-# Configure timezone
-if [ -f "/usr/share/zoneinfo/$TZ" ]; then
-    info "Setting timezone $TZ"
-    ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime
-    echo "$TZ" > /etc/timezone
-else
-    error "Error: unknown timezone $TZ"
 fi
 
 
@@ -79,6 +83,7 @@ If required we'll download a fresh copy of the server in the new directory struc
 !!! ATTENTION !!!
 EOF
 fi
+
 
 if [ -n "$POST_BOOTSTRAP_HOOK" ]; then
     info "Running post bootstrap hook: $POST_BOOTSTRAP_HOOK"

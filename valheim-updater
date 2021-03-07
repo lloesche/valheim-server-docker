@@ -26,7 +26,7 @@ main() {
             check_server_restart
             next_update=$(($(date +%s)+UPDATE_INTERVAL))
             while [ $run = true ] && [ "$(date +%s)" -lt $next_update ]; do
-                sleep 5
+                sleep 9
             done
         done
     else
@@ -34,6 +34,7 @@ main() {
         check_lock $pidfile
     fi
 }
+
 
 update() {
     local logfile
@@ -43,7 +44,14 @@ update() {
     pre_update_check_hook
     logfile="$(mktemp)"
     info "Downloading/updating/validating Valheim server from Steam"
-    download_valheim
+    if ! download_valheim; then
+        if [ -f "$valheim_download_path/valheim_server.x86_64" ]; then
+            error "Failed to update Valheim server from Steam - however an old version was found - trying to start"
+        else
+            error "Failed to download Valheim server from Steam - retrying later - check your networking and volume access permissions"
+            return
+        fi
+    fi
     rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$valheim_install_path" | tee "$logfile"
     if grep '^[*>]' "$logfile" > /dev/null 2>&1; then
         info "Valheim Server was updated - restarting"
@@ -105,6 +113,9 @@ check_server_restart() {
                     fi
                     ;;
                 restart)
+                    if ! server_is_running; then
+                        mode=start
+                    fi
                     ;;
                 *)
                     mode=restart

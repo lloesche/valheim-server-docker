@@ -17,6 +17,9 @@ SERVER_PUBLIC=${SERVER_PUBLIC:-1}
 # steamcmd.sh arguments
 STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 
+# Flag to wipe all downloaded server data on startup (config is untouched)
+DEBUG_START_FRESH=${DEBUG_START_FRESH:-false}
+
 # How often we check for Valheim server updates
 # This used to be 900 (15 min) and is here for backwards
 # compatibility reasons. We now set it to 10 years by default
@@ -65,6 +68,9 @@ DEFAULT_LOG_FILTER='grep --line-buffered -v -e "^\s*$" -e "^(Filename:"'
 SERVER_LOG_FILTER=${SERVER_LOG_FILTER:-$DEFAULT_LOG_FILTER}
 SERVER_LOG_STDOUT_FILTER=${SERVER_LOG_STDOUT_FILTER:-$SERVER_LOG_FILTER}
 SERVER_LOG_STDERR_FILTER=${SERVER_LOG_STDERR_FILTER:-$SERVER_LOG_FILTER}
+
+# Server status
+SERVER_STATUS_FILE=${SERVER_STATUS_FILE:-/var/run/valheim-server.status}
 
 # Hooks
 PRE_BOOTSTRAP_HOOK=${PRE_BOOTSTRAP_HOOK:-}

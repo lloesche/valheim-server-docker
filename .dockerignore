@@ -1,0 +1,25 @@
+this
+.idea/
+tmp/
+runner.env
+artifacts/
+*~
+*backups
+.cache
+docker-tag
+.tox/
+.*.swp
+*.egg-info
+wheelhouse/
+test/build/*
+PASSED
+FAILED
+test/.vagrant/*
+# Container image specific
+.gitignore
+.git
+.dockerignore
+Dockerfile
+**/__pycache__
+venv*
+.vscode/
