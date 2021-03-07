@@ -32,6 +32,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 * [Admin Commands](#admin-commands)
 * [Supervisor](#supervisor)
   * [Supervisor API](#supervisor-api)
+* [Status web server](#status-web-server)
 * [ValheimPlus](#valheimplus)
 	* [Updates](#updates-1)
 	* [Configuration](#configuration)
@@ -345,6 +346,52 @@ Since log files are written to stdout/stderr they can not be viewed from within 
 
 ## Supervisor API
 If Supervisor's http server is enabled it also provides an XML-RPC API at `/RPC2`. Details can be found in [the official documentation](http://supervisord.org/api.html).
+
+
+# Status web server
+If `STATUS_HTTP` is set to `true` the status web server will be started.
+By default it runs on container port `80` but can be customized using `STATUS_HTTP_PORT`.
+
+A `/status.json` will be updated every 10 seconds.
+
+Whenever Valheim server is not yet running the status will contain an error like
+```
+{
+  "last_status_update": "2021-03-07T21:42:46.307232+00:00",
+  "error": "timeout('timed out')"
+}
+```
+The error is just a string representation of whatever Python exception was thrown when trying to connect to the query port (`2457/udp` by default).
+
+Once the server is running and listening on its UDP ports `/status.json` will contain something like this
+```
+{
+  "last_status_update": "2021-03-07T21:42:16.076662+00:00",
+  "error": null,
+  "server_name": "My Docker based server",
+  "server_type": "d",
+  "platform": "l",
+  "player_count": 1,
+  "password_protected": true,
+  "vac_enabled": false,
+  "port": 2456,
+  "steam_id": 90143789459088380,
+  "keywords": "0.147.3@0.9.4",
+  "game_id": 892970,
+  "players": [
+    {
+      "name": "",
+      "score": 0,
+      "duration": 7.000421047210693
+    }
+  ]
+}
+```
+All the information in `status.json` is fetched from Valheim servers public query port. You will notice that some of the fields like player name or player score currently contain no information. However for completeness the entire query response is left intact.
+
+Within the container `status.json` is written to `STATUS_HTTP_HTDOCS` which by default is `/opt/valheim/htdocs`. It can either be consumed directly or the user can add their own html/css/js to this directory to read the json data and present it in whichever style they prefer. A file named `index.html` will be shown on `/` if it exists.
+
+As mentioned all the information is publicly available on the Valheim server query port. However the option is there to configure a `STATUS_HTTP_CONF` (`/config/httpd.conf` by default) containing [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) to limit access to the status web server by IP/subnet or login/password.
 
 
 # ValheimPlus

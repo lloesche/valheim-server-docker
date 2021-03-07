@@ -121,5 +121,6 @@ RUN dpkg --add-architecture i386 \
 
 EXPOSE 2456-2458/udp
 EXPOSE 9001/tcp
+EXPOSE 80/tcp
 WORKDIR /
 CMD ["/usr/local/sbin/bootstrap"]
