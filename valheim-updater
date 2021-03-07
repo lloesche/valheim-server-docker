@@ -113,6 +113,9 @@ check_server_restart() {
                     fi
                     ;;
                 restart)
+                    if ! server_is_running; then
+                        mode=start
+                    fi
                     ;;
                 *)
                     mode=restart
