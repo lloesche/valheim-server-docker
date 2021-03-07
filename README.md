@@ -117,6 +117,10 @@ src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp (1276) 
 | `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server on port `:9001` |
 | `SUPERVISOR_HTTP_USER` | `admin` | Supervisor http server username |
 | `SUPERVISOR_HTTP_PASS` |  | Supervisor http server password. http server will not be started if password is not set! |
+| `STATUS_HTTP` | `false` | Turn on the status http server on port |
+| `STATUS_HTTP_PORT` | `80` | Status http server tcp port |
+| `STATUS_HTTP_CONF` | `/config/httpd.conf` | Path to the [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) |
+| `STATUS_HTTP_HTDOCS` | `/opt/valheim/htdocs` | Path to the status httpd htdocs where `status.json` is written |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 

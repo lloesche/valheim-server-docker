@@ -3,16 +3,20 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG TESTS
 RUN apt-get update
 RUN apt-get -y install apt-utils
-RUN apt-get -y install build-essential curl python3 python3-pip shellcheck
+RUN apt-get -y install build-essential curl git python3 python3-pip shellcheck
 WORKDIR /build/busybox
-RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2
-RUN tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox
-RUN make defconfig
-RUN make install
+RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2 \
+    && tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox \
+    && make defconfig \
+    && make install
 COPY ./vpenvconf/ /build/vpenvconf/
 WORKDIR /build/vpenvconf
 RUN if [ "${TESTS:-true}" = true ]; then pip3 install tox && tox; fi
 RUN python3 setup.py bdist --format=gztar
+WORKDIR /build
+RUN git clone https://github.com/Yepoleb/python-a2s.git \
+    && cd python-a2s \
+    && python3 setup.py bdist --format=gztar
 COPY bootstrap /usr/local/sbin/
 COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
@@ -25,7 +29,9 @@ RUN mkdir -p \
 WORKDIR /artifacts
 RUN mv /build/busybox/_install/bin/busybox ./bin/busybox
 RUN mv /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz ./tmp/vpenvconf.tar.gz
+RUN mv /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz ./tmp/python-a2s.tar.gz
 COPY bootstrap ./sbin/
+COPY status-updater.py ./bin/
 COPY valheim-* ./bin/
 COPY defaults ./etc/valheim/
 COPY common ./etc/valheim/
@@ -88,10 +94,12 @@ RUN dpkg --add-architecture i386 \
     && ln -s /usr/local/bin/busybox /usr/local/bin/bzip2 \
     && ln -s /usr/local/bin/busybox /usr/local/bin/xz \
     && ln -s /usr/local/bin/busybox /usr/local/bin/pstree \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/killall \
     && rm -f /bin/sh \
     && ln -s /bin/bash /bin/sh \
     && cd / \
     && tar xzvf /usr/local/tmp/vpenvconf.tar.gz \
+    && tar xzvf /usr/local/tmp/python-a2s.tar.gz \
     && locale-gen \
     && apt-get clean \
     && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
