@@ -19,7 +19,7 @@ fi
 
 # check if we are supposed to wipe our data directories
 if [ "$DEBUG_START_FRESH" = true ]; then
-    warn "Wiping all data directories (DEBUG_START_FRESH: true)"
+    warn "Wiping all data directories (DEBUG_START_FRESH: $DEBUG_START_FRESH)"
     rm -rf "$valheim_download_path"
     rm -rf "$valheim_install_path"
     rm -rf "$vp_download_path"
