@@ -102,7 +102,7 @@ RUN dpkg --add-architecture i386 \
         /usr/local/sbin/bootstrap \
         /usr/local/bin/valheim-* \
     && mv -f /etc/supervisor/supervisord.conf.valheim /etc/supervisor/supervisord.conf \
-    && chmod 700 /etc/supervisor/supervisord.conf \
+    && chmod 600 /etc/supervisor/supervisord.conf \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/local/tmp
