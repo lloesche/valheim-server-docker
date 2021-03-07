@@ -112,6 +112,7 @@ RUN dpkg --add-architecture i386 \
         /opt/steamcmd/linux32/steamerrorreporter \
         /usr/local/sbin/bootstrap \
         /usr/local/bin/valheim-* \
+        /usr/local/bin/status-updater.py \
     && mv -f /etc/supervisor/supervisord.conf.valheim /etc/supervisor/supervisord.conf \
     && chmod 600 /etc/supervisor/supervisord.conf \
     && cd "/opt/steamcmd" \
