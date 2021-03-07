@@ -9,6 +9,7 @@
 main() {
     configure_timezone
     setup_supervisor_http_server
+    setup_status_http_server
     exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 }
 
@@ -43,5 +44,53 @@ EOF
         fi
     fi
 }
+
+
+# Enable/disable status http server
+setup_status_http_server() {
+    rm -f "$status_http_server_conf"
+    rm -f "$status_http_server_updater_conf"
+    if [ "$STATUS_HTTP" = true ]; then
+        info "Status http server activated"
+        touch "$STATUS_HTTP_CONF"
+        mkdir -p "$STATUS_HTTP_HTDOCS"
+        if [ ! -d "$STATUS_HTTP_HTDOCS" ]; then
+            error "Could not create directory $STATUS_HTTP_HTDOCS"
+            return
+        fi
+        cat > "$status_http_server_conf" <<EOF
+[program:valheim-status-httpd]
+user=root
+environment=HOME="/root",USER="root",LANG="en_US.UTF-8",PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+command=/usr/local/bin/httpd -f -p "$STATUS_HTTP_PORT" -h "$STATUS_HTTP_HTDOCS" -c "$STATUS_HTTP_CONF"
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+autostart=true
+autorestart=true
+startsecs=10
+startretries=0
+priority=90
+EOF
+        cat > "$status_http_server_updater_conf" <<EOF
+[program:valheim-status-updater]
+user=root
+environment=HOME="/root",USER="root",LANG="en_US.UTF-8",PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+command=/usr/local/bin/status-updater.py
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+autostart=true
+autorestart=true
+startsecs=10
+startretries=0
+priority=80
+EOF
+        chmod 600 "$status_http_server_updater_conf"
+    fi
+}
+
 
 main
