@@ -16,13 +16,13 @@ main() {
 # Configure timezone
 configure_timezone() {
     export TZ
-    if [ -f "/usr/share/zoneinfo/$TZ" ]; then
-        ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime
-        echo "$TZ" > /etc/timezone
-        info "Setting timezone $TZ"
-    else
-        fatal "Unknown timezone $TZ - aborting container start"
+    if [ ! -f "/usr/share/zoneinfo/$TZ" ]; then
+        warn "Unknown timezone $TZ - defaulting to Etc/UTC"
+        TZ="Etc/UTC"
     fi
+    ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime
+    echo "$TZ" > /etc/timezone
+    info "Setting timezone $TZ"
 }
 
 
