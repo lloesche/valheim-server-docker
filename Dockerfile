@@ -35,6 +35,7 @@ COPY contrib/* ./share/valheim/contrib/
 FROM debian:stable-slim
 ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build-env /artifacts/ /usr/local/
+COPY supervisord.conf /etc/supervisor/supervisord.conf.valheim
 RUN dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get -y install --no-install-recommends apt-utils \
@@ -100,10 +101,11 @@ RUN dpkg --add-architecture i386 \
         /opt/steamcmd/linux32/steamerrorreporter \
         /usr/local/sbin/bootstrap \
         /usr/local/bin/valheim-* \
+    && mv -f /etc/supervisor/supervisord.conf.valheim /etc/supervisor/supervisord.conf \
+    && chmod 700 /etc/supervisor/supervisord.conf \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/local/tmp
-COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 EXPOSE 2456-2458/udp
 EXPOSE 9001/tcp
