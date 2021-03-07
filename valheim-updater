@@ -26,7 +26,7 @@ main() {
             check_server_restart
             next_update=$(($(date +%s)+UPDATE_INTERVAL))
             while [ $run = true ] && [ "$(date +%s)" -lt $next_update ]; do
-                sleep 5
+                sleep 9
             done
         done
     else

@@ -74,7 +74,7 @@ wait_for_server_listening() {
             break
         else
             debug "Waiting for server to listen on port $SERVER_PORT"
-            sleep 3
+            sleep 5
         fi
     done
 }
