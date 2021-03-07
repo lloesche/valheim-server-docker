@@ -85,6 +85,9 @@ RUN dpkg --add-architecture i386 \
     && ln -s /usr/local/bin/busybox /usr/local/bin/setuidgid \
     && ln -s /usr/local/bin/busybox /usr/local/bin/ftpget \
     && ln -s /usr/local/bin/busybox /usr/local/bin/ftpput \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/bzip2 \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/xz \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/pstree \
     && rm -f /bin/sh \
     && ln -s /bin/bash /bin/sh \
     && cd / \
