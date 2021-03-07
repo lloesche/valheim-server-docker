@@ -96,6 +96,7 @@ download_valheim() {
 }
 
 
+# This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` steamcmd issue (#184).
 verify_cpu_mhz() {
     float_regex="^([0-9]+\\.?[0-9]*)\$"
     cpu_mhz=$(grep "^cpu MHz" /proc/cpuinfo | head -1 | cut -d : -f 2 | xargs)
