@@ -90,8 +90,22 @@ check_valheim_plus() {
 
 
 download_valheim() {
+    verify_cpu_mhz
     # shellcheck disable=SC2086
     /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
+}
+
+
+# This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` steamcmd issue (#184).
+verify_cpu_mhz() {
+    float_regex="^([0-9]+\\.?[0-9]*)\$"
+    cpu_mhz=$(grep "^cpu MHz" /proc/cpuinfo | head -1 | cut -d : -f 2 | xargs)
+    if [ -n "$cpu_mhz" ] && [[ "$cpu_mhz" =~ $float_regex ]] && [ "${cpu_mhz%.*}" -gt 0 ]; then
+        debug "Found CPU with $cpu_mhz MHz"
+    else
+        debug "Unable to determine CPU Frequency - setting a default of 1.5 GHz so steamcmd won't complain"
+        export CPU_MHZ="1500.000"
+    fi
 }
 
 
