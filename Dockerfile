@@ -37,17 +37,17 @@ RUN if [ "${TESTS:-true}" = true ]; then \
             /usr/local/share/valheim/contrib/*.sh \
         ; \
     fi
-RUN mkdir -p /usr/local/tmp
 WORKDIR /
 RUN mv /build/busybox/_install/bin/busybox /usr/local/bin/busybox
+RUN rm -rf /usr/local/lib/
 RUN tar xzvf /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz
+COPY supervisord.conf /usr/local/
 
 
 FROM debian:stable-slim
 ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build-env /usr/local/ /usr/local/
-COPY supervisord.conf /etc/supervisor/supervisord.conf.valheim
 RUN dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get -y --no-install-recommends install apt-utils \
@@ -114,7 +114,7 @@ RUN dpkg --add-architecture i386 \
         /opt/steamcmd/linux32/steamerrorreporter \
         /usr/local/sbin/bootstrap \
         /usr/local/bin/valheim-* \
-    && mv -f /etc/supervisor/supervisord.conf.valheim /etc/supervisor/supervisord.conf \
+    && mv -f /usr/local/supervisord.conf /etc/supervisor/supervisord.conf \
     && chmod 600 /etc/supervisor/supervisord.conf \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
