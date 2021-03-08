@@ -22,6 +22,8 @@ main() {
         trap 'error_handler $? $LINENO $BASH_LINENO "$BASH_COMMAND" $(printf "::%s" ${FUNCNAME[@]}); trap - ERR' ERR
         while [ $run = true ]; do
             ensure_permissions
+            verify_cpu_mhz
+            verify_memory
             update
             check_server_restart
             next_update=$(($(date +%s)+UPDATE_INTERVAL))
@@ -90,8 +92,6 @@ check_valheim_plus() {
 
 
 download_valheim() {
-    verify_cpu_mhz
-    verify_memory
     # shellcheck disable=SC2086
     /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
 }
@@ -103,6 +103,7 @@ verify_cpu_mhz() {
     cpu_mhz=$(grep "^cpu MHz" /proc/cpuinfo | head -1 | cut -d : -f 2 | xargs)
     if [ -n "$cpu_mhz" ] && [[ "$cpu_mhz" =~ $float_regex ]] && [ "${cpu_mhz%.*}" -gt 0 ]; then
         debug "Found CPU with $cpu_mhz MHz"
+        unset CPU_MHZ
     else
         debug "Unable to determine CPU Frequency - setting a default of 1.5 GHz so steamcmd won't complain"
         export CPU_MHZ="1500.000"
