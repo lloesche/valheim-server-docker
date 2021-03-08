@@ -101,16 +101,7 @@ ensure_permissions() {
 
 
 server_is_idle() {
-    local status
     "$cmd_valheim_status" > /dev/null 2>&1
-    status=$?
-    # valheim-status exits with 125 on error
-    # or the number of connected players on successful server query
-    if [ "$status" -gt 0 ] && [ "$status" -lt 125 ]; then
-        return 1
-    else
-        return 0
-    fi
 }
 
 

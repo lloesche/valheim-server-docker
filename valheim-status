@@ -49,7 +49,10 @@ def main() -> None:
     if not args.update:
         status = get_status(query_host, query_port)
         num_players = len(status.get("players", []))
-        exit_code = 125 if status.get("error") is not None else num_players
+        if status.get("error") is not None:
+            exit_code = 125 if args.timeout_is_error else 0
+        else:
+            exit_code = num_players
         json_output = json.dumps(
             status, default=json_default, skipkeys=True, indent=4, sort_keys=True
         )
@@ -140,6 +143,13 @@ def get_arg_parser() -> ArgumentParser:
         "--update",
         help="Update status continuously and write to status.json.",
         dest="update",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--timeout-is-error",
+        help="Consider timeout to be an error and exit 125 instead of 0",
+        dest="timeout_is_error",
         action="store_true",
         default=False,
     )
