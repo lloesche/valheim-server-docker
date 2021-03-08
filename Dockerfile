@@ -20,8 +20,7 @@ RUN python3 setup.py bdist --format=gztar
 WORKDIR /build
 RUN git clone https://github.com/Yepoleb/python-a2s.git \
     && cd python-a2s \
-    && python3 setup.py bdist --format=gztar \
-    && rm -rf /usr/local/
+    && python3 setup.py bdist --format=gztar
 COPY bootstrap /usr/local/sbin/
 COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
@@ -40,6 +39,7 @@ RUN if [ "${TESTS:-true}" = true ]; then \
     fi
 WORKDIR /
 RUN mv /build/busybox/_install/bin/busybox /usr/local/bin/busybox
+RUN rm -rf /usr/local/lib/
 RUN tar xzvf /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz
 COPY supervisord.conf /usr/local/
