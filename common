@@ -37,6 +37,7 @@ supervisor_http_server_conf=/etc/supervisor/conf.d/http_server.conf
 # Status httpd config files
 status_http_server_conf=/etc/supervisor/conf.d/status_http_server.conf
 status_http_server_updater_conf=/etc/supervisor/conf.d/status_http_server_updater.conf
+cmd_valheim_status=/usr/local/bin/valheim-status
 
 # log levels
 debug=50
@@ -100,11 +101,7 @@ ensure_permissions() {
 
 
 server_is_idle() {
-    if timeout 3 tcpdump udp port "$SERVER_PORT" -n -s 84 -c 1 > /dev/null 2>&1; then
-        return 1
-    else
-        return 0
-    fi
+    "$cmd_valheim_status" > /dev/null 2>&1
 }
 
 

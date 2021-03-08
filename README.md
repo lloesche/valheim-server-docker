@@ -202,7 +202,7 @@ This holds especially true the more players are connected to the system.
 ## Deploying with Docker and systemd
 Create a config file `/etc/sysconfig/valheim-server`
 ```
-SERVER_NAME="My Server"
+SERVER_NAME=My Server
 SERVER_PORT=2456
 WORLD_NAME=Dedicated
 SERVER_PASS=secret
@@ -224,7 +224,7 @@ Copy'paste the following into your shell
 mkdir -p $HOME/valheim-server/config $HOME/valheim-server/data
 cd $HOME/valheim-server/
 cat > $HOME/valheim-server/valheim.env << EOF
-SERVER_NAME="My Server"
+SERVER_NAME=My Server
 WORLD_NAME=Dedicated
 SERVER_PASS=secret
 SERVER_PUBLIC=true

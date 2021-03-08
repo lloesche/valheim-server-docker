@@ -77,7 +77,7 @@ EOF
 [program:valheim-status-updater]
 user=root
 environment=HOME="/root",USER="root",LANG="en_US.UTF-8",PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-command=/usr/local/bin/status-updater.py
+command=/usr/local/bin/valheim-status --update
 stdout_logfile=/dev/stdout
 stdout_logfile_maxbytes=0
 stderr_logfile=/dev/stderr
