@@ -53,7 +53,7 @@ def main() -> None:
         time.sleep(10)
 
 
-def write_status(status: str, status_file: str) -> bool:
+def write_status(status: str, status_file: str) -> None:
     tmp_status_file = status_file + ".tmp"
     json_output = json.dumps(status, default=json_default, skipkeys=True)
     with open(tmp_status_file, "w") as json_file:
