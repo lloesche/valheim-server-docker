@@ -58,7 +58,7 @@ def get_env(prefix: str) -> Dict:
 
 
 def get_config(config_file: str) -> ConfigParser:
-    config = ConfigParser(comment_prefixes="/", allow_no_value=True)
+    config = ConfigParser()
     config.optionxform = str
     if os.path.isfile(config_file):
         log.debug(f"Reading existing ValheimPlus config {config_file}")
