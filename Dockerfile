@@ -11,7 +11,11 @@ RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1
     && make install
 COPY ./vpenvconf/ /build/vpenvconf/
 WORKDIR /build/vpenvconf
-RUN if [ "${TESTS:-true}" = true ]; then pip3 install tox && tox; fi
+RUN if [ "${TESTS:-true}" = true ]; then \
+        pip3 install tox \
+        && tox \
+        ; \
+    fi
 RUN python3 setup.py bdist --format=gztar
 WORKDIR /build
 RUN git clone https://github.com/Yepoleb/python-a2s.git \
@@ -22,25 +26,27 @@ COPY valheim-* /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
 COPY contrib/* /usr/local/share/valheim/contrib/
-RUN if [ "${TESTS:-true}" = true ]; then shellcheck -a -x -s bash -e SC2034 /usr/local/sbin/bootstrap /usr/local/bin/valheim-* /usr/local/share/valheim/contrib/*.sh; fi
-RUN mkdir -p \
-        /artifacts/bin \
-        /artifacts/tmp
-WORKDIR /artifacts
-RUN mv /build/busybox/_install/bin/busybox ./bin/busybox
-RUN mv /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz ./tmp/vpenvconf.tar.gz
-RUN mv /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz ./tmp/python-a2s.tar.gz
-COPY bootstrap ./sbin/
-COPY status-updater.py ./bin/
-COPY valheim-* ./bin/
-COPY defaults ./etc/valheim/
-COPY common ./etc/valheim/
-COPY contrib/* ./share/valheim/contrib/
+RUN if [ "${TESTS:-true}" = true ]; then \
+        shellcheck -a -x -s bash -e SC2034 \
+            /usr/local/sbin/bootstrap \
+            /usr/local/bin/valheim-backup \
+            /usr/local/bin/valheim-bootstrap \
+            /usr/local/bin/valheim-server \
+            /usr/local/bin/valheim-updater \
+            /usr/local/bin/valheim-plus-updater \
+            /usr/local/share/valheim/contrib/*.sh \
+        ; \
+    fi
+RUN mkdir -p /usr/local/tmp
+WORKDIR /
+RUN mv /build/busybox/_install/bin/busybox /usr/local/bin/busybox
+RUN tar xzvf /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz
+RUN tar xzvf /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz
 
 
 FROM debian:stable-slim
 ENV DEBIAN_FRONTEND=noninteractive
-COPY --from=build-env /artifacts/ /usr/local/
+COPY --from=build-env /usr/local/ /usr/local/
 COPY supervisord.conf /etc/supervisor/supervisord.conf.valheim
 RUN dpkg --add-architecture i386 \
     && apt-get update \
@@ -97,9 +103,6 @@ RUN dpkg --add-architecture i386 \
     && ln -s /usr/local/bin/busybox /usr/local/bin/killall \
     && rm -f /bin/sh \
     && ln -s /bin/bash /bin/sh \
-    && cd / \
-    && tar xzvf /usr/local/tmp/vpenvconf.tar.gz \
-    && tar xzvf /usr/local/tmp/python-a2s.tar.gz \
     && locale-gen \
     && apt-get clean \
     && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
@@ -112,12 +115,11 @@ RUN dpkg --add-architecture i386 \
         /opt/steamcmd/linux32/steamerrorreporter \
         /usr/local/sbin/bootstrap \
         /usr/local/bin/valheim-* \
-        /usr/local/bin/status-updater.py \
     && mv -f /etc/supervisor/supervisord.conf.valheim /etc/supervisor/supervisord.conf \
     && chmod 600 /etc/supervisor/supervisord.conf \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/local/tmp
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 EXPOSE 2456-2458/udp
 EXPOSE 9001/tcp

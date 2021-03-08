@@ -14,6 +14,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import os
+import sys
 import a2s
 import json
 import socket
@@ -44,13 +45,30 @@ def main() -> None:
     query_host = args.host
     query_port = args.port + 1
     status_file = args.status_file
+
+    if not args.update:
+        status = get_status(query_host, query_port)
+        num_players = len(status.get("players", []))
+        exit_code = 125 if status.get("error") is not None else num_players
+        json_output = json.dumps(
+            status, default=json_default, skipkeys=True, indent=4, sort_keys=True
+        )
+        print(json_output)
+        sys.exit(exit_code)
+
     signal(SIGINT, handler)
     signal(SIGTERM, handler)
-    log.info("Valheim status updater started")
+    log.info("Valheim status updater started.")
+    log.debug(
+        (
+            f"Writing status from {query_host}:{query_port}"
+            f" to {status_file} every {args.frequency}s"
+        )
+    )
     while run:
         status = get_status(query_host, query_port)
         write_status(status, status_file)
-        time.sleep(10)
+        time.sleep(args.frequency)
 
 
 def write_status(status: str, status_file: str) -> None:
@@ -119,6 +137,13 @@ def get_arg_parser() -> ArgumentParser:
         default=False,
     )
     parser.add_argument(
+        "--update",
+        help="Update status continuously and write to status.json.",
+        dest="update",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
         "--host",
         help="Valheim Server Hostname (default: localhost)",
         dest="host",
@@ -141,6 +166,13 @@ def get_arg_parser() -> ArgumentParser:
         dest="status_file",
         type=str,
         default=default_status_file,
+    )
+    parser.add_argument(
+        "--frequency",
+        help=f"Update frequency in seconds (default: 10)",
+        dest="frequency",
+        type=int,
+        default=10,
     )
 
     return parser

@@ -91,6 +91,7 @@ check_valheim_plus() {
 
 download_valheim() {
     verify_cpu_mhz
+    verify_memory
     # shellcheck disable=SC2086
     /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
 }
@@ -106,6 +107,29 @@ verify_cpu_mhz() {
         debug "Unable to determine CPU Frequency - setting a default of 1.5 GHz so steamcmd won't complain"
         export CPU_MHZ="1500.000"
     fi
+}
+
+
+verify_memory() {
+    mem=$(awk '
+        BEGIN {
+            total=0
+            free=0
+            available=0
+        }
+        {
+            if($1 ~ /^MemTotal/)
+                total=$2
+            else if($1 ~ /^MemFree/)
+                free=$2
+            else if($1 ~ /^MemAvailable/)
+                available=$2
+        }
+        END {
+            print total"/"free"/"available
+        }
+    ' /proc/meminfo)
+    debug "Memory total/free/available: $mem"
 }
 
 
