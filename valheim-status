@@ -58,7 +58,7 @@ def main() -> None:
 
     signal(SIGINT, handler)
     signal(SIGTERM, handler)
-    log.info("Valheim status updater started.")
+    log.info("Valheim status updater started")
     log.debug(
         (
             f"Writing status from {query_host}:{query_port}"
