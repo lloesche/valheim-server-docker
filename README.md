@@ -118,7 +118,7 @@ src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp (1276) 
 | `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server on port `:9001` |
 | `SUPERVISOR_HTTP_USER` | `admin` | Supervisor http server username |
 | `SUPERVISOR_HTTP_PASS` |  | Supervisor http server password. http server will not be started if password is not set! |
-| `STATUS_HTTP` | `false` | Turn on the status http server on port |
+| `STATUS_HTTP` | `false` | Turn on the status http server. Only useful on public servers (`SERVER_PUBLIC=true`). |
 | `STATUS_HTTP_PORT` | `80` | Status http server tcp port |
 | `STATUS_HTTP_CONF` | `/config/httpd.conf` | Path to the [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) |
 | `STATUS_HTTP_HTDOCS` | `/opt/valheim/htdocs` | Path to the status httpd htdocs where `status.json` is written |
@@ -352,6 +352,8 @@ If Supervisor's http server is enabled it also provides an XML-RPC API at `/RPC2
 If `STATUS_HTTP` is set to `true` the status web server will be started.
 By default it runs on container port `80` but can be customized using `STATUS_HTTP_PORT`.
 
+This only works for public Valheim servers (`SERVER_PUBLIC=true`) because private ones do not answer to [Steam server queries](https://developer.valvesoftware.com/wiki/Server_queries).
+
 A `/status.json` will be updated every 10 seconds.
 
 Whenever Valheim server is not yet running the status will contain an error like
@@ -405,7 +407,7 @@ A few modifications, like for example changing the `dataRate` can be done server
 ## Updates
 ValheimPlus is automatically being updated using the same `UPDATE_CRON` schedule the Valheim server uses to check for updates. If an update of either
 Valheim server or ValheimPlus is found it is being downloaded, configured and the server automatically restarted.
-This also means your clients always need to run the latest ValheimPlus version or won't be able to connect. If this is undesired the schedule could be changed to only check for updates once per day. Example  `UPDATE_CRON='0 6 * * *'` would only check at 6 AM.
+This also means your clients always need to run the latest ValheimPlus version or will not be able to connect. If this is undesired the schedule could be changed to only check for updates once per day. Example  `UPDATE_CRON='0 6 * * *'` would only check at 6 AM.
 
 ## Configuration
 See [ValheimPlus config from Environment Variables](#valheimplus-config-from-environment-variables)

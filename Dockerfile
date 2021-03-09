@@ -58,6 +58,7 @@ RUN dpkg --add-architecture i386 \
         libsdl2-2.0-0 \
         libsdl2-2.0-0:i386 \
         curl \
+        tcpdump \
         libcurl4 \
         libcurl4:i386 \
         ca-certificates \

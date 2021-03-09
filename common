@@ -101,7 +101,15 @@ ensure_permissions() {
 
 
 server_is_idle() {
-    "$cmd_valheim_status" > /dev/null 2>&1
+    if [ "$SERVER_PUBLIC" = 1 ]; then
+        "$cmd_valheim_status" > /dev/null 2>&1
+    else
+        if timeout 3 tcpdump udp port "$SERVER_PORT" -n -s 84 -c 1 > /dev/null 2>&1; then
+            return 1
+        else
+            return 0
+        fi
+    fi
 }
 
 
