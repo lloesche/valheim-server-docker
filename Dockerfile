@@ -121,7 +121,7 @@ RUN dpkg --add-architecture i386 \
     && ./steamcmd.sh +login anonymous +quit \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-EXPOSE 2456-2458/udp
+EXPOSE 2456-2457/udp
 EXPOSE 9001/tcp
 EXPOSE 80/tcp
 WORKDIR /

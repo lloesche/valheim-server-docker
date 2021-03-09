@@ -64,7 +64,7 @@ $ mkdir -p $HOME/valheim-server/config/worlds $HOME/valheim-server/data
 $ docker run -d \
     --name valheim-server \
     --cap-add=sys_nice \
-    -p 2456-2458:2456-2458/udp \
+    -p 2456-2457:2456-2457/udp \
     -v $HOME/valheim-server/config:/config \
     -v $HOME/valheim-server/data:/opt/valheim \
     -e SERVER_NAME="My Server" \
@@ -79,7 +79,7 @@ A fresh start will take several minutes depending on your Internet connection sp
 
 Do not forget to modify `WORLD_NAME` to reflect the name of your world! For existing worlds that is the filename in the `worlds/` folder without the `.db/.fwl` extension.
 
-If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2458 are forwarded to the container host.
+If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2457 are forwarded to the container host.
 Also ensure they are publicly accessible in any firewall.
 
 There is more info in section [Finding Your Server](#finding-your-server).

@@ -15,7 +15,7 @@ ExecStart=/usr/bin/docker run \
           --cap-add=sys_nice \
           -v /etc/valheim:/config:Z \
           -v /opt/valheim:/opt/valheim:Z \
-          -p 2456-2458:2456-2458/udp \
+          -p 2456-2457:2456-2457/udp \
           --env-file /etc/sysconfig/valheim-server \
           lloesche/valheim-server
 ExecStop=/usr/bin/docker stop %n
