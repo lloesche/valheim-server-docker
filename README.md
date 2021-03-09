@@ -149,7 +149,7 @@ The following environment variables can be populated to run commands whenever sp
 ### Event hook examples
 #### Install extra packages
 ```
-POST_BOOTSTRAP_HOOK="apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install awscli"
+-e POST_BOOTSTRAP_HOOK="apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install awscli"
 ```
 
 #### Copy backups to another location
@@ -164,9 +164,9 @@ Within that command the string `@BACKUP_FILE@` will be replaced by the full path
 
 #### Delay restarts by 1 minute and notify on Discord
 ```
-DISCORD_WEBHOOK="https://discord.com/api/webhooks/8171522530..."
-DISCORD_MESSAGE="Restarting Valheim server in one minute!"
-PRE_RESTART_HOOK='curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$DISCORD_MESSAGE\"}" "$DISCORD_WEBHOOK" && sleep 60'
+-e DISCORD_WEBHOOK="https://discord.com/api/webhooks/8171522530..." \
+-e DISCORD_MESSAGE="Restarting Valheim server in one minute!" \
+-e PRE_RESTART_HOOK='curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$DISCORD_MESSAGE\"}" "$DISCORD_WEBHOOK" && sleep 60'
 ```
 
 
