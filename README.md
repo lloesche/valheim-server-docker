@@ -230,7 +230,7 @@ SERVER_PASS=secret
 SERVER_PUBLIC=true
 EOF
 curl -o $HOME/valheim-server/docker-compose.yaml https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/docker-compose.yaml
-docker-compose up
+docker-compose up --build
 ```
 
 ## Deploying to Kubernetes
