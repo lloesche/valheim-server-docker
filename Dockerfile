@@ -4,11 +4,13 @@ ARG TESTS
 RUN apt-get update
 RUN apt-get -y install apt-utils
 RUN apt-get -y install build-essential curl git python3 python3-pip golang shellcheck
+
 WORKDIR /build/busybox
 RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2 \
     && tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox \
     && make defconfig \
     && make install
+
 WORKDIR /build/vpenvconf
 COPY ./vpenvconf/ /build/vpenvconf/
 RUN if [ "${TESTS:-true}" = true ]; then \
@@ -17,14 +19,22 @@ RUN if [ "${TESTS:-true}" = true ]; then \
         ; \
     fi
 RUN python3 setup.py bdist --format=gztar
+
 WORKDIR /build/valheim-logfilter
 COPY ./valheim-logfilter/ /build/valheim-logfilter/
 RUN go build -ldflags="-s -w" \
     && mv valheim-logfilter /usr/local/bin/
+
 WORKDIR /build
 RUN git clone https://github.com/Yepoleb/python-a2s.git \
     && cd python-a2s \
     && python3 setup.py bdist --format=gztar
+
+WORKDIR /build/supervisor
+RUN curl -L -o /tmp/supervisor.tar.gz https://github.com/Supervisor/supervisor/archive/4.2.2.tar.gz \
+    && tar xzvf /tmp/supervisor.tar.gz --strip-components=1 -C /build/supervisor \
+    && python3 setup.py bdist --format=gztar
+
 COPY bootstrap /usr/local/sbin/
 COPY valheim-status /usr/local/bin/
 COPY valheim-bootstrap /usr/local/bin/
@@ -50,11 +60,13 @@ RUN if [ "${TESTS:-true}" = true ]; then \
 WORKDIR /
 RUN mv /build/busybox/_install/bin/busybox /usr/local/bin/busybox
 RUN rm -rf /usr/local/lib/
+RUN tar xzvf /build/supervisor/dist/supervisor-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz
-COPY supervisord.conf /usr/local/etc/supervisor/supervisord.conf
+COPY supervisord.conf /usr/local/etc/supervisord.conf
 RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \
-    && chmod 600 /usr/local/etc/supervisor/supervisord.conf
+    && chmod 600 /usr/local/etc/supervisord.conf
+
 
 FROM debian:stable-slim
 ENV DEBIAN_FRONTEND=noninteractive
@@ -73,7 +85,6 @@ RUN dpkg --add-architecture i386 \
         libcurl4 \
         libcurl4:i386 \
         ca-certificates \
-        supervisor \
         procps \
         locales \
         unzip \

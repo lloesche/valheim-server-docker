@@ -10,7 +10,7 @@ main() {
     configure_timezone
     setup_supervisor_http_server
     setup_status_http_server
-    exec /usr/bin/supervisord -c /usr/local/etc/supervisor/supervisord.conf
+    exec /usr/local/bin/supervisord -c /usr/local/etc/supervisord.conf
 }
 
 
