@@ -89,11 +89,8 @@ For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-
 
 For more deployment options see the [Deployment section](#deployment). 
 
-Granting `CAP_SYS_NICE` to the container is optional. It allows the Steam networking library that Valheim uses to give itself more CPU cycles.
-Without it you will see a message `Warning: failed to set thread priority` in the startup log. On highly loaded systems it also helps with
-```
-src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp (1276) : Assertion Failed: SDR service thread gave up on lock after waiting 60ms. This directly adds to delay of processing of network packets!
-```
+Granting `CAP_SYS_NICE` to the container is optional. It allows the Steam library that Valheim uses to give itself more CPU cycles.
+Without it you will see a message `Warning: failed to set thread priority` in the startup log.
 
 
 # Environment Variables
@@ -151,13 +148,6 @@ The default filter removes:
 - A repeating line saying `(Filename: ./Runtime/Export/Debug/Debug.bindings.h Line: 35)`
 - Lines flodding the log with `Assertion Failed` warnings on packet processing timeouts (See [#104](https://github.com/lloesche/valheim-server-docker/discussions/104))
 - If ValheimPlus is turned on lines starting with `Fallback handler could not load library`
-
-Users affected by [#104](https://github.com/lloesche/valheim-server-docker/discussions/104) might want to add:
-```
--e VALHEIM_LOG_FILTER_STARTSWITH_AssertionFailed="src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp"
-```
-
-Upon server start you will see the message `Configuring Valheim server log filter` and related configuration messages twice. Once for stdout and once for stderr.
 
 
 ## Event hooks
