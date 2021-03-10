@@ -71,6 +71,9 @@ prepare_valheim_plus() {
 
 
 merge_valheim_plus() {
+    local config_file
+    local pkg_config_dir
+    local dest_file
     debug "Merging Valheim server and ValheimPlus mod"
     # remove any old ValheimPlus install directories
     rm -rf "$vp_install_path.tmp" "$vp_install_path.old"
@@ -81,14 +84,23 @@ merge_valheim_plus() {
     # rsync all ValheimPlus mod files on top of the dedicated server files
     rsync -a --itemize-changes "$vp_download_path/extracted/" "$vp_install_path.tmp"
     # if /config/valheimplus/ does not exist copy the default config from the ZIP archive
-    if [ ! -d "$vp_config_path" ] && [ -d "$vp_install_path.tmp/BepInEx/config" ]; then
-        cp -a "$vp_install_path.tmp/BepInEx/config" "$vp_config_path"
-        # generate config from env variables
-        write_valheim_plus_config
-    fi
-    # always copy the config that came with the latest ZIP archive to valheim_plus.cfg.default
-    if [ -f "$vp_install_path.tmp/BepInEx/config/valheim_plus.cfg" ]; then
-        cp -f "$vp_install_path.tmp/BepInEx/config/valheim_plus.cfg" "$vp_config_path/valheim_plus.cfg.default"
+    mkdir -p "$vp_config_path"
+    pkg_config_dir="$vp_install_path.tmp/BepInEx/config/"
+    if [ -d "$pkg_config_dir" ]; then
+        cd "$pkg_config_dir" || fatal "Could not cd $pkg_config_dir"
+        for config_file in *; do
+            dest_file="$vp_config_path/$config_file"
+            # always copy the config that came with the latest ZIP archive to valheim_plus.cfg.default
+            cp -f "$config_file" "$dest_file.default"
+            if [ ! -f "$dest_file" ]; then
+                debug "Config $dest_file does not exist - copying from archive"
+                cp -f "$config_file" "$dest_file"
+                if [ "$config_file" = "valheim_plus.cfg" ]; then
+                    write_valheim_plus_config
+                fi
+            fi
+        done
+        cd - || fatal "Could not cd -"
     fi
     # ensure config file permissions
     ensure_permissions
