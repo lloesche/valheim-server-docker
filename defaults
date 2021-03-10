@@ -78,6 +78,7 @@ VALHEIM_LOG_FILTER_VERBOSE=${VALHEIM_LOG_FILTER_VERBOSE:-2}
 export VALHEIM_LOG_FILTER_EMPTY=${VALHEIM_LOG_FILTER_EMPTY:-true}
 export VALHEIM_LOG_FILTER_MATCH=${VALHEIM_LOG_FILTER_MATCH- }
 export VALHEIM_LOG_FILTER_STARTSWITH=${VALHEIM_LOG_FILTER_STARTSWITH-(Filename:}
+export VALHEIM_LOG_FILTER_STARTSWITH_AssertionFailed=${VALHEIM_LOG_FILTER_STARTSWITH_AssertionFailed-src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp}
 if [ "$VALHEIM_PLUS" = true ]; then
     export VALHEIM_LOG_FILTER_STARTSWITH_VP=${VALHEIM_LOG_FILTER_STARTSWITH_VP-Fallback handler could not load library}
 fi
