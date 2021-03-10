@@ -221,11 +221,11 @@ All existing configuration in /config/valheimplus/valheim_plus.cfg is retained a
 
 
 # System requirements
-On our system while idle with no players connected Valheim server consumes around 2.8 GB RSS and 10 GB VSZ. All the while using around 30% of one CPU Core on a 2.40GHz Intel Xeon E5-2620 v3. Valheim server is making use of many threads with two of them seemingly doing the bulk of the work each responsible for around 8-10% of the 30% of idle load.
+On our system while idle with no players connected Valheim server consumes around 2.8 GB RSS. All the while using around 30% of one CPU Core on a 2.40GHz Intel Xeon E5-2620 v3. Valheim server is making use of many threads with two of them seemingly doing the bulk of the work each responsible for around 8-10% of the 30% of idle load.
 
 The picture changes when players connect. The first player increased overall load to 42%, the second player to 53%. In the thread view we see that a thread that was previously consuming 10% is now hovering around 38%. Meaning while Valheim server creates 50 threads on our system it looks like there is a single thread doing the bulk of all work (~70%) with no way for the Kernel to distribute the load to many cores.
 
-Therefor our minimum requirements would be a dual core system with 4 GB of RAM and 8 GB of Swap. And our recommended system would be a high clocked 4 core server with 16 GB of RAM. A few very high clocked cores will be more beneficial than having many cores. I.e. two 5 GHz cores will yield better performance than six 2 GHz cores.
+Therefor our minimum requirements would be a dual core system with 4 GB of RAM and our recommended system would be a high clocked 4 core server with 8 GB of RAM. A few very high clocked cores will be more beneficial than having many cores. I.e. two 5 GHz cores will yield better performance than six 2 GHz cores.
 This holds especially true the more players are connected to the system.
 
 
