@@ -79,10 +79,10 @@ SERVER_LOG_STDERR_FILTER=${SERVER_LOG_STDERR_FILTER:-$SERVER_LOG_FILTER}
 # It also logs a repeating line "(Filename: ./Runtime/Export/Debug/Debug.bindings.h Line: 35)".
 # We filter all of this by default.
 export VALHEIM_LOG_FILTER_EMPTY=${VALHEIM_LOG_FILTER_EMPTY:-true}
-export VALHEIM_LOG_FILTER_MATCH=${VALHEIM_LOG_FILTER_MATCH:- }
-export VALHEIM_LOG_FILTER_STARTSWITH=${VALHEIM_LOG_FILTER_STARTSWITH:-(Filename:}
+export VALHEIM_LOG_FILTER_MATCH=${VALHEIM_LOG_FILTER_MATCH- }
+export VALHEIM_LOG_FILTER_STARTSWITH=${VALHEIM_LOG_FILTER_STARTSWITH-(Filename:}
 if [ "$VALHEIM_PLUS" = true ]; then
-    export VALHEIM_LOG_FILTER_STARTSWITH_VP_Fallback_handler="Fallback handler could not load library"
+    export VALHEIM_LOG_FILTER_STARTSWITH_VP=${VALHEIM_LOG_FILTER_STARTSWITH_VP-"Fallback handler could not load library"}
 fi
 
 
