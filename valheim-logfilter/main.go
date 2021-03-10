@@ -50,6 +50,9 @@ func main() {
 		pair := strings.SplitN(e, "=", 2)
 		envVar := pair[0]
 		varValue := pair[1]
+		if len(varValue) == 0 {
+			continue
+		}
 		if strings.HasPrefix(envVar, *envMatch) {
 			glog.Infof("Removing log lines matching %s", varValue)
 			matchFilters = append(matchFilters, varValue)
