@@ -11,6 +11,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 
 * [Basic Docker Usage](#basic-docker-usage)
 * [Environment Variables](#environment-variables)
+	* [Log filters](#log-filters)
 	* [Event hooks](#event-hooks)
 		* [Event hook examples](#event-hook-examples)
 			* [Install extra packages](#install-extra-packages)
@@ -125,6 +126,34 @@ src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp (1276) 
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
+## Log filters
+Valheim server by default logs a lot of noise. These env variables allow users to remove unwanted lines from the log.
+
+| Prefix | Default | Purpose |
+|----------|----------|-------|
+| `VALHEIM_LOG_FILTER_EMPTY` | `true` | Filter empty log lines |
+| `VALHEIM_LOG_FILTER_MATCH` | ` ` | Filter log lines exactly matching |
+| `VALHEIM_LOG_FILTER_STARTSWITH` | `(Filename:` | Filter log lines starting with |
+| `VALHEIM_LOG_FILTER_ENDSWITH` |  | Filter log lines ending with |
+| `VALHEIM_LOG_FILTER_CONTAINS` |  | Filter log lines containing |
+| `VALHEIM_LOG_FILTER_REGEXP` |  | Filter log lines matching regexp |
+
+All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` are prefixes. Meaning you can define multiple matches like so:
+```
+-e VALHEIM_LOG_FILTER_STARTSWITH=foo \
+-e VALHEIM_LOG_FILTER_STARTSWITH_BAR=bar \
+-e VALHEIM_LOG_FILTER_STARTSWITH_SOMETHING_ELSE="some other filter"
+```
+
+The default filter removes:
+- Empty log lines
+- Log lines consisting of a single space (wtf?)
+- A repeating line saying `(Filename: ./Runtime/Export/Debug/Debug.bindings.h Line: 35)`
+
+Users affected by [#104](https://github.com/lloesche/valheim-server-docker/discussions/104) might want to add:
+```
+-e VALHEIM_LOG_FILTER_STARTSWITH_AssertionFailed="src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp"
+```
 
 ## Event hooks
 The following environment variables can be populated to run commands whenever specific events happen.
