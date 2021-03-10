@@ -11,6 +11,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 
 * [Basic Docker Usage](#basic-docker-usage)
 * [Environment Variables](#environment-variables)
+	* [Log filters](#log-filters)
 	* [Event hooks](#event-hooks)
 		* [Event hook examples](#event-hook-examples)
 			* [Install extra packages](#install-extra-packages)
@@ -88,11 +89,8 @@ For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-
 
 For more deployment options see the [Deployment section](#deployment). 
 
-Granting `CAP_SYS_NICE` to the container is optional. It allows the Steam networking library that Valheim uses to give itself more CPU cycles.
-Without it you will see a message `Warning: failed to set thread priority` in the startup log. On highly loaded systems it also helps with
-```
-src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp (1276) : Assertion Failed: SDR service thread gave up on lock after waiting 60ms. This directly adds to delay of processing of network packets!
-```
+Granting `CAP_SYS_NICE` to the container is optional. It allows the Steam library that Valheim uses to give itself more CPU cycles.
+Without it you will see a message `Warning: failed to set thread priority` in the startup log.
 
 
 # Environment Variables
@@ -124,6 +122,32 @@ src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp (1276) 
 | `STATUS_HTTP_HTDOCS` | `/opt/valheim/htdocs` | Path to the status httpd htdocs where `status.json` is written |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
+
+## Log filters
+Valheim server by default logs a lot of noise. These env variables allow users to remove unwanted lines from the log.
+
+| Prefix | Default | Purpose |
+|----------|----------|-------|
+| `VALHEIM_LOG_FILTER_EMPTY` | `true` | Filter empty log lines |
+| `VALHEIM_LOG_FILTER_MATCH` | ` ` | Filter log lines exactly matching |
+| `VALHEIM_LOG_FILTER_STARTSWITH` | `(Filename:` | Filter log lines starting with |
+| `VALHEIM_LOG_FILTER_ENDSWITH` |  | Filter log lines ending with |
+| `VALHEIM_LOG_FILTER_CONTAINS` |  | Filter log lines containing |
+| `VALHEIM_LOG_FILTER_REGEXP` |  | Filter log lines matching regexp |
+
+All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` are prefixes. Meaning you can define multiple matches like so:
+```
+-e VALHEIM_LOG_FILTER_STARTSWITH=foo \
+-e VALHEIM_LOG_FILTER_STARTSWITH_BAR=bar \
+-e VALHEIM_LOG_FILTER_STARTSWITH_SOMETHING_ELSE="some other filter"
+```
+
+The default filter removes:
+- Empty log lines
+- Log lines consisting of a single space (wtf?)
+- A repeating line saying `(Filename: ./Runtime/Export/Debug/Debug.bindings.h Line: 35)`
+- Lines flodding the log with `Assertion Failed` warnings on packet processing timeouts (See [#104](https://github.com/lloesche/valheim-server-docker/discussions/104))
+- If ValheimPlus is turned on lines starting with `Fallback handler could not load library`
 
 
 ## Event hooks
@@ -189,11 +213,11 @@ All existing configuration in /config/valheimplus/valheim_plus.cfg is retained a
 
 
 # System requirements
-On our system while idle with no players connected Valheim server consumes around 2.8 GB RSS and 10 GB VSZ. All the while using around 30% of one CPU Core on a 2.40GHz Intel Xeon E5-2620 v3. Valheim server is making use of many threads with two of them seemingly doing the bulk of the work each responsible for around 8-10% of the 30% of idle load.
+On our system while idle with no players connected Valheim server consumes around 2.8 GB RSS. All the while using around 30% of one CPU Core on a 2.40 GHz Intel Xeon E5-2620 v3. Valheim server is making use of many threads with two of them seemingly doing the bulk of the work each responsible for around 8-10% of the 30% of idle load.
 
 The picture changes when players connect. The first player increased overall load to 42%, the second player to 53%. In the thread view we see that a thread that was previously consuming 10% is now hovering around 38%. Meaning while Valheim server creates 50 threads on our system it looks like there is a single thread doing the bulk of all work (~70%) with no way for the Kernel to distribute the load to many cores.
 
-Therefor our minimum requirements would be a dual core system with 4 GB of RAM and 8 GB of Swap. And our recommended system would be a high clocked 4 core server with 16 GB of RAM. A few very high clocked cores will be more beneficial than having many cores. I.e. two 5 GHz cores will yield better performance than six 2 GHz cores.
+Therefor our minimum requirements would be a dual core system with 4 GB of RAM and our recommended system would be a high clocked 4 core server with 8 GB of RAM. A few very high clocked cores will be more beneficial than having many cores. I.e. two 5 GHz cores will yield better performance than six 2 GHz cores.
 This holds especially true the more players are connected to the system.
 
 

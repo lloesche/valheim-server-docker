@@ -10,7 +10,7 @@ main() {
     configure_timezone
     setup_supervisor_http_server
     setup_status_http_server
-    exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+    exec /usr/local/bin/supervisord -c /usr/local/etc/supervisord.conf
 }
 
 
@@ -32,6 +32,7 @@ setup_supervisor_http_server() {
     rm -f "$supervisor_http_server_conf"
     if [ "$SUPERVISOR_HTTP" = true ]; then
         if [ -n "$SUPERVISOR_HTTP_PASS" ]; then
+            info "Supervisor http server activated"
             cat > "$supervisor_http_server_conf" <<EOF
 [inet_http_server]
 port = :9001
@@ -73,6 +74,7 @@ startsecs=10
 startretries=0
 priority=90
 EOF
+        chmod 600 "$status_http_server_conf"
         cat > "$status_http_server_updater_conf" <<EOF
 [program:valheim-status-updater]
 user=root

@@ -32,12 +32,13 @@ valheim_updater_pidfile=/var/run/valheim-updater.pid
 valheim_backup_pidfile=/var/run/valheim-backup.pid
 
 # Supervisor config files
-supervisor_http_server_conf=/etc/supervisor/conf.d/http_server.conf
+supervisor_http_server_conf=/usr/local/etc/supervisor/conf.d/http_server.conf
 
 # Status httpd config files
-status_http_server_conf=/etc/supervisor/conf.d/status_http_server.conf
-status_http_server_updater_conf=/etc/supervisor/conf.d/status_http_server_updater.conf
+status_http_server_conf=/usr/local/etc/supervisor/conf.d/status_http_server.conf
+status_http_server_updater_conf=/usr/local/etc/supervisor/conf.d/status_http_server_updater.conf
 cmd_valheim_status=/usr/local/bin/valheim-status
+cmd_valheim_logfilter=/usr/local/bin/valheim-logfilter
 
 # log levels
 debug=50

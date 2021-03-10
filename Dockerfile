@@ -3,29 +3,49 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG TESTS
 RUN apt-get update
 RUN apt-get -y install apt-utils
-RUN apt-get -y install build-essential curl git python3 python3-pip shellcheck
+RUN apt-get -y install build-essential curl git python3 python3-pip golang shellcheck
+
 WORKDIR /build/busybox
 RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2 \
     && tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox \
     && make defconfig \
     && make install
-COPY ./vpenvconf/ /build/vpenvconf/
+
 WORKDIR /build/vpenvconf
+COPY ./vpenvconf/ /build/vpenvconf/
 RUN if [ "${TESTS:-true}" = true ]; then \
         pip3 install tox \
         && tox \
         ; \
     fi
 RUN python3 setup.py bdist --format=gztar
+
+WORKDIR /build/valheim-logfilter
+COPY ./valheim-logfilter/ /build/valheim-logfilter/
+RUN go build -ldflags="-s -w" \
+    && mv valheim-logfilter /usr/local/bin/
+
 WORKDIR /build
 RUN git clone https://github.com/Yepoleb/python-a2s.git \
     && cd python-a2s \
     && python3 setup.py bdist --format=gztar
+
+WORKDIR /build/supervisor
+RUN curl -L -o /tmp/supervisor.tar.gz https://github.com/Supervisor/supervisor/archive/4.2.2.tar.gz \
+    && tar xzvf /tmp/supervisor.tar.gz --strip-components=1 -C /build/supervisor \
+    && python3 setup.py bdist --format=gztar
+
 COPY bootstrap /usr/local/sbin/
-COPY valheim-* /usr/local/bin/
+COPY valheim-status /usr/local/bin/
+COPY valheim-bootstrap /usr/local/bin/
+COPY valheim-backup /usr/local/bin/
+COPY valheim-updater /usr/local/bin/
+COPY valheim-plus-updater /usr/local/bin/
+COPY valheim-server /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
 COPY contrib/* /usr/local/share/valheim/contrib/
+RUN chmod 755 /usr/local/sbin/bootstrap /usr/local/bin/valheim-*
 RUN if [ "${TESTS:-true}" = true ]; then \
         shellcheck -a -x -s bash -e SC2034 \
             /usr/local/sbin/bootstrap \
@@ -40,9 +60,12 @@ RUN if [ "${TESTS:-true}" = true ]; then \
 WORKDIR /
 RUN mv /build/busybox/_install/bin/busybox /usr/local/bin/busybox
 RUN rm -rf /usr/local/lib/
+RUN tar xzvf /build/supervisor/dist/supervisor-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz
-COPY supervisord.conf /usr/local/
+COPY supervisord.conf /usr/local/etc/supervisord.conf
+RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \
+    && chmod 600 /usr/local/etc/supervisord.conf
 
 
 FROM debian:stable-slim
@@ -62,7 +85,6 @@ RUN dpkg --add-architecture i386 \
         libcurl4 \
         libcurl4:i386 \
         ca-certificates \
-        supervisor \
         procps \
         locales \
         unzip \
@@ -74,6 +96,12 @@ RUN dpkg --add-architecture i386 \
         python3-pkg-resources \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+    && rm -f /bin/sh \
+    && ln -s /bin/bash /bin/sh \
+    && locale-gen \
+    && apt-get clean \
+    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
+    && ln -s /config /root/.config/unity3d/IronGate/Valheim \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/syslogd \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/crond \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/mkpasswd \
@@ -101,22 +129,12 @@ RUN dpkg --add-architecture i386 \
     && ln -s /usr/local/bin/busybox /usr/local/bin/xz \
     && ln -s /usr/local/bin/busybox /usr/local/bin/pstree \
     && ln -s /usr/local/bin/busybox /usr/local/bin/killall \
-    && rm -f /bin/sh \
-    && ln -s /bin/bash /bin/sh \
-    && locale-gen \
-    && apt-get clean \
-    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
-    && ln -s /config /root/.config/unity3d/IronGate/Valheim \
     && curl -L -o /tmp/steamcmd_linux.tar.gz https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
     && tar xzvf /tmp/steamcmd_linux.tar.gz -C /opt/steamcmd/ \
     && chown -R root:root /opt/steamcmd \
     && chmod 755 /opt/steamcmd/steamcmd.sh \
         /opt/steamcmd/linux32/steamcmd \
         /opt/steamcmd/linux32/steamerrorreporter \
-        /usr/local/sbin/bootstrap \
-        /usr/local/bin/valheim-* \
-    && mv -f /usr/local/supervisord.conf /etc/supervisor/supervisord.conf \
-    && chmod 600 /etc/supervisor/supervisord.conf \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

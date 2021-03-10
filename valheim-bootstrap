@@ -35,7 +35,9 @@ mkdir -p "$valheim_install_path"
 if [ "$VALHEIM_PLUS" = true ]; then
     mkdir -p "$vp_download_path"
     mkdir -p "$vp_install_path"
-    write_valheim_plus_config
+    if [ -d "$vp_config_path" ]; then
+        write_valheim_plus_config
+    fi
 fi
 
 
