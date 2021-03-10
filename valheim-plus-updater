@@ -85,7 +85,7 @@ merge_valheim_plus() {
     rsync -a --itemize-changes "$vp_download_path/extracted/" "$vp_install_path.tmp"
     # if /config/valheimplus/ does not exist copy the default config from the ZIP archive
     mkdir -p "$vp_config_path"
-    pkg_config_dir="$vp_install_path.tmp/BepInEx/config/"
+    pkg_config_dir="$vp_install_path.tmp/BepInEx/config"
     if [ -d "$pkg_config_dir" ]; then
         cd "$pkg_config_dir" || fatal "Could not cd $pkg_config_dir"
         for config_file in *; do
@@ -105,8 +105,8 @@ merge_valheim_plus() {
     # ensure config file permissions
     ensure_permissions
     # remove the config folder within the server directory and symlink it to /config
-    rm -rf "$vp_install_path.tmp/BepInEx/config"
-    ln -s "$vp_config_path" "$vp_install_path.tmp/BepInEx/config"
+    rm -rf "$pkg_config_dir"
+    ln -s "$vp_config_path" "$pkg_config_dir"
     # move an existing copy of ValheimPlus to the .old extension
     if [ -d "$vp_install_path" ]; then
         mv -f "$vp_install_path" "$vp_install_path.old"
