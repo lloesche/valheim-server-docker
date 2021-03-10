@@ -22,7 +22,7 @@ All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` are prefixes. Me
 
 # Usage
 ```
-Usage of /tmp/go-build1230045202/b001/exe/main:
+Usage of valheim-logfilter:
   -alsologtostderr
     	log to standard error as well as files
   -env-contains string
