@@ -149,6 +149,7 @@ The default filter removes:
 - Empty log lines
 - Log lines consisting of a single space (wtf?)
 - A repeating line saying `(Filename: ./Runtime/Export/Debug/Debug.bindings.h Line: 35)`
+- If ValheimPlus is turned on lines starting with `Fallback handler could not load library`
 
 Users affected by [#104](https://github.com/lloesche/valheim-server-docker/discussions/104) might want to add:
 ```
