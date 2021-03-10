@@ -35,6 +35,7 @@ COPY valheim-server /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
 COPY contrib/* /usr/local/share/valheim/contrib/
+RUN chmod 755 /usr/local/sbin/bootstrap /usr/local/bin/valheim-*
 RUN if [ "${TESTS:-true}" = true ]; then \
         shellcheck -a -x -s bash -e SC2034 \
             /usr/local/sbin/bootstrap \
@@ -51,8 +52,9 @@ RUN mv /build/busybox/_install/bin/busybox /usr/local/bin/busybox
 RUN rm -rf /usr/local/lib/
 RUN tar xzvf /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz
-COPY supervisord.conf /usr/local/
-
+COPY supervisord.conf /usr/local/etc/supervisor/supervisord.conf
+RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \
+    && chmod 600 /usr/local/etc/supervisor/supervisord.conf
 
 FROM debian:stable-slim
 ENV DEBIAN_FRONTEND=noninteractive
@@ -83,6 +85,12 @@ RUN dpkg --add-architecture i386 \
         python3-pkg-resources \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+    && rm -f /bin/sh \
+    && ln -s /bin/bash /bin/sh \
+    && locale-gen \
+    && apt-get clean \
+    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
+    && ln -s /config /root/.config/unity3d/IronGate/Valheim \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/syslogd \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/crond \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/mkpasswd \
@@ -110,22 +118,12 @@ RUN dpkg --add-architecture i386 \
     && ln -s /usr/local/bin/busybox /usr/local/bin/xz \
     && ln -s /usr/local/bin/busybox /usr/local/bin/pstree \
     && ln -s /usr/local/bin/busybox /usr/local/bin/killall \
-    && rm -f /bin/sh \
-    && ln -s /bin/bash /bin/sh \
-    && locale-gen \
-    && apt-get clean \
-    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
-    && ln -s /config /root/.config/unity3d/IronGate/Valheim \
     && curl -L -o /tmp/steamcmd_linux.tar.gz https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
     && tar xzvf /tmp/steamcmd_linux.tar.gz -C /opt/steamcmd/ \
     && chown -R root:root /opt/steamcmd \
     && chmod 755 /opt/steamcmd/steamcmd.sh \
         /opt/steamcmd/linux32/steamcmd \
         /opt/steamcmd/linux32/steamerrorreporter \
-        /usr/local/sbin/bootstrap \
-        /usr/local/bin/valheim-* \
-    && mv -f /usr/local/supervisord.conf /etc/supervisor/supervisord.conf \
-    && chmod 600 /etc/supervisor/supervisord.conf \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
