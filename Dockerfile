@@ -18,15 +18,19 @@ RUN if [ "${TESTS:-true}" = true ]; then \
     fi
 RUN python3 setup.py bdist --format=gztar
 WORKDIR /build/valheim-logfilter
-COPY ./logfilter/ /build/valheim-logfilter/
-RUN go build \
-    && mv logfilter /usr/local/bin/valheim-logfilter
+COPY ./valheim-logfilter/ /build/valheim-logfilter/
+RUN go build -ldflags="-s -w" \
+    && mv valheim-logfilter /usr/local/bin/
 WORKDIR /build
 RUN git clone https://github.com/Yepoleb/python-a2s.git \
     && cd python-a2s \
     && python3 setup.py bdist --format=gztar
 COPY bootstrap /usr/local/sbin/
-COPY valheim-* /usr/local/bin/
+COPY valheim-bootstrap /usr/local/bin/
+COPY valheim-backup /usr/local/bin/
+COPY valheim-updater /usr/local/bin/
+COPY valheim-plus-updater /usr/local/bin/
+COPY valheim-server /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
 COPY contrib/* /usr/local/share/valheim/contrib/

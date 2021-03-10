@@ -1,4 +1,4 @@
-module github.com/valheim-server-docker/logfilter
+module github.com/valheim-server-docker/valheim-logfilter
 
 go 1.16
 

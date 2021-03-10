@@ -26,12 +26,12 @@ import (
 )
 
 func main() {
-	envMatch := flag.String("match", "VALHEIM_LOG_FILTER_MATCH", "Valheim match filter env varname prefix")
-	envPrefix := flag.String("startswith", "VALHEIM_LOG_FILTER_STARTSWITH", "Valheim starts-with filter env varname prefix")
-	envSuffix := flag.String("endswith", "VALHEIM_LOG_FILTER_ENDSWITH", "Valheim ends-with filter env varname prefix")
-	envContains := flag.String("contains", "VALHEIM_LOG_FILTER_CONTAINS", "Valheim contains filter varname prefix")
-	envRegexp := flag.String("regexp", "VALHEIM_LOG_FILTER_REGEXP", "Valheim regexp filter varname prefix")
-	envFilterEmpty := flag.String("empty", "VALHEIM_LOG_FILTER_EMPTY", "Valheim empty-line filter varname")
+	envMatch := flag.String("env-match", "VALHEIM_LOG_FILTER_MATCH", "Valheim match filter env varname prefix")
+	envPrefix := flag.String("env-startswith", "VALHEIM_LOG_FILTER_STARTSWITH", "Valheim starts-with filter env varname prefix")
+	envSuffix := flag.String("env-endswith", "VALHEIM_LOG_FILTER_ENDSWITH", "Valheim ends-with filter env varname prefix")
+	envContains := flag.String("env-contains", "VALHEIM_LOG_FILTER_CONTAINS", "Valheim contains filter varname prefix")
+	envRegexp := flag.String("env-regexp", "VALHEIM_LOG_FILTER_REGEXP", "Valheim regexp filter varname prefix")
+	envFilterEmpty := flag.String("env-empty", "VALHEIM_LOG_FILTER_EMPTY", "Valheim empty-line filter varname")
 	flag.Parse()
 
 	if *envMatch == "" || *envPrefix == "" || *envSuffix == "" || *envContains == "" || *envRegexp == "" || *envFilterEmpty == "" {
