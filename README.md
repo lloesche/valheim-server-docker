@@ -155,6 +155,9 @@ Users affected by [#104](https://github.com/lloesche/valheim-server-docker/discu
 -e VALHEIM_LOG_FILTER_STARTSWITH_AssertionFailed="src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp"
 ```
 
+Upon server start you will see the message `Configuring Valheim server log filter` and related configuration messages twice. Once for stdout and once for stderr.
+
+
 ## Event hooks
 The following environment variables can be populated to run commands whenever specific events happen.
 
