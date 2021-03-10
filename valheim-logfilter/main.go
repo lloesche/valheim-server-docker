@@ -54,19 +54,19 @@ func main() {
 			continue
 		}
 		if strings.HasPrefix(envVar, *envMatch) {
-			glog.V(2).Infof("Removing log lines matching %s", varValue)
+			glog.V(2).Infof("Removing log lines matching '%s'", varValue)
 			matchFilters = append(matchFilters, varValue)
 		} else if strings.HasPrefix(envVar, *envPrefix) {
-			glog.V(2).Infof("Removing log lines starting with %s", varValue)
+			glog.V(2).Infof("Removing log lines starting with '%s'", varValue)
 			prefixFilters = append(prefixFilters, varValue)
 		} else if strings.HasPrefix(envVar, *envSuffix) {
-			glog.V(2).Infof("Removing log lines ending with %s", varValue)
+			glog.V(2).Infof("Removing log lines ending with '%s'", varValue)
 			suffixFilters = append(suffixFilters, varValue)
 		} else if strings.HasPrefix(envVar, *envContains) {
-			glog.V(2).Infof("Removing log lines containing %s", varValue)
+			glog.V(2).Infof("Removing log lines containing '%s'", varValue)
 			containsFilters = append(containsFilters, varValue)
 		} else if strings.HasPrefix(envVar, *envRegexp) {
-			glog.V(2).Infof("Removing log lines matching regexp %s", varValue)
+			glog.V(2).Infof("Removing log lines matching regexp '%s'", varValue)
 			regexpFilters = append(regexpFilters, regexp.MustCompile(varValue))
 		} else if envVar == *envFilterEmpty {
 			filterEmpty = varValue == "true"
@@ -112,7 +112,7 @@ Input:
 		for _, filter := range containsFilters {
 			if strings.Contains(scanner.Text(), filter) {
 				if glog.V(5) {
-					glog.Infof("Line contains filter %s", filter)
+					glog.Infof("Line contains filter '%s'", filter)
 				}
 				continue Input
 			}
