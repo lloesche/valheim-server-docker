@@ -32,6 +32,7 @@ setup_supervisor_http_server() {
     rm -f "$supervisor_http_server_conf"
     if [ "$SUPERVISOR_HTTP" = true ]; then
         if [ -n "$SUPERVISOR_HTTP_PASS" ]; then
+            info "Supervisor http server activated"
             cat > "$supervisor_http_server_conf" <<EOF
 [inet_http_server]
 port = :9001
