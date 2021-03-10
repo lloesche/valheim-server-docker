@@ -3,14 +3,14 @@ Filter Valheim dedicated server log output
 
 Valheim server by default logs a lot of noise. These env variables allow users to remove unwanted lines from the log.
 
-| Prefix | Default | Purpose |
-|----------|----------|-------|
-| `VALHEIM_LOG_FILTER_EMPTY` | `true` | Filter empty log lines |
-| `VALHEIM_LOG_FILTER_MATCH` | ` ` | Filter log lines exactly matching |
-| `VALHEIM_LOG_FILTER_STARTSWITH` | `(Filename:` | Filter log lines starting with |
-| `VALHEIM_LOG_FILTER_ENDSWITH` |  | Filter log lines ending with |
-| `VALHEIM_LOG_FILTER_CONTAINS` |  | Filter log lines containing |
-| `VALHEIM_LOG_FILTER_REGEXP` |  | Filter log lines matching regexp |
+| Prefix | Purpose |
+|----------|-------|
+| `VALHEIM_LOG_FILTER_EMPTY` | Filter empty log lines |
+| `VALHEIM_LOG_FILTER_MATCH` | Filter log lines exactly matching |
+| `VALHEIM_LOG_FILTER_STARTSWITH` | Filter log lines starting with |
+| `VALHEIM_LOG_FILTER_ENDSWITH` | Filter log lines ending with |
+| `VALHEIM_LOG_FILTER_CONTAINS` | Filter log lines containing |
+| `VALHEIM_LOG_FILTER_REGEXP` | Filter log lines matching regexp |
 
 All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` are prefixes. Meaning you can define multiple matches like so:
 ```
