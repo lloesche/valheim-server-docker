@@ -45,7 +45,7 @@ func main() {
 	var regexpFilters []*regexp.Regexp
 	filterEmpty := false
 
-	glog.Info("Configuring Valheim server log filter")
+	glog.V(1).Info("Configuring Valheim server log filter")
 	for _, e := range os.Environ() {
 		pair := strings.SplitN(e, "=", 2)
 		envVar := pair[0]
@@ -54,23 +54,23 @@ func main() {
 			continue
 		}
 		if strings.HasPrefix(envVar, *envMatch) {
-			glog.Infof("Removing log lines matching %s", varValue)
+			glog.V(2).Infof("Removing log lines matching %s", varValue)
 			matchFilters = append(matchFilters, varValue)
 		} else if strings.HasPrefix(envVar, *envPrefix) {
-			glog.Infof("Removing log lines starting with %s", varValue)
+			glog.V(2).Infof("Removing log lines starting with %s", varValue)
 			prefixFilters = append(prefixFilters, varValue)
 		} else if strings.HasPrefix(envVar, *envSuffix) {
-			glog.Infof("Removing log lines ending with %s", varValue)
+			glog.V(2).Infof("Removing log lines ending with %s", varValue)
 			suffixFilters = append(suffixFilters, varValue)
 		} else if strings.HasPrefix(envVar, *envContains) {
-			glog.Infof("Removing log lines containing %s", varValue)
+			glog.V(2).Infof("Removing log lines containing %s", varValue)
 			containsFilters = append(containsFilters, varValue)
 		} else if strings.HasPrefix(envVar, *envRegexp) {
-			glog.Infof("Removing log lines matching regexp %s", varValue)
+			glog.V(2).Infof("Removing log lines matching regexp %s", varValue)
 			regexpFilters = append(regexpFilters, regexp.MustCompile(varValue))
 		} else if envVar == *envFilterEmpty {
 			filterEmpty = varValue == "true"
-			glog.Infof("Removing empty log lines: %t", filterEmpty)
+			glog.V(2).Infof("Removing empty log lines: %t", filterEmpty)
 		}
 	}
 	glog.Flush()
