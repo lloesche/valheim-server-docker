@@ -74,6 +74,7 @@ startsecs=10
 startretries=0
 priority=90
 EOF
+        chmod 600 "$status_http_server_conf"
         cat > "$status_http_server_updater_conf" <<EOF
 [program:valheim-status-updater]
 user=root
