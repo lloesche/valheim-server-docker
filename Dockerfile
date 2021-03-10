@@ -26,6 +26,7 @@ RUN git clone https://github.com/Yepoleb/python-a2s.git \
     && cd python-a2s \
     && python3 setup.py bdist --format=gztar
 COPY bootstrap /usr/local/sbin/
+COPY valheim-status /usr/local/bin/
 COPY valheim-bootstrap /usr/local/bin/
 COPY valheim-backup /usr/local/bin/
 COPY valheim-updater /usr/local/bin/
