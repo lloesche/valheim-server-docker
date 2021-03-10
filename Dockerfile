@@ -3,20 +3,24 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG TESTS
 RUN apt-get update
 RUN apt-get -y install apt-utils
-RUN apt-get -y install build-essential curl git python3 python3-pip shellcheck
+RUN apt-get -y install build-essential curl git python3 python3-pip golang shellcheck
 WORKDIR /build/busybox
 RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2 \
     && tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox \
     && make defconfig \
     && make install
-COPY ./vpenvconf/ /build/vpenvconf/
 WORKDIR /build/vpenvconf
+COPY ./vpenvconf/ /build/vpenvconf/
 RUN if [ "${TESTS:-true}" = true ]; then \
         pip3 install tox \
         && tox \
         ; \
     fi
 RUN python3 setup.py bdist --format=gztar
+WORKDIR /build/valheim-logfilter
+COPY ./logfilter/ /build/valheim-logfilter/
+RUN go build \
+    && mv logfilter /usr/local/bin/valheim-logfilter
 WORKDIR /build
 RUN git clone https://github.com/Yepoleb/python-a2s.git \
     && cd python-a2s \
