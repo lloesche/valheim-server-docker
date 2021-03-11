@@ -501,4 +501,4 @@ You will need to remove the container completely and perform the [First install]
 ![Error Step 3](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/synology_upgrade_error3.png "Error Step 3")
 Make sure to use the same folder settings as before so the existing `/config` and `/opt/valheim` directories are used.
 
-The error is caused by Synology using the old image's `ENTRYPOINT` with the newly downloaded image. By removing the container and recreating it we're forcing Synology to use the new images `ENTRYPOINT`.
+The error is caused by Synology using the old image's `CMD` with the newly downloaded image. By removing the container and recreating it we're forcing Synology to use the new images `CMD`.
