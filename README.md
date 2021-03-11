@@ -465,6 +465,31 @@ Alternatively start with `-e VPCFG_Server_enabled=true -e VPCFG_Server_enforceMo
 
 Ensure that the server can not be accessed from the public Internet. If you like to have the LAN experience but over the Internet I can highly recommend [ZeroTier](https://www.zerotier.com/). It is an open source VPN service where you can create a virtual network switch that you and your friends can join. It is like Hamachi but free and open source. They do have a paid product for Businesses with more than 50 users. So for more than 50 users you could either get their Business product or alternatively would have to host the VPN controller yourself.
 
+# Changing startup CMD in Portainer
+
+Portainer retains the startup CMD from the first time the container ist deployed. This is also true if the container is updated using "Recreate" in combination with "Pull latest image".
+
+Recent changes made it so that the startup CMD of the image was changed. To avoid recreating the container from scratch you can use the "Duplicate/Edit" function of Portainer by following the instructions outlined below.
+
+![Step 1](https://user-images.githubusercontent.com/1853759/110857440-25d1d000-82b9-11eb-8426-d2dbb5cb0802.png "Step 1")
+
+Stop the old container (1) and edit the name (2)
+
+![Step 2](https://user-images.githubusercontent.com/1853759/110857603-587bc880-82b9-11eb-9351-473abddcd6e3.png "Step 2")
+
+Append `_old` or similar to the name (3) save the change (4) and click "Duplicate/Edit" (5)
+
+![Step 3](https://user-images.githubusercontent.com/1853759/110857992-d5a73d80-82b9-11eb-8e4f-440a1d1b1f98.png "Step 3")
+
+Change the name back to original name (2) (3) (4).
+
+Unter Advanced container settings override (6) the command and enter `/usr/local/sbin/bootstrap` (7)
+
+Make shure "Always pull the image" is enabled.
+
+click "Deploy the container" to finish.
+
+If your server starts and is working delete the old unused image and the old container.
 
 # Synology Help
 ## First install
