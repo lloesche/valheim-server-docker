@@ -161,8 +161,8 @@ The following environment variables can be populated to run commands whenever sp
 | `POST_BACKUP_HOOK` |  | Command to be executed after a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path of the backup zip file. Backups are blocked until this command returns. See [Post backup hook](#post-backup-hook) for details. |
 | `PRE_UPDATE_CHECK_HOOK` |  | Command to be executed before an update check is performed. Current update is blocked until this command returns. |
 | `POST_UPDATE_CHECK_HOOK` |  | Command to be executed after an update check was performed. Future updates are blocked until this command returns. |
-| `PRE_START_HOOK` |  | Command to be executed before the first server start is performed. Current start is blocked until this command returns. |
-| `POST_START_HOOK` |  | Command to be executed after the first server start was performed. Future restarts and update checks are blocked until this command returns. |
+| `PRE_START_HOOK` |  | Command to be executed before the first server start is performed by the valheim-updater. Current start is blocked until this command returns. |
+| `POST_START_HOOK` |  | Command to be executed after the first server start was performed by the valheim-updater. Future restarts and update checks are blocked until this command returns. |
 | `PRE_RESTART_HOOK` |  | Command to be executed before a server restart is performed by the valheim-updater. Current restart is blocked until this command returns. |
 | `POST_RESTART_HOOK` |  | Command to be executed after a server restart was performed by the valheim-updater. Future restarts and update checks are blocked until this command returns. |
 | `PRE_SERVER_RUN_HOOK` |  | Command to be executed before the server is started. Server startup is blocked until this command returns. |
