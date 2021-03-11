@@ -10,7 +10,10 @@ It is running the CMD from an old version of lloesche/valheim-server on a new ve
 If you are using a Synology NAS check this help page:
 https://github.com/lloesche/valheim-server-docker#error-after-download-of-new-container-image
 
-If you are on a different system like e.g. Portainer you have to delete the container and re-create it.
+If you are using Portainer read this for information on updating the CMD:
+https://github.com/lloesche/valheim-server-docker#changing-startup-cmd-in-portainer
+
+If you are on a different system the safest way to resolve this issue is to delete the container and re-create it from scratch.
 
 All the files in `/config` and `/opt/valheim` can be retained of course!
 
