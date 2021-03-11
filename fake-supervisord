@@ -1,0 +1,20 @@
+#!/bin/bash
+
+cat <<EOF
+!!! ATTENTION !!!
+
+You are seeing this message because your container manager is executing the wrong startup CMD.
+
+It is running the CMD from an old version of lloesche/valheim-server on a new version of lloesche/valheim-server
+
+If you are using a Synology NAS check this help page:
+https://github.com/lloesche/valheim-server-docker#error-after-download-of-new-container-image
+
+If you are on a different system like e.g. Portainer you have to delete the container and re-create it.
+
+All the files in `/config` and `/opt/valheim` can be retained of course!
+
+!!! ATTENTION !!!
+EOF
+
+exec /usr/local/sbin/bootstrap

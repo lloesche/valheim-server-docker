@@ -71,6 +71,7 @@ RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \
 FROM debian:stable-slim
 ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build-env /usr/local/ /usr/local/
+COPY fake-supervisord /usr/bin/supervisord
 RUN dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get -y --no-install-recommends install apt-utils \
@@ -135,6 +136,7 @@ RUN dpkg --add-architecture i386 \
     && chmod 755 /opt/steamcmd/steamcmd.sh \
         /opt/steamcmd/linux32/steamcmd \
         /opt/steamcmd/linux32/steamerrorreporter \
+        /usr/bin/supervisord \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
