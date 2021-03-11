@@ -42,7 +42,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 * [Synology Help](#synology-help)
 	* [First install](#first-install)
 	* [Updating the container image to the latest version](#updating-the-container-image-to-the-latest-version)
-
+		* [Error after download of new container image](#error-after-download-of-new-container-image)
 <!-- vim-markdown-toc -->
 
 
