@@ -163,8 +163,8 @@ The following environment variables can be populated to run commands whenever sp
 | `POST_UPDATE_CHECK_HOOK` |  | Command to be executed after an update check was performed. Future updates are blocked until this command returns. |
 | `PRE_START_HOOK` |  | Command to be executed before the first server start is performed. Current start is blocked until this command returns. |
 | `POST_START_HOOK` |  | Command to be executed after the first server start was performed. Future restarts and update checks are blocked until this command returns. |
-| `PRE_RESTART_HOOK` |  | Command to be executed before a server restart is performed. Current restart is blocked until this command returns. |
-| `POST_RESTART_HOOK` |  | Command to be executed after a server restart was performed. Future restarts and update checks are blocked until this command returns. |
+| `PRE_RESTART_HOOK` |  | Command to be executed before a server restart is performed by the valheim-updater. Current restart is blocked until this command returns. |
+| `POST_RESTART_HOOK` |  | Command to be executed after a server restart was performed by the valheim-updater. Future restarts and update checks are blocked until this command returns. |
 | `PRE_SERVER_RUN_HOOK` |  | Command to be executed before the server is started. Server startup is blocked until this command returns. |
 | `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered after 29 seconds. |
 | `PRE_SERVER_SHUTDOWN_HOOK` |  | Command to be executed before the server is shut down. Server shutdown is blocked until this command returns. If `PRE_SERVER_SHUTDOWN_HOOK` holds the shutdown process for more than 90 seconds, the entire process will be hard-killed by `supervisord`. |
