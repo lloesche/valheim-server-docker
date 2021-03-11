@@ -487,3 +487,17 @@ The process of updating the image clears all data stored inside the container. S
 ![Update Step 4](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update4.png "Update Step 4")
 ![Update Step 5](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update5.png "Update Step 5")
 ![Update Step 6](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/update6.png "Update Step 6")
+
+### Error after download of new container image
+If you are getting the following error after an Update:
+![Error Step 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/synology_upgrade_error1.png "Error Step 1")
+
+![Error Step 2](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/synology_upgrade_error2.png "Error Step 2")
+```
+"Failure: OCI runtime create failed: container_linux.go:367: [...]"
+```
+
+You will need to remove the container completely and perform the [First install](#first-install) steps again.
+![Error Step 3](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/synology_upgrade_error3.png "Error Step 3")
+
+The error is caused by Synology using the old image's `ENTRYPOINT` with the newly downloaded image. By removing the container and recreating it we're forcing Synology to use the new images `ENTRYPOINT`.
