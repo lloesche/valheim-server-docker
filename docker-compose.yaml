@@ -14,3 +14,4 @@ services:
     env_file:
       - $HOME/valheim-server/valheim.env
     restart: always
+    stop_grace_period: 2m
