@@ -13,6 +13,7 @@ ExecStart=/usr/bin/docker run \
           --name %n \
           --rm \
           --cap-add=sys_nice \
+          --stop-timeout 120 \
           -v /etc/valheim:/config:Z \
           -v /opt/valheim:/opt/valheim:Z \
           -p 2456-2457:2456-2457/udp \
