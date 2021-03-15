@@ -16,7 +16,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 		* [Event hook examples](#event-hook-examples)
 			* [Install extra packages](#install-extra-packages)
 			* [Copy backups to another location](#copy-backups-to-another-location)
-			* [Delay restarts by 1 minute and notify on Discord](#delay-restarts-by-1-minute-and-notify-on-discord)
+			* [Notify on Discord](#notify-on-discord)
 	* [ValheimPlus config from Environment Variables](#valheimplus-config-from-environment-variables)
 * [System requirements](#system-requirements)
 * [Deployment](#deployment)
@@ -188,11 +188,31 @@ Within that command the string `@BACKUP_FILE@` will be replaced by the full path
 -e POST_BACKUP_HOOK='timeout 300 scp @BACKUP_FILE@ myself@example.com:~/backups/$(basename @BACKUP_FILE@)'
 ```
 
-#### Delay restarts by 1 minute and notify on Discord
+#### Notify on Discord
+Because proper string quoting on the shell vs. inside a `docker-compose.yaml` vs. an `env_file` can be challenging, here are examples for each use case.
+
+##### Using the commandline
+Delay restarts by 1 minute and notify on Discord
 ```
 -e DISCORD_WEBHOOK="https://discord.com/api/webhooks/8171522530..." \
 -e DISCORD_MESSAGE="Restarting Valheim server in one minute!" \
 -e PRE_RESTART_HOOK='curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$DISCORD_MESSAGE\"}" "$DISCORD_WEBHOOK" && sleep 60'
+```
+
+##### Inside docker-compose.yaml
+Notify on Discord with server's name in the message
+```
+    environment:
+      - DISCORD_WEBHOOK=https://discord.com/api/webhooks/8171522530...
+      - DISCORD_MESSAGE=Starting Valheim server $$SERVER_NAME
+      - 'PRE_BOOTSTRAP_HOOK=curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$$(eval echo $$DISCORD_MESSAGE)\"}" "$$DISCORD_WEBHOOK"'
+```
+
+##### Inside an env_file
+```
+DISCORD_WEBHOOK=https://discord.com/api/webhooks/8171522530...
+DISCORD_MESSAGE=Starting Valheim server
+PRE_BOOTSTRAP_HOOK=curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$DISCORD_MESSAGE\"}" "$DISCORD_WEBHOOK"
 ```
 
 
