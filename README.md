@@ -211,7 +211,7 @@ enabled=true
 enforceMod=false
 dataRate=500
 ```
-All existing configuration in /config/valheimplus/valheim_plus.cfg is retained and a backup of the old config is created as /config/valheimplus/valheim_plus.old before writing the new config file.
+All existing configuration in `/config/valheimplus/valheim_plus.cfg` is retained and a backup of the old config is created as `/config/valheimplus/valheim_plus.cfg.old` before writing the new config file.
 
 
 # System requirements
