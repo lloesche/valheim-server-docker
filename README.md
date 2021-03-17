@@ -26,6 +26,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 	* [Deploying to AWS ECS](#deploying-to-aws-ecs)
 * [Updates](#updates)
 * [Backups](#backups)
+  * [Manual backup](#manual-backup)
 * [Finding Your Server](#finding-your-server)
 	* [In-game](#in-game)
 	* [Steam Server Browser](#steam-server-browser)
@@ -316,6 +317,30 @@ Beware that backups are performed while the server is running. As such files mig
 However the `worlds/` directory also contains a `.db.old` file for each world which should always be closed and in a consistent state.
 
 See [Copy backups to another location](#copy-backups-to-another-location) for an example of how to copy backups offsite.
+
+## Manual backup
+Sending `SIGHUP` to the `valheim-backup` service or restarting the service will create a backup.
+The PID of the running service can be found in `/var/run/valheim-backup.pid`
+
+Assuming your container's name is `valheim-server` here's how both would work:
+
+Sending SIGHUP using `supervisorctl` (the most graceful way of making a backup)
+```
+docker exec -it valheim-server supervisorctl signal HUP valheim-backup
+```
+
+Sending SIGHUP manually (as graceful as before but more "manual")
+```
+docker exec -it valheim-server bash -c 'kill -HUP $(< /var/run/valheim-backup.pid)'
+```
+
+Restarting `valheim-backup` (the more brute force way)
+```
+docker exec -it valheim-server supervisorctl restart valheim-backup
+```
+
+The restart can also be done from [the Supervisor web UI](#supervisor).
+![Backup Step 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/backup1.png "Backup Step 1")
 
 
 # Finding Your Server
