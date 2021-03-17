@@ -45,6 +45,9 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 	* [First install](#first-install)
 	* [Updating the container image to the latest version](#updating-the-container-image-to-the-latest-version)
 		* [Error after download of new container image](#error-after-download-of-new-container-image)
+* [QNAP NAS Help](#qnap-nas-help)
+	* [Creating container](#creating-container)
+	* [Updating image](#updating-image)
 <!-- vim-markdown-toc -->
 
 
@@ -576,3 +579,64 @@ You will need to remove the container completely and perform the [First install]
 Make sure to use the same folder settings as before so the existing `/config` and `/opt/valheim` directories are used.
 
 The error is caused by Synology using the old image's `CMD` with the newly downloaded image. By removing the container and recreating it we're forcing Synology to use the new images `CMD`.
+
+# QNAP NAS Help
+## Creating container
+
+As a prerequisite you need to make folder where you will keep yours saves, backups and configuration.
+
+Here is sample **docker-compose.yml** file that we will use in next steps.
+```yaml
+version: "3"
+
+services: 
+  valheim: 
+    image: lloesche/valheim-server
+    cap_add:
+      - sys_nice
+    volumes: 
+      - /share/CACHEDEV1_DATA/{you_path_to_folder}/config:/config
+      - /share/CACHEDEV1_DATA/{you_path_to_folder}/data:/opt/valheim
+    ports: 
+      - "2456-2457:2456-2457/udp"
+      - "9001:9001/tcp"
+    env_file:
+      - /share/CACHEDEV1_DATA/{you_path_to_folder}/valheim.env
+    restart: always
+```
+
+The most important part is `/share/CACHEDEV1_DATA/{you_path_to_folder}/config`. You need to replace **{you_path_to_folder}** with folder path where you want to store data and configuration for you container.
+
+Also in this folder you need to create file **valheim.env** to store you configuration variables. 
+
+Example:
+
+```
+SERVER_NAME=My Server
+WORLD_NAME=Dedicated
+SERVER_PASS=secret
+SERVER_PUBLIC=true
+```
+
+
+![Qnap Step 1](misc/qnap_create_button.png "Qnap Step 1")
+
+![Qnap Step 2](misc/qnap_create_application.png "Qnap Step 2")
+
+![Qnap Step 3](misc/qnap_create_yaml.png "Qnap Step 3")
+
+
+
+## Updating image
+
+![Qnap update Step 1](misc/qnap_update_resources.png "Qnap update Step 1")
+
+![Qnap update Step 2](misc/qnap_update_button.png "Qnap update Step 2")
+
+In the image name you need to specify image from your container definition `lloesche/valheim-server`
+
+![Qnap update Step 3](misc/qnap_update_pull.png "Qnap update Step 3")
+
+After image is downloaded restart you container. As you can see old image is now unused and new one is used by container. You can safely delete old image to save resources.
+
+![Qnap update Step 4](misc/qnap_update_images.png "Qnap update Step 4")
