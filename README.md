@@ -629,7 +629,7 @@ SERVER_PUBLIC=true
 
 ## Updating image
 
-![Qnap update Step 1](misc/qnap_update_resource.png "Qnap update Step 1")
+![Qnap update Step 1](misc/qnap_update_resources.png "Qnap update Step 1")
 
 ![Qnap update Step 2](misc/qnap_update_button.png "Qnap update Step 2")
 
