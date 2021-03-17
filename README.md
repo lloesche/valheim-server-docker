@@ -619,24 +619,24 @@ SERVER_PUBLIC=true
 ```
 
 
-![Qnap Step 1](misc/qnap_create_button.png "Qnap Step 1")
+![Qnap Step 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/qnap_create_button.png "Qnap Step 1")
 
-![Qnap Step 2](misc/qnap_create_application.png "Qnap Step 2")
+![Qnap Step 2](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/qnap_create_application.png "Qnap Step 2")
 
-![Qnap Step 3](misc/qnap_create_yaml.png "Qnap Step 3")
+![Qnap Step 3](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/qnap_create_yaml.png "Qnap Step 3")
 
 
 
 ## Updating image
 
-![Qnap update Step 1](misc/qnap_update_resources.png "Qnap update Step 1")
+![Qnap update Step 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/qnap_update_resources.png "Qnap update Step 1")
 
-![Qnap update Step 2](misc/qnap_update_button.png "Qnap update Step 2")
+![Qnap update Step 2](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/qnap_update_button.png "Qnap update Step 2")
 
 In the image name you need to specify image from your container definition `lloesche/valheim-server`
 
-![Qnap update Step 3](misc/qnap_update_pull.png "Qnap update Step 3")
+![Qnap update Step 3](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/qnap_update_pull.png "Qnap update Step 3")
 
 After image is downloaded restart you container. As you can see old image is now unused and new one is used by container. You can safely delete old image to save resources.
 
-![Qnap update Step 4](misc/qnap_update_images.png "Qnap update Step 4")
+![Qnap update Step 4](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/qnap_update_images.png "Qnap update Step 4")
