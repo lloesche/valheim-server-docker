@@ -613,7 +613,7 @@ services:
 
 The most important part is `/share/CACHEDEV1_DATA/{path_to_folder}/config`. You need to replace **{path_to_folder}** with the folder path where you want to store data and configuration for your Valheim server.
 
-Change your memory and cpu limit according to your available resources on QNAP. Current settings are 60% of single CPU and 4gb of RAM.
+Change your memory and cpu limit according to your available resources on QNAP. Current settings are 70% of single CPU and 4gb of RAM.
 
 In this folder you need to create a file `valheim.env` to store configuration variables. 
 
