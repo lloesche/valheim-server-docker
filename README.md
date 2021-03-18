@@ -607,7 +607,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.60'
+          cpus: '0.70'
           memory: 4gb
 ```
 
