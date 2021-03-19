@@ -8,9 +8,9 @@ ConditionPathExists=/etc/sysconfig/valheim-server
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker stop %n
 ExecStartPre=-/usr/bin/docker rm %n
-ExecStartPre=/usr/bin/docker pull lloesche/valheim-server
 ExecStart=/usr/bin/docker run \
           --name %n \
+          --pull=always \
           --rm \
           --cap-add=sys_nice \
           --stop-timeout 120 \
