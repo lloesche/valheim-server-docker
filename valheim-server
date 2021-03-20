@@ -84,6 +84,7 @@ wait_for_server_listening() {
 run_server() {
     pre_server_run_hook
     info "Running Valheim Server"
+    debug "Server config is name: $SERVER_NAME, port: $SERVER_PORT/udp, world: $WORLD_NAME, public: $SERVER_PUBLIC, V+ mod: $VALHEIM_PLUS"
     update_server_status starting
 
     # shellcheck disable=SC2086
