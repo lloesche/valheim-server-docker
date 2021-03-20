@@ -363,8 +363,8 @@ Only 200 servers will be shown at a time so we will have to enter part of our se
 
 ### Joining Directly via Hostname/IP
 
-Valheim has since added the `Join IP` button to the `Join Game` tab. If you click the `Join IP` button, you are prompted to enter your server's IP and port.
-If you left the `SERVER_PORT` at its default value of `2456`, you do not have to enter the port. The IP or URL of your server will suffice.
+Valheim has since added the `Join IP` button to the `Join Game` tab. If you click the `Join IP` button, you are prompted to enter your server's IP address and port number.
+If you left the `SERVER_PORT` at its default value of `2456`, you do not have to enter the port. The hostname or IP of your server will suffice.
 If you changed the port, you have to specify it like this: `example.com:3333`.
 
 This method of connecting to your server will work even if your server is not public (i.e., you set `SERVER_PUBLIC` to `false`).
