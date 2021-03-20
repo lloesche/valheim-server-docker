@@ -54,12 +54,12 @@ fatal=5
 log_level=${log_level:-$debug}
 
 
-debug()    { logstd $debug    "(DEBUG) $*"; }
-info()     { logstd $info     "(INFO) $*"; }
-warn()     { logstd $warn     "(WARN) $*"; }
-error()    { logerr $error    "(ERROR) $*"; }
-critical() { logerr $critical "(CRITIAL) $*"; }
-fatal()    { logerr $fatal    "(FATAL) $*"; exit 1; }
+debug()    { logstd $debug    "DEBUG - [$$] - $*"; }
+info()     { logstd $info     "INFO - $*"; }
+warn()     { logstd $warn     "WARN - $*"; }
+error()    { logerr $error    "ERROR - $*"; }
+critical() { logerr $critical "CRITIAL - $*"; }
+fatal()    { logerr $fatal    "FATAL - $*"; exit 1; }
 
 
 logstd() {
@@ -83,10 +83,7 @@ printline() {
     log_data="$*"
 
     if [ "$log_at_level" -le "$log_level" ]; then
-        printf "%s [%i] %s\\n" \
-            "$(date +'%Y-%m-%d %H:%M:%S')" \
-            $$ \
-            "$log_data"
+        echo "$log_data"
     fi
 }
 

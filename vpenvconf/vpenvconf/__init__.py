@@ -7,7 +7,7 @@ from typing import Dict
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
+    format="%(levelname)s - %(message)s",
 )
 log = logging.getLogger("vpenvconf")
 log.setLevel(logging.INFO)

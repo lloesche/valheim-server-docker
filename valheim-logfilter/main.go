@@ -21,6 +21,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/golang/glog"
 )
@@ -32,9 +33,10 @@ func main() {
 	envContains := flag.String("env-contains", "VALHEIM_LOG_FILTER_CONTAINS", "Valheim contains filter varname prefix")
 	envRegexp := flag.String("env-regexp", "VALHEIM_LOG_FILTER_REGEXP", "Valheim regexp filter varname prefix")
 	envFilterEmpty := flag.String("env-empty", "VALHEIM_LOG_FILTER_EMPTY", "Valheim empty-line filter varname")
+	envFilterUTF8 := flag.String("env-utf8", "VALHEIM_LOG_FILTER_UTF8", "Valheim UTF-8 filter varname")
 	flag.Parse()
 
-	if *envMatch == "" || *envPrefix == "" || *envSuffix == "" || *envContains == "" || *envRegexp == "" || *envFilterEmpty == "" {
+	if *envMatch == "" || *envPrefix == "" || *envSuffix == "" || *envContains == "" || *envRegexp == "" || *envFilterEmpty == "" || *envFilterUTF8 == "" {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
@@ -44,6 +46,7 @@ func main() {
 	var containsFilters []string
 	var regexpFilters []*regexp.Regexp
 	filterEmpty := false
+	filterUTF8 := false
 
 	glog.V(1).Info("Configuring Valheim server log filter")
 	for _, e := range os.Environ() {
@@ -71,6 +74,9 @@ func main() {
 		} else if envVar == *envFilterEmpty {
 			filterEmpty = varValue == "true"
 			glog.V(2).Infof("Removing empty log lines: %t", filterEmpty)
+		} else if envVar == *envFilterUTF8 {
+			filterUTF8 = varValue == "true"
+			glog.V(2).Infof("Removing invalid UTF-8 chars: %t", filterUTF8)
 		}
 	}
 	glog.Flush()
@@ -78,15 +84,34 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 Input:
 	for scanner.Scan() {
+		logLine := scanner.Text()
 		if glog.V(10) {
-			glog.Infof("Processing line '%s'", scanner.Text())
+			glog.Infof("Processing line '%s'", logLine)
 		}
-		if filterEmpty && len(scanner.Text()) == 0 {
-			glog.V(5).Info("Skipping empty line")
+		if filterEmpty && len(logLine) == 0 {
+			if glog.V(5) {
+				glog.Info("Skipping empty line")
+			}
 			continue
 		}
+		if filterUTF8 && !utf8.ValidString(logLine) {
+			if glog.V(5) {
+				glog.Info("Removing non UTF-8 character(s)")
+			}
+			v := make([]rune, 0, len(logLine))
+			for i, r := range logLine {
+				if r == utf8.RuneError {
+					_, size := utf8.DecodeRuneInString(logLine[i:])
+					if size == 1 {
+						continue
+					}
+				}
+				v = append(v, r)
+			}
+			logLine = string(v)
+		}
 		for _, filter := range matchFilters {
-			if scanner.Text() == filter {
+			if logLine == filter {
 				if glog.V(5) {
 					glog.Infof("Line matched '%s'", filter)
 				}
@@ -94,7 +119,7 @@ Input:
 			}
 		}
 		for _, filter := range prefixFilters {
-			if strings.HasPrefix(scanner.Text(), filter) {
+			if strings.HasPrefix(logLine, filter) {
 				if glog.V(5) {
 					glog.Infof("Line matched prefix filter '%s'", filter)
 				}
@@ -102,7 +127,7 @@ Input:
 			}
 		}
 		for _, filter := range suffixFilters {
-			if strings.HasSuffix(scanner.Text(), filter) {
+			if strings.HasSuffix(logLine, filter) {
 				if glog.V(5) {
 					glog.Infof("Line matched suffix filter '%s'", filter)
 				}
@@ -110,7 +135,7 @@ Input:
 			}
 		}
 		for _, filter := range containsFilters {
-			if strings.Contains(scanner.Text(), filter) {
+			if strings.Contains(logLine, filter) {
 				if glog.V(5) {
 					glog.Infof("Line contains filter '%s'", filter)
 				}
@@ -118,7 +143,7 @@ Input:
 			}
 		}
 		for _, filter := range regexpFilters {
-			if filter.MatchString(scanner.Text()) {
+			if filter.MatchString(logLine) {
 				if glog.V(5) {
 					glog.Infof("Line matched regexp filter '%s'", filter)
 				}
@@ -129,7 +154,7 @@ Input:
 			glog.Info("Line matched no filters")
 		}
 		glog.Flush()
-		fmt.Println(scanner.Text())
+		fmt.Println(logLine)
 	}
 
 	if scanner.Err() != nil {

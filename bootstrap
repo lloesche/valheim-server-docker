@@ -65,10 +65,10 @@ setup_status_http_server() {
 user=root
 environment=HOME="/root",USER="root",LANG="en_US.UTF-8",PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 command=/usr/local/bin/httpd -f -p "$STATUS_HTTP_PORT" -h "$STATUS_HTTP_HTDOCS" -c "$STATUS_HTTP_CONF"
-stdout_logfile=/dev/stdout
-stdout_logfile_maxbytes=0
-stderr_logfile=/dev/stderr
-stderr_logfile_maxbytes=0
+stdout_syslog=true
+stderr_syslog=true
+stdout_logfile_maxbytes=1MB
+stderr_logfile_maxbytes=1MB
 autostart=true
 autorestart=true
 startsecs=10
@@ -81,10 +81,10 @@ EOF
 user=root
 environment=HOME="/root",USER="root",LANG="en_US.UTF-8",PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 command=/usr/local/bin/valheim-status --update
-stdout_logfile=/dev/stdout
-stdout_logfile_maxbytes=0
-stderr_logfile=/dev/stderr
-stderr_logfile_maxbytes=0
+stdout_syslog=true
+stderr_syslog=true
+stdout_logfile_maxbytes=1MB
+stderr_logfile_maxbytes=1MB
 autostart=true
 autorestart=true
 startsecs=10
