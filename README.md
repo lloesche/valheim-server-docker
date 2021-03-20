@@ -162,6 +162,7 @@ The following environment variables can be populated to run commands whenever sp
 
 | Name | Default | Purpose |
 |----------|----------|-------|
+| `PRE_SUPERVISOR_HOOK` |  | Command to be executed before supervisord is run. Startup is blocked until this command returns. |
 | `PRE_BOOTSTRAP_HOOK` |  | Command to be executed before bootstrapping is done. Startup is blocked until this command returns. |
 | `POST_BOOTSTRAP_HOOK` |  | Command to be executed after bootstrapping is done and before the server or any services are started. Can be used to install additional packages or perform additional system setup. Startup is blocked until this command returns. |
 | `PRE_BACKUP_HOOK` |  | Command to be executed before a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path of the future backup zip file. Backups are blocked until this command returns. See [Post backup hook](#post-backup-hook) for details. |

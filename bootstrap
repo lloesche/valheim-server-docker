@@ -10,6 +10,7 @@ main() {
     configure_timezone
     setup_supervisor_http_server
     setup_status_http_server
+    pre_supervisor_hook
     exec /usr/local/bin/supervisord -c /usr/local/etc/supervisord.conf
 }
 
@@ -91,6 +92,14 @@ startretries=0
 priority=80
 EOF
         chmod 600 "$status_http_server_updater_conf"
+    fi
+}
+
+
+pre_supervisor_hook() {
+    if [ -n "$PRE_SUPERVISOR_HOOK" ]; then
+        info "Running pre supervisor hook: $PRE_SUPERVISOR_HOOK"
+        eval "$PRE_SUPERVISOR_HOOK"
     fi
 }
 
