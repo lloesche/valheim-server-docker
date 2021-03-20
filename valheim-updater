@@ -48,7 +48,7 @@ update() {
     info "Downloading/updating/validating Valheim server from Steam"
     if ! download_valheim; then
         if [ -f "$valheim_download_path/valheim_server.x86_64" ]; then
-            error "Failed to update Valheim server from Steam - however an old version was found - trying to start"
+            error "Failed to update Valheim server from Steam - however an existing version was found locally - using it"
         else
             error "Failed to download Valheim server from Steam - retrying later - check your networking and volume access permissions"
             return
