@@ -71,9 +71,10 @@ wait_for_server_listening() {
     while :; do
         if server_is_listening; then
             update_server_status running
+            debug "Server is now listening on UDP port $SERVER_PORT"
             break
         else
-            debug "Waiting for server to listen on port $SERVER_PORT"
+            debug "Waiting for server to listen on UDP port $SERVER_PORT"
             sleep 5
         fi
     done
