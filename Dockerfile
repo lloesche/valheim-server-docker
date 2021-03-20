@@ -1,6 +1,7 @@
 FROM debian:stable-slim as build-env
 ENV DEBIAN_FRONTEND=noninteractive
 ARG TESTS
+RUN env
 RUN apt-get update
 RUN apt-get -y install apt-utils
 RUN apt-get -y install build-essential curl git python3 python3-pip golang shellcheck
