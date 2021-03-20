@@ -367,7 +367,7 @@ Valheim has since added the `Join IP` button to the `Join Game` tab. If you clic
 If you left the `SERVER_PORT` at its default value of `2456`, you do not have to enter the port. The IP or URL of your server will suffice.
 If you changed the port, you have to specify it like this: `example.com:3333`.
 
-This method of connecting to your server will work if your server is not public, ie you did set `SERVER_PUBLIC` to `false`.
+This method of connecting to your server will work even if your server is not public (i.e., you set `SERVER_PUBLIC` to `false`).
 
 ![in-game server browser with join ip button](./misc/find5.png "in-game server browser with join ip button")
 ![join ip dialog](./misc/find6.png "join ip dialog")
