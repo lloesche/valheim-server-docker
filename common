@@ -41,6 +41,9 @@ cmd_valheim_status=/usr/local/bin/valheim-status
 cmd_valheim_logfilter=/usr/local/bin/valheim-logfilter
 cmd_supervisorctl=/usr/local/bin/supervisorctl
 
+# File containing the git commit shasum this image was build with
+git_commit_file=/usr/local/etc/git-commit.HEAD
+
 # log levels
 debug=50
 info=40
