@@ -360,6 +360,17 @@ When in-game, click on `Join Game` and select `Community`. Wait for the game to 
 Only 200 servers will be shown at a time so we will have to enter part of our server name to filter the view.
 ![in-game server browser](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/find1.png "in-game server browser")
 
+### Join directly via IP
+
+Valheim has since added the `Join IP` button to the `Join Game` tab. If you click the `Join IP` button, you are prompted to enter your server's IP and port.
+If you left the `SERVER_PORT` at its default value of `2456`, you do not have to enter the port. The IP or URL of your server will suffice.
+If you changed the port, you have to specify it like this: `example.com:3333`.
+
+This method of connecting to your server will work if your server is not public, ie you did set `SERVER_PUBLIC` to `false`.
+
+![in-game server browser with join ip button](./misc/find5.png "in-game server browser with join ip button")
+![join ip dialog](./misc/find6.png "join ip dialog")
+
 ## Steam Server Browser
 When using the Steam server browser, in Steam go to `View -> Servers`. Click on `CHANGE FILTERS` and select Game `Valheim`.
 Wait for Steam to load all 4000+ Servers then sort the `SERVERS` column by clicking on its title. Scroll down until you find your server.
@@ -393,6 +404,8 @@ Sometimes it also helps to press the `REFRESH` button and then immediately doubl
 
 Overall LAN play via the Steam Server Browser has been a bit hit and miss for me while online play using the in-game search has resulted in the most consistent success.
 
+NOTE 2: You will only find your Valheim game server using this method if your server is public (`SERVER_PUBLIC` is NOT set to `false`).
+If you started your server with `SERVER_PUBLIC` set to `false`, you will get the error message: `Server is not responding.` in the list where the servers are supposed to appear.
 
 # Admin Commands
 Upon startup the server will create a file `/config/adminlist.txt`. In it you can list the IDs of all administrator users.
