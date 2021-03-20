@@ -361,7 +361,7 @@ When in-game, click on `Join Game` and select `Community`. Wait for the game to 
 Only 200 servers will be shown at a time so we will have to enter part of our server name to filter the view.
 ![in-game server browser](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/find1.png "in-game server browser")
 
-### Join directly via IP
+### Joining Directly via Hostname/IP
 
 Valheim has since added the `Join IP` button to the `Join Game` tab. If you click the `Join IP` button, you are prompted to enter your server's IP and port.
 If you left the `SERVER_PORT` at its default value of `2456`, you do not have to enter the port. The IP or URL of your server will suffice.
