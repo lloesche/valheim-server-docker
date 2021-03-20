@@ -45,7 +45,11 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/lloesche/valheim-server:latest
+          build-args: |
+            COMMIT_TAG=${{ github.sha }}
+          tags: |
+            ghcr.io/lloesche/valheim-server:latest
+            ghcr.io/lloesche/valheim-server:${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
