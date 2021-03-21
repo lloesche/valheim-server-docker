@@ -127,6 +127,9 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `STATUS_HTTP_PORT` | `80` | Status http server tcp port |
 | `STATUS_HTTP_CONF` | `/config/httpd.conf` | Path to the [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) |
 | `STATUS_HTTP_HTDOCS` | `/opt/valheim/htdocs` | Path to the status httpd htdocs where `status.json` is written |
+| `SYSLOG_REMOTE_HOST` |  | Remote syslog host or IP to send logs to |
+| `SYSLOG_REMOTE_PORT` | `514` | Remote syslog UDP port to send logs to |
+| `SYSLOG_REMOTE_AND_LOCAL` | `true` | When sending logs to a remote syslog server also log local |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 

@@ -84,6 +84,10 @@ if [ "$VALHEIM_PLUS" = true ]; then
     export VALHEIM_LOG_FILTER_STARTSWITH_VP=${VALHEIM_LOG_FILTER_STARTSWITH_VP-Fallback handler could not load library}
 fi
 
+# Syslog settings
+SYSLOG_REMOTE_HOST=${SYSLOG_REMOTE_HOST:-}
+SYSLOG_REMOTE_PORT=${SYSLOG_REMOTE_PORT:-514}
+SYSLOG_REMOTE_AND_LOCAL=${SYSLOG_REMOTE_AND_LOCAL:-true}
 
 # Server status
 SERVER_STATUS_FILE=${SERVER_STATUS_FILE:-/var/run/valheim-server.status}

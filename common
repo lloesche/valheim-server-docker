@@ -41,6 +41,10 @@ cmd_valheim_status=/usr/local/bin/valheim-status
 cmd_valheim_logfilter=/usr/local/bin/valheim-logfilter
 cmd_supervisorctl=/usr/local/bin/supervisorctl
 
+# Syslog supervisor config file
+supervisor_syslog_conf=/usr/local/etc/supervisor/conf.d/syslog.conf
+
+
 # File containing the git commit shasum this image was build with
 git_commit_file=/usr/local/etc/git-commit.HEAD
 

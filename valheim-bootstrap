@@ -101,7 +101,6 @@ fi
 
 
 # Start all services
-supervisorctl start crond
 supervisorctl start valheim-updater
 supervisorctl start valheim-backup
 
