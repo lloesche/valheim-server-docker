@@ -13,6 +13,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 * [Environment Variables](#environment-variables)
 	* [Log filters](#log-filters)
 		* [Log filter event hooks](#log-filter-event-hooks)
+			* [Discord log filter event hook example](#discord-log-filter-event-hook-example)
 	* [Event hooks](#event-hooks)
 		* [Event hook examples](#event-hook-examples)
 			* [Install extra packages](#install-extra-packages)
@@ -140,11 +141,20 @@ Valheim server by default logs a lot of noise. These env variables allow users t
 | Prefix | Default | Purpose |
 |----------|----------|-------|
 | `VALHEIM_LOG_FILTER_EMPTY` | `true` | Filter empty log lines |
+| `VALHEIM_LOG_FILTER_UTF8` | `true` | Filter invalid UTF-8 characters |
 | `VALHEIM_LOG_FILTER_MATCH` | ` ` | Filter log lines exactly matching |
 | `VALHEIM_LOG_FILTER_STARTSWITH` | `(Filename:` | Filter log lines starting with |
 | `VALHEIM_LOG_FILTER_ENDSWITH` |  | Filter log lines ending with |
 | `VALHEIM_LOG_FILTER_CONTAINS` |  | Filter log lines containing |
 | `VALHEIM_LOG_FILTER_REGEXP` |  | Filter log lines matching regexp |
+
+The default filter removes:
+- Empty log lines
+- Log lines consisting of a single space (wtf?)
+- A repeating line saying `(Filename: ./Runtime/Export/Debug/Debug.bindings.h Line: 35)`
+- Lines flodding the log with `Assertion Failed` warnings on packet processing timeouts (See [#104](https://github.com/lloesche/valheim-server-docker/discussions/104))
+- If ValheimPlus is turned on lines starting with `Fallback handler could not load library`
+
 
 ### Log filter event hooks
 If an environment variable prefixed with `ON_` exists for an identically named log filter, instead of removing the log line the contents of the variable will be executed when the filter matches with the log line piped on stdin.
@@ -157,7 +167,7 @@ If an environment variable prefixed with `ON_` exists for an identically named l
 | `ON_VALHEIM_LOG_FILTER_CONTAINS` | Run command hook on log lines containing |
 | `ON_VALHEIM_LOG_FILTER_REGEXP` | Run command hook on regexp match |
 
-All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` are prefixes. Meaning you can define multiple matches like so:
+All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` and `VALHEIM_LOG_FILTER_UTF8` are prefixes. Meaning you can define multiple matches like so:
 ```
 -e VALHEIM_LOG_FILTER_STARTSWITH=foo \
 -e VALHEIM_LOG_FILTER_STARTSWITH_BAR=bar \
@@ -166,12 +176,15 @@ All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` are prefixes. Me
 -e ON_VALHEIM_LOG_FILTER_CONTAINS_Connected="cat >> /tmp/character_login"
 ```
 
-The default filter removes:
-- Empty log lines
-- Log lines consisting of a single space (wtf?)
-- A repeating line saying `(Filename: ./Runtime/Export/Debug/Debug.bindings.h Line: 35)`
-- Lines flodding the log with `Assertion Failed` warnings on packet processing timeouts (See [#104](https://github.com/lloesche/valheim-server-docker/discussions/104))
-- If ValheimPlus is turned on lines starting with `Fallback handler could not load library`
+#### Discord log filter event hook example
+Sends a Discord message whenever a player connects to the server
+```
+-e DISCORD_WEBHOOK="https://discord.com/api/webhooks/8171522530..." \
+-e VALHEIM_LOG_FILTER_CONTAINS_Connected="Got character ZDOID from" \
+-e ON_VALHEIM_LOG_FILTER_CONTAINS_Connected='{ read l; l=${l//*ZDOID from /}; l=${l// :*/}; msg="Player $l connected"; curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$msg\"}" "$DISCORD_WEBHOOK"; }'
+```
+
+See [Notify on Discord](#notify-on-discord) below for proper quoting in env and compose files.
 
 
 ## Event hooks
