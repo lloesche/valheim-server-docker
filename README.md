@@ -12,6 +12,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 * [Basic Docker Usage](#basic-docker-usage)
 * [Environment Variables](#environment-variables)
 	* [Log filters](#log-filters)
+    * [Log filter event hooks](#log-filter-event-hooks)
 	* [Event hooks](#event-hooks)
 		* [Event hook examples](#event-hook-examples)
 			* [Install extra packages](#install-extra-packages)
@@ -145,11 +146,24 @@ Valheim server by default logs a lot of noise. These env variables allow users t
 | `VALHEIM_LOG_FILTER_CONTAINS` |  | Filter log lines containing |
 | `VALHEIM_LOG_FILTER_REGEXP` |  | Filter log lines matching regexp |
 
+### Log filter event hooks
+If an environment variable prefixed with `ON_` exists for an identically named log filter, instead of removing the log line the contents of the variable will be executed when the filter matches with the log line piped on stdin.
+
+| Prefix | Purpose |
+|----------|-------|
+| `ON_VALHEIM_LOG_FILTER_MATCH` | Run command hook on log lines exactly matching |
+| `ON_VALHEIM_LOG_FILTER_STARTSWITH` | Run command hook on log lines starting with |
+| `ON_VALHEIM_LOG_FILTER_ENDSWITH` | Run command hook on log lines ending with |
+| `ON_VALHEIM_LOG_FILTER_CONTAINS` | Run command hook on log lines containing |
+| `ON_VALHEIM_LOG_FILTER_REGEXP` | Run command hook on regexp match |
+
 All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` are prefixes. Meaning you can define multiple matches like so:
 ```
 -e VALHEIM_LOG_FILTER_STARTSWITH=foo \
 -e VALHEIM_LOG_FILTER_STARTSWITH_BAR=bar \
 -e VALHEIM_LOG_FILTER_STARTSWITH_SOMETHING_ELSE="some other filter"
+-e VALHEIM_LOG_FILTER_CONTAINS_Connected="Got character ZDOID from"
+-e ON_VALHEIM_LOG_FILTER_CONTAINS_Connected="cat >> /tmp/character_login"
 ```
 
 The default filter removes:
