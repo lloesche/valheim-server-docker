@@ -62,7 +62,11 @@ fi
 
 if [ -n "$RESTART_CRON" ]; then
     debug "Creating cron to restart valheim-server using schedule $RESTART_CRON"
-    echo "$RESTART_CRON $cmd_supervisorctl restart valheim-server" >> "$crontab"
+    if [ "$RESTART_IF_IDLE" = true ]; then
+        echo "$RESTART_CRON $cmd_valheim_is_idle && $cmd_supervisorctl restart valheim-server" >> "$crontab"
+    else
+        echo "$RESTART_CRON $cmd_supervisorctl restart valheim-server" >> "$crontab"
+    fi
 else
     debug "Environment variable RESTART_CRON is empty - no automatic valheim-server restart scheduled"
 fi

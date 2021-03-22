@@ -39,6 +39,7 @@ RUN curl -L -o /tmp/supervisor.tar.gz https://github.com/Supervisor/supervisor/a
 
 COPY bootstrap /usr/local/sbin/
 COPY valheim-status /usr/local/bin/
+COPY valheim-is-idle /usr/local/bin/
 COPY valheim-bootstrap /usr/local/bin/
 COPY valheim-backup /usr/local/bin/
 COPY valheim-updater /usr/local/bin/
@@ -52,6 +53,7 @@ RUN if [ "${TESTS:-true}" = true ]; then \
         shellcheck -a -x -s bash -e SC2034 \
             /usr/local/sbin/bootstrap \
             /usr/local/bin/valheim-backup \
+            /usr/local/bin/valheim-is-idle \
             /usr/local/bin/valheim-bootstrap \
             /usr/local/bin/valheim-server \
             /usr/local/bin/valheim-updater \

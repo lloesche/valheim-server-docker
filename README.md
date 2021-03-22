@@ -114,6 +114,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `UPDATE_CRON` | `*/15 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for update checks (disabled if set to an empty string or if the legacy `UPDATE_INTERVAL` is set) |
 | `UPDATE_IF_IDLE` | `true` | Only run update check if no players are connected to the server (`true` or `false`) |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
+| `RESTART_IF_IDLE` | `true` | Only run daily restart if no players are connected to the server (`true` or `false`) |
 | `TZ` | `Etc/UTC` | Container [time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
 | `BACKUPS` | `true` | Whether the server should create periodic backups (`true` or `false`) |
 | `BACKUPS_CRON` | `0 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for world backups (disabled if set to an empty string or if the legacy `BACKUPS_INTERVAL` is set) |

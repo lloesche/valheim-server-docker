@@ -1,0 +1,11 @@
+#!/bin/bash
+# valheim-is-idle returns 0 if the server is idle or 1 if players are connected
+# For private servers this check is not 100% reliable as it relies on watching
+# the network traffic for player activity.
+# For public servers this queries the Steam query port (2457/udp by default).
+
+# Include defaults
+. /usr/local/etc/valheim/defaults
+. /usr/local/etc/valheim/common
+
+server_is_idle
