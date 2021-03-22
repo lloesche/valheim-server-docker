@@ -106,6 +106,7 @@ RUN dpkg --add-architecture i386 \
     && rm -f /bin/sh \
     && ln -s /bin/bash /bin/sh \
     && locale-gen \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
     && apt-get clean \
     && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
     && ln -s /config /root/.config/unity3d/IronGate/Valheim \
