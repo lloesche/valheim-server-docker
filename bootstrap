@@ -8,6 +8,7 @@
 
 main() {
     configure_timezone
+    setup_syslog
     setup_supervisor_http_server
     setup_status_http_server
     pre_supervisor_hook
@@ -25,6 +26,38 @@ configure_timezone() {
     ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime
     echo "$TZ" > /etc/timezone
     info "Setting timezone $TZ"
+}
+
+
+# Configure syslog
+setup_syslog() {
+    local SYSLOG_ARGS
+    local log_msg
+    SYSLOG_ARGS="-S -t -O -"
+
+    log_target_msg="stdout"
+    if [ -n "$SYSLOG_REMOTE_HOST" ]; then
+        SYSLOG_ARGS="$SYSLOG_ARGS -R $SYSLOG_REMOTE_HOST:$SYSLOG_REMOTE_PORT"
+        log_target_msg="$SYSLOG_REMOTE_HOST:$SYSLOG_REMOTE_PORT"
+        if [ "$SYSLOG_REMOTE_AND_LOCAL" = true ]; then
+            SYSLOG_ARGS="$SYSLOG_ARGS -L"
+            log_target_msg="$log_target_msg and stdout"
+        fi
+    fi
+    info "Setting up syslogd - logging to $log_target_msg"
+    cat > "$supervisor_syslog_conf" <<EOF
+[program:syslogd]
+user=root
+environment=HOME="/root",USER="root",LANG="en_US.UTF-8",PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+command=/usr/local/sbin/syslogd -n $SYSLOG_ARGS
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+autostart=true
+autorestart=true
+priority=10
+EOF
 }
 
 
@@ -65,10 +98,10 @@ setup_status_http_server() {
 user=root
 environment=HOME="/root",USER="root",LANG="en_US.UTF-8",PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 command=/usr/local/bin/httpd -f -p "$STATUS_HTTP_PORT" -h "$STATUS_HTTP_HTDOCS" -c "$STATUS_HTTP_CONF"
-stdout_logfile=/dev/stdout
-stdout_logfile_maxbytes=0
-stderr_logfile=/dev/stderr
-stderr_logfile_maxbytes=0
+stdout_syslog=true
+stderr_syslog=true
+stdout_logfile_maxbytes=1MB
+stderr_logfile_maxbytes=1MB
 autostart=true
 autorestart=true
 startsecs=10
@@ -81,10 +114,10 @@ EOF
 user=root
 environment=HOME="/root",USER="root",LANG="en_US.UTF-8",PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 command=/usr/local/bin/valheim-status --update
-stdout_logfile=/dev/stdout
-stdout_logfile_maxbytes=0
-stderr_logfile=/dev/stderr
-stderr_logfile_maxbytes=0
+stdout_syslog=true
+stderr_syslog=true
+stdout_logfile_maxbytes=1MB
+stderr_logfile_maxbytes=1MB
 autostart=true
 autorestart=true
 startsecs=10

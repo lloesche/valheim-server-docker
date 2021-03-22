@@ -41,6 +41,10 @@ cmd_valheim_status=/usr/local/bin/valheim-status
 cmd_valheim_logfilter=/usr/local/bin/valheim-logfilter
 cmd_supervisorctl=/usr/local/bin/supervisorctl
 
+# Syslog supervisor config file
+supervisor_syslog_conf=/usr/local/etc/supervisor/conf.d/syslog.conf
+
+
 # File containing the git commit shasum this image was build with
 git_commit_file=/usr/local/etc/git-commit.HEAD
 
@@ -54,12 +58,12 @@ fatal=5
 log_level=${log_level:-$debug}
 
 
-debug()    { logstd $debug    "(DEBUG) $*"; }
-info()     { logstd $info     "(INFO) $*"; }
-warn()     { logstd $warn     "(WARN) $*"; }
-error()    { logerr $error    "(ERROR) $*"; }
-critical() { logerr $critical "(CRITIAL) $*"; }
-fatal()    { logerr $fatal    "(FATAL) $*"; exit 1; }
+debug()    { logstd $debug    "DEBUG - [$$] - $*"; }
+info()     { logstd $info     "INFO - $*"; }
+warn()     { logstd $warn     "WARN - $*"; }
+error()    { logerr $error    "ERROR - $*"; }
+critical() { logerr $critical "CRITIAL - $*"; }
+fatal()    { logerr $fatal    "FATAL - $*"; exit 1; }
 
 
 logstd() {
@@ -83,10 +87,7 @@ printline() {
     log_data="$*"
 
     if [ "$log_at_level" -le "$log_level" ]; then
-        printf "%s [%i] %s\\n" \
-            "$(date +'%Y-%m-%d %H:%M:%S')" \
-            $$ \
-            "$log_data"
+        echo "$log_data"
     fi
 }
 
