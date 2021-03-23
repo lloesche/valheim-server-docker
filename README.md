@@ -178,11 +178,11 @@ All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` and `VALHEIM_LOG
 ```
 
 #### Discord log filter event hook example
-Sends a Discord message whenever a player connects to the server
+Sends a Discord message whenever a player spawns
 ```
 -e DISCORD_WEBHOOK="https://discord.com/api/webhooks/8171522530..." \
--e VALHEIM_LOG_FILTER_CONTAINS_Connected="Got character ZDOID from" \
--e ON_VALHEIM_LOG_FILTER_CONTAINS_Connected='{ read l; l=${l//*ZDOID from /}; l=${l// :*/}; msg="Player $l connected"; curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$msg\"}" "$DISCORD_WEBHOOK"; }'
+-e VALHEIM_LOG_FILTER_CONTAINS_Spawned="Got character ZDOID from" \
+-e ON_VALHEIM_LOG_FILTER_CONTAINS_Spawned='{ read l; l=${l//*ZDOID from /}; l=${l// :*/}; msg="Player $l spawned into the world"; curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$msg\"}" "$DISCORD_WEBHOOK"; }'
 ```
 
 See [Notify on Discord](#notify-on-discord) below for proper quoting in env and compose files.
