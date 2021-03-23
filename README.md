@@ -254,6 +254,16 @@ DISCORD_MESSAGE=Starting Valheim server
 PRE_BOOTSTRAP_HOOK=curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$DISCORD_MESSAGE\"}" "$DISCORD_WEBHOOK"
 ```
 
+#### Notify on Matrix, inside an env_file
+Create an account for your bot, log in and join the room you want to post to. The room ID is noted in the room's settings.
+```
+MATRIX_BOT_SERVER=https://matrix...
+MATRIX_BOT_ROOM_ID=!...
+MATRIX_BOT_ACCESS_TOKEN=...
+PRE_RESTART_HOOK=curl -sfSL -X PUT -d "{\"msgtype\":\"m.notice\",\"body\":\"Valheim is being updated\"}" "$MATRIX_BOT_SERVER/_matrix/client/r0/rooms/$MATRIX_BOT_ROOM_ID/send/m.room.message/$(date +%s-%N)?access_token=$MATRIX_BOT_ACCESS_TOKEN"
+```
+Note the `$(date +%s-%N)` is used for the required unique txnId.
+
 
 ## ValheimPlus config from Environment Variables
 ValheimPlus config can be specified in environment variables using the syntax `VPCFG_<section>_<variable>=<value>`.
