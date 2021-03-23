@@ -231,3 +231,31 @@ update_server_status() {
     status=$1
     echo "$status" > "$SERVER_STATUS_FILE"
 }
+
+
+write_bannedlist() {
+    write_serverlist banned "$BANNEDLIST_IDS"
+}
+
+
+write_adminlist() {
+    write_serverlist admin "$ADMINLIST_IDS"
+}
+
+
+write_serverlist() {
+    local type
+    local id_list
+    local list_file
+    type=$1
+    id_list=$2
+    list_file="/config/${type}list.txt"
+
+    if [ -n "$id_list" ]; then
+        debug "Writing $list_file"
+        # Retain original file comment, including weird double space
+        echo "// List $type players ID  ONE per line" > "$list_file"
+        # shellcheck disable=SC2001
+        echo "$id_list" | sed -e "s/ \\+/\\n/g" >> "$list_file"
+    fi
+}

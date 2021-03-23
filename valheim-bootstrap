@@ -47,6 +47,9 @@ if [ "$VALHEIM_PLUS" = true ]; then
     fi
 fi
 
+# Write server's adminlist.txt / bannedlist.txt
+write_adminlist
+write_bannedlist
 
 # Create crontabs
 crontab=$(mktemp)
