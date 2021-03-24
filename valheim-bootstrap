@@ -27,6 +27,12 @@ if [ "$DEBUG_START_FRESH" = true ]; then
     rm -rf "$vp_install_path"
 fi
 
+# check if we are supposed to reinstall ValheimPlus
+if [ "$DEBUG_REINSTALL_VALHEIM_PLUS" = true ]; then
+    warn "Reinstalling ValheimPlus mod (DEBUG_REINSTALL_VALHEIM_PLUS: $DEBUG_REINSTALL_VALHEIM_PLUS)"
+    rm -rf "$vp_download_path"
+    rm -rf "$vp_install_path"
+fi
 
 # Output image commit version on startup
 if [ -f "$git_commit_file" ]; then

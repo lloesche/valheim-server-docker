@@ -34,13 +34,14 @@ check_for_update() {
     remote_updated_at=$(jq -r  ".updated_at" <<< "$api_response" )
     remote_size=$(jq -r  ".size" <<< "$api_response")
 
-    if [ -f "$vp_zipfile" ] && [ -f "$vp_zipfile.updated_at" ]; then
+    if [ -f "$vp_zipfile" ] && [ -f "$vp_zipfile.updated_at" ] && [ -f "$vp_zipfile.installed_at" ]; then
         local_updated_at=$(< "$vp_zipfile.updated_at")
+        local_installed_at=$(< "$vp_zipfile.installed_at")
         local_size=$(stat --format="%s" "$vp_zipfile")
-        if [ "$local_updated_at" = "$remote_updated_at" ] && [ "$local_size" = "$remote_size" ]; then
-            debug "Local ValheimPlus archive is identical to remote archive - no update required"
+        if [ "$local_updated_at" = "$remote_updated_at" ] && [ "$local_size" = "$remote_size" ] && [ "$local_updated_at" = "$local_installed_at" ]; then
+            debug "Local ValheimPlus archive is identical to remote archive and was successfully installed - no update required"
         else
-            info "Local ValheimPlus archive with size $local_size and update date $local_updated_at differs from remote size $remote_size and date $remote_updated_at - updating"
+            info "Local ValheimPlus archive with size $local_size and update date $local_updated_at differs from remote size $remote_size and date $remote_updated_at or failed to successfully install - updating"
             prepare_valheim_plus "$download_url" "$remote_updated_at"
         fi
     else
@@ -54,9 +55,14 @@ check_for_update() {
     # it is created by valheim-updater if a Valheim server update
     # was downloaded and the mod needs to be applied to it.
     if [ -f "$vp_mergefile" ]; then
-        info "Valheim dedicated server or ValheimPlus got updated - merging installation files"
-        rm -f "$vp_mergefile"
-        merge_valheim_plus
+        info "Valheim dedicated server or ValheimPlus got updated - extracting and merging installation files"
+        if (set -e; extract_valheim_plus && merge_valheim_plus); then
+            debug "Successfully installed ValheimPlus mod"
+            cp -f "$vp_zipfile.updated_at" "$vp_zipfile.installed_at"
+            rm -f "$vp_mergefile"
+        else
+            error "Failed to extract and install ValheimPlus mod - retrying later"
+        fi
     fi
 }
 
@@ -65,7 +71,6 @@ prepare_valheim_plus() {
     local download_url="$1"
     local updated_at="$2"
     download_valheim_plus "$download_url" "$updated_at" \
-        && extract_valheim_plus \
         && touch "$vp_mergefile"
 }
 
@@ -122,7 +127,7 @@ download_valheim_plus() {
     local updated_at="$2"
     local download_path="$vp_download_path/$vp_zipfile"
     debug "Downloading $download_url to $download_path"
-    curl -L -o "$download_path" "$download_url" \
+    curl -sfSL -o "$download_path" "$download_url" \
         && echo "$updated_at" > "$download_path.updated_at"
 }
 

@@ -17,8 +17,11 @@ SERVER_PUBLIC=${SERVER_PUBLIC:-1}
 # steamcmd.sh arguments
 STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 
+# Debug Flags
 # Flag to wipe all downloaded server data on startup (config is untouched)
 DEBUG_START_FRESH=${DEBUG_START_FRESH:-false}
+# Flat to make valheim-plus-updater reinstall the V+ ZIP over vanilla server
+DEBUG_REINSTALL_VALHEIM_PLUS=${DEBUG_REINSTALL_VALHEIM_PLUS:-false}
 
 # How often we check for Valheim server updates
 # This used to be 900 (15 min) and is here for backwards
