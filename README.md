@@ -345,56 +345,11 @@ CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and A
 [https://github.com/rileydakota/valheim-ecs-fargate-cdk](https://github.com/rileydakota/valheim-ecs-fargate-cdk)
 
 ## Deploying to Nomad
-Copy and Paste the following to `valheim.nomad`:
 ```
-job "valheim" {
-  datacenters = ["dc1"]
-
-  group "valheim" {
-    network {
-      mode = "bridge"
-      port "game1" {
-        static = 2456
-        to = 2456
-      }
-      port "game2" {
-        static = 2457
-        to = 2457
-      }
-      port "game3" {
-        static = 2458
-        to = 2458
-      }
-      port "supervisor" {
-        static = 9001
-        to = 9001
-      }
-    }
-
-    task "valheim-server" {
-      driver = "docker"
-      env {
-        SERVER_NAME = "Testserver_Nomad"
-        WORLD_NAME = "testworld"
-        SERVER_PASS = "secret"
-      }
-      config {
-        image = "lloesche/valheim-server"
-        volumes = [
-          "/var/lib/valheim/config:/config",
-          "/var/lib/valheim/data:/opt/valheim"
-        ]
-      }
-      resources {
-        cpu    = 6000
-        memory = 4096
-      }
-    }
-  }
-}
+$ sudo mkdir -p /var/lib/valheim/{config,data}
+$ sudo curl -o /var/lib/valheim/valheim.nomad https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/valheim.nomad
+$ sudo nomad job run /var/lib/valheim/valheim.nomad
 ```
-Then add the two directories: `mkdir -p /var/lib/valheim/{config,data}` and run your job: `nomad run job valheim.nomad`
-
 
 # Updates
 By default the container will check for Valheim server updates every 15 minutes if no players are currently connected to the server.
