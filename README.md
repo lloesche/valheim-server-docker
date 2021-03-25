@@ -26,6 +26,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 	* [Deploying with docker-compose](#deploying-with-docker-compose)
 	* [Deploying to Kubernetes](#deploying-to-kubernetes)
 	* [Deploying to AWS ECS](#deploying-to-aws-ecs)
+	* [Deploying to Nomad](#deploying-to-nomad)
 * [Updates](#updates)
 * [Backups](#backups)
   * [Manual backup](#manual-backup)
@@ -343,6 +344,12 @@ helm install valheim-server valheim-k8s/valheim-k8s # see repo for full config
 CDK Project for spinning up a Valheim game server on AWS Using ECS Fargate and Amazon EFS is available here:
 [https://github.com/rileydakota/valheim-ecs-fargate-cdk](https://github.com/rileydakota/valheim-ecs-fargate-cdk)
 
+## Deploying to Nomad
+```
+$ sudo mkdir -p /var/lib/valheim/{config,data}
+$ sudo curl -o /var/lib/valheim/valheim.nomad https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/valheim.nomad
+$ sudo nomad job run /var/lib/valheim/valheim.nomad
+```
 
 # Updates
 By default the container will check for Valheim server updates every 15 minutes if no players are currently connected to the server.
