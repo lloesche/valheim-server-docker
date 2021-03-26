@@ -190,6 +190,9 @@ Sends a Discord message whenever a player spawns
 
 See [Notify on Discord](#notify-on-discord) below for proper quoting in env and compose files.
 
+If you are running ValheimPlus and this filter triggers twice, check [this ValheimPlus issue](https://github.com/valheimPlus/ValheimPlus/issues/318).
+The cause is a misconfigured `BepInEx.cfg` that causes all log lines to be duplicated.
+
 
 ## Event hooks
 The following environment variables can be populated to run commands whenever specific events happen.
