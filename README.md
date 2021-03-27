@@ -126,7 +126,8 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
-| `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server on port `:9001` |
+| `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server |
+| `SUPERVISOR_HTTP_PORT` | `9001` | Set supervisor's http server port |
 | `SUPERVISOR_HTTP_USER` | `admin` | Supervisor http server username |
 | `SUPERVISOR_HTTP_PASS` |  | Supervisor http server password. http server will not be started if password is not set! |
 | `STATUS_HTTP` | `false` | Turn on the status http server. Only useful on public servers (`SERVER_PUBLIC=true`). |
