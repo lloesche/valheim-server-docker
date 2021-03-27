@@ -2,16 +2,20 @@ FROM debian:stable-slim as build-env
 ENV DEBIAN_FRONTEND=noninteractive
 ARG TESTS
 ARG SOURCE_COMMIT
+ARG BUSYBOX_VERSION=1.32.1
+ARG SUPERVISOR_VERSION=4.2.2
 
 RUN apt-get update
 RUN apt-get -y install apt-utils
 RUN apt-get -y install build-essential curl git python3 python3-pip golang shellcheck
 
 WORKDIR /build/busybox
-RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-1.32.1.tar.bz2 \
+RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2 \
     && tar xjvf /tmp/busybox.tar.bz2 --strip-components=1 -C /build/busybox \
     && make defconfig \
-    && make install
+    && sed -i -e "s/^CONFIG_FEATURE_SYSLOGD_READ_BUFFER_SIZE=.*/CONFIG_FEATURE_SYSLOGD_READ_BUFFER_SIZE=2048/" .config \
+    && make \
+    && cp busybox /usr/local/bin/
 
 WORKDIR /build/vpenvconf
 COPY ./vpenvconf/ /build/vpenvconf/
@@ -33,7 +37,7 @@ RUN git clone https://github.com/Yepoleb/python-a2s.git \
     && python3 setup.py bdist --format=gztar
 
 WORKDIR /build/supervisor
-RUN curl -L -o /tmp/supervisor.tar.gz https://github.com/Supervisor/supervisor/archive/4.2.2.tar.gz \
+RUN curl -L -o /tmp/supervisor.tar.gz https://github.com/Supervisor/supervisor/archive/${SUPERVISOR_VERSION}.tar.gz \
     && tar xzvf /tmp/supervisor.tar.gz --strip-components=1 -C /build/supervisor \
     && python3 setup.py bdist --format=gztar
 
@@ -62,7 +66,6 @@ RUN if [ "${TESTS:-true}" = true ]; then \
         ; \
     fi
 WORKDIR /
-RUN mv /build/busybox/_install/bin/busybox /usr/local/bin/busybox
 RUN rm -rf /usr/local/lib/
 RUN tar xzvf /build/supervisor/dist/supervisor-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz
