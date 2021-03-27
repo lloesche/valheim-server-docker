@@ -69,7 +69,7 @@ setup_supervisor_http_server() {
             info "Supervisor http server activated"
             cat > "$supervisor_http_server_conf" <<EOF
 [inet_http_server]
-port = :9001
+port = :$SUPERVISOR_HTTP_PORT
 username = $SUPERVISOR_HTTP_USER
 password = $SUPERVISOR_HTTP_PASS
 EOF
