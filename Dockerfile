@@ -48,6 +48,7 @@ COPY valheim-bootstrap /usr/local/bin/
 COPY valheim-backup /usr/local/bin/
 COPY valheim-updater /usr/local/bin/
 COPY valheim-plus-updater /usr/local/bin/
+COPY bepinex-updater /usr/local/bin/
 COPY valheim-server /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
@@ -62,6 +63,7 @@ RUN if [ "${TESTS:-true}" = true ]; then \
             /usr/local/bin/valheim-server \
             /usr/local/bin/valheim-updater \
             /usr/local/bin/valheim-plus-updater \
+            /usr/local/bin/bepinex-updater \
             /usr/local/share/valheim/contrib/*.sh \
         ; \
     fi

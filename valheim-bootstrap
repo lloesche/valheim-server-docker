@@ -21,10 +21,7 @@ fi
 # check if we are supposed to wipe our data directories
 if [ "$DEBUG_START_FRESH" = true ]; then
     warn "Wiping all data directories (DEBUG_START_FRESH: $DEBUG_START_FRESH)"
-    rm -rf "$valheim_download_path"
-    rm -rf "$valheim_install_path"
-    rm -rf "$vp_download_path"
-    rm -rf "$vp_install_path"
+    rm -rf "/opt/valheim/*"
 fi
 
 # check if we are supposed to reinstall ValheimPlus
@@ -32,6 +29,13 @@ if [ "$DEBUG_REINSTALL_VALHEIM_PLUS" = true ]; then
     warn "Reinstalling ValheimPlus mod (DEBUG_REINSTALL_VALHEIM_PLUS: $DEBUG_REINSTALL_VALHEIM_PLUS)"
     rm -rf "$vp_download_path"
     rm -rf "$vp_install_path"
+fi
+
+# check if we are supposed to reinstall BepInEx
+if [ "$DEBUG_REINSTALL_BEPINEX" = true ]; then
+    warn "Reinstalling BepInEx mod (DEBUG_REINSTALL_BEPINEX: $DEBUG_REINSTALL_BEPINEX)"
+    rm -rf "$bepinex_download_path"
+    rm -rf "$bepinex_install_path"
 fi
 
 # Output image commit version on startup
@@ -45,12 +49,23 @@ fi
 mkdir -p "$valheim_download_path"
 mkdir -p "$valheim_install_path"
 
+# Mod support
+if [ "$VALHEIM_PLUS" = true ] && [ "$BEPINEX" = true ]; then
+    fatal "Enable ValheimPlus or BepInEx mod support but not both - aborting startup"
+    exit 1
+fi
+
 if [ "$VALHEIM_PLUS" = true ]; then
     mkdir -p "$vp_download_path"
     mkdir -p "$vp_install_path"
     if [ -d "$vp_config_path" ]; then
         write_valheim_plus_config
     fi
+fi
+
+if [ "$BEPINEX" = true ]; then
+    mkdir -p "$bepinex_download_path"
+    mkdir -p "$bepinex_install_path"
 fi
 
 # Write server's adminlist.txt / bannedlist.txt

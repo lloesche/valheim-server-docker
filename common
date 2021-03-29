@@ -2,6 +2,7 @@
 # for process aliveness when an existing
 # pidfile is found
 trap ':' USR1
+just_started=${just_started:-true}
 
 # We are creating the following directory structure
 # /opt/valheim/
@@ -13,18 +14,29 @@ trap ':' USR1
 #
 valheim_download_path=/opt/valheim/dl/server    # Valheim server download directory
 valheim_install_path=/opt/valheim/server        # Valheim server installation directory
-vp_download_path=/opt/valheim/dl/plus           # ValheimPlus download directory
-vp_install_path=/opt/valheim/plus               # ValheimPlus installation directory
-vp_zipfile=UnixServer.zip                       # Name of the ValheimPlus archive
 valheim_restartfile="/tmp/valheim.restart"      # Signaling file created by valheim-updater
                                                 # or valheim-plus-updater that describes
                                                 # if and how to restart the server
+
+# ValheimPlus Mod
+vp_download_path=/opt/valheim/dl/plus           # ValheimPlus download directory
+vp_install_path=/opt/valheim/plus               # ValheimPlus installation directory
+vp_zipfile=UnixServer.zip                       # Name of the ValheimPlus archive
 vp_mergefile="$vp_download_path/merge"          # Signaling file created by valheim-updater
                                                 # that tells valheim-plus-updater that Valheim
                                                 # server was updated and needs to be merged
                                                 # with ValheimPlus
 vp_config_path="/config/valheimplus"
-just_started=${just_started:-true}
+
+# BepInEx Mod
+bepinex_download_path=/opt/valheim/dl/bepinex    # BepInEx download directory
+bepinex_install_path=/opt/valheim/bepinex        # BepInEx installation directory
+bepinex_config_path="/config/bepinex"
+bepinex_mergefile="$bepinex_download_path/merge" # Signaling file created by valheim-updater
+                                                 # that tells valheim-plus-updater that Valheim
+                                                 # server was updated and needs to be merged
+                                                 # with BepInEx
+bepinex_zipfile=BepInEx.zip                      # Name of the ValheimPlus archive
 
 # Collection of PID files
 valheim_server_pidfile=/var/run/valheim-server.pid

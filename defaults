@@ -22,6 +22,8 @@ STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 DEBUG_START_FRESH=${DEBUG_START_FRESH:-false}
 # Flat to make valheim-plus-updater reinstall the V+ ZIP over vanilla server
 DEBUG_REINSTALL_VALHEIM_PLUS=${DEBUG_REINSTALL_VALHEIM_PLUS:-false}
+# Flat to make bepinex-updater reinstall the BepInEx ZIP over vanilla server
+DEBUG_REINSTALL_BEPINEX=${DEBUG_REINSTALL_BEPINEX:-false}
 
 # How often we check for Valheim server updates
 # This used to be 900 (15 min) and is here for backwards
@@ -61,6 +63,7 @@ STATUS_HTTP_HTDOCS=${STATUS_HTTP_HTDOCS%/}
 # Mod support
 VALHEIM_PLUS=${VALHEIM_PLUS:-false}
 VALHEIM_PLUS_CFG_ENV_PREFIX=${VALHEIM_PLUS_CFG_ENV_PREFIX:-VPCFG_}
+BEPINEX=${BEPINEX:-false}
 
 # Permissions
 PERMISSIONS_UMASK=${PERMISSIONS_UMASK:-022}

@@ -1,0 +1,146 @@
+#!/bin/bash
+# bepinex-updater is being called by
+# valheim-updater when $BEPINEX=true
+# It downloads the BepInExPack mod and merges
+# the downloaded archive with the vanilla
+# Valheim server into /opt/valheim/bepinex
+
+# Include defaults and common functions
+. /usr/local/etc/valheim/defaults
+. /usr/local/etc/valheim/common
+
+main() {
+    create_directory_structure
+    check_for_update
+}
+
+
+create_directory_structure() {
+    mkdir -p "$bepinex_download_path" "$bepinex_install_path"
+}
+
+
+check_for_update() {
+    cd "$bepinex_download_path" || fatal "Could not cd $bepinex_download_path"
+    local api_response
+    local download_url
+    local remote_updated_at
+    local remote_version
+    local local_version
+    local local_updated_at
+    local local_installed_at
+    if ! api_response=$(curl -sfSL -H "accept: application/json" "https://valheim.thunderstore.io/api/experimental/package/denikson/BepInExPack_Valheim/"); then
+        fatal "Error: could not retrieve BepInEx release info from Thunderstore.io API"
+    fi
+    download_url=$(jq -r  ".latest.download_url" <<< "$api_response" )
+    remote_version=$(jq -r  ".latest.version_number" <<< "$api_response")
+    remote_updated_at=$(jq -r  ".date_updated" <<< "$api_response" )
+
+    if [ -f "$bepinex_zipfile" ] && [ -f "$bepinex_zipfile.updated_at" ] && [ -f "$bepinex_zipfile.version" ] && [ -f "$bepinex_zipfile.installed_at" ]; then
+        local_updated_at=$(< "$bepinex_zipfile.updated_at")
+        local_version=$(< "$bepinex_zipfile.version")
+        local_installed_at=$(< "$bepinex_zipfile.installed_at")
+        if [ "$local_updated_at" = "$remote_updated_at" ] && [ "$local_version" = "$remote_version" ] && [ "$local_updated_at" = "$local_installed_at" ]; then
+            debug "Local BepInEx archive is identical to remote archive and was successfully installed - no update required"
+        else
+            info "Local BepInEx archive with version $local_version and update date $local_updated_at differs from remote version $remote_version and date $remote_updated_at or failed to successfully install - updating"
+            prepare_bepinex "$download_url" "$remote_updated_at" "$remote_version"
+        fi
+    else
+        info "Fresh BepInEx install"
+        prepare_bepinex "$download_url" "$remote_updated_at" "$remote_version"
+    fi
+
+    # The control file $bepinex_mergefile is either created
+    # in prepare_bepinex() if BepInEx is being installed for
+    # the first time or an update is available, or
+    # it is created by valheim-updater if a Valheim server update
+    # was downloaded and the mod needs to be applied to it.
+    if [ -f "$bepinex_mergefile" ]; then
+        info "Valheim dedicated server or BepInEx got updated - extracting and merging installation files"
+        if (set -e; extract_bepinex && merge_bepinex); then
+            debug "Successfully installed BepInEx mod"
+            cp -f "$bepinex_zipfile.updated_at" "$bepinex_zipfile.installed_at"
+            rm -f "$bepinex_mergefile"
+        else
+            error "Failed to extract and install BepInEx mod - retrying later"
+        fi
+    fi
+}
+
+
+prepare_bepinex() {
+    local download_url="$1"
+    local updated_at="$2"
+    local version="$3"
+    download_bepinex "$download_url" "$updated_at" "$version" \
+        && touch "$bepinex_mergefile"
+}
+
+
+merge_bepinex() {
+    local config_file
+    local pkg_config_dir
+    local dest_file
+    debug "Merging Valheim server and BepInEx mod"
+    # remove any old BepInEx install directories
+    rm -rf "$bepinex_install_path.tmp" "$bepinex_install_path.old"
+    # create a new install directory where we will stage the new version
+    mkdir -p "$bepinex_install_path.tmp"
+    # rsync all Valheim dedicated server files
+    rsync -a --itemize-changes --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$bepinex_install_path.tmp"
+    # rsync all BepInEx mod files on top of the dedicated server files
+    rsync -a --itemize-changes "$bepinex_download_path/extracted/BepInExPack_Valheim/" "$bepinex_install_path.tmp"
+    # if /config/bepinex/ does not exist copy the default config from the ZIP archive
+    mkdir -p "$bepinex_config_path"
+    pkg_config_dir="$bepinex_install_path.tmp/BepInEx/config"
+    if [ -d "$pkg_config_dir" ]; then
+        cd "$pkg_config_dir" || fatal "Could not cd $pkg_config_dir"
+        for config_file in *; do
+            dest_file="$bepinex_config_path/$config_file"
+            # always copy the config that came with the latest ZIP archive
+            cp -f "$config_file" "$dest_file.default"
+            if [ ! -f "$dest_file" ]; then
+                debug "Config $dest_file does not exist - copying from archive"
+                cp -f "$config_file" "$dest_file"
+            fi
+        done
+        cd - || fatal "Could not cd -"
+    fi
+    # ensure config file permissions
+    ensure_permissions
+    # remove the config folder within the server directory and symlink it to /config
+    rm -rf "$pkg_config_dir"
+    ln -s "$bepinex_config_path" "$pkg_config_dir"
+    # move an existing copy of BepInEx to the .old extension
+    if [ -d "$bepinex_install_path" ]; then
+        mv -f "$bepinex_install_path" "$bepinex_install_path.old"
+    fi
+    # move the staging folder to the live folder and signal valheim-updater to restart the server
+    mv "$bepinex_install_path.tmp" "$bepinex_install_path"
+    write_restart_file updated
+}
+
+
+download_bepinex() {
+    local download_url="$1"
+    local updated_at="$2"
+    local version="$3"
+    local download_path="$bepinex_download_path/$bepinex_zipfile"
+    debug "Downloading $download_url to $download_path"
+    curl -sfSL -o "$download_path" "$download_url" \
+        && echo "$updated_at" > "$download_path.updated_at" \
+        && echo "$version" > "$download_path.version"
+}
+
+
+extract_bepinex() {
+    cd "$bepinex_download_path" || fatal "Could not cd $bepinex_download_path"
+    debug "Extracting downloaded BepInEx ZIP archive"
+    rm -rf extracted
+    mkdir -p extracted
+    unzip -d extracted/ "$bepinex_zipfile"
+}
+
+
+main

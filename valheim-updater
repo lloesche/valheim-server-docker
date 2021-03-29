@@ -59,10 +59,12 @@ update() {
     if grep '^[*>]' "$logfile" > /dev/null 2>&1; then
         info "Valheim Server was updated - restarting"
         check_valheim_plus updated
+        check_bepinex updated
         write_restart_file updated
     else
         info "Valheim Server is already the latest version"
         check_valheim_plus uptodate
+        check_bepinex uptodate
         if [ "$just_started" = true ]; then
             write_restart_file just_started
         fi
@@ -87,6 +89,25 @@ check_valheim_plus() {
             debug "If this is unwanted remove $vp_install_path"
             touch "$vp_mergefile"
             just_started=$just_started /usr/local/bin/valheim-plus-updater
+        fi
+    fi
+}
+
+
+check_bepinex() {
+    if [ "$BEPINEX" = true ]; then
+        debug "BepInEx is enabled - running updater"
+        if [ "$1" = updated ]; then
+            info "Valheim Server was updated from Steam - signaling BepInEx updater to merge updated files"
+            touch "$bepinex_mergefile"
+        fi
+        just_started=$just_started /usr/local/bin/bepinex-updater
+    else
+        if [ "$1" = updated ] && [ -d "$bepinex_install_path" ]; then
+            debug "BepInEx currently disabled but previously installed - keeping installation fresh"
+            debug "If this is unwanted remove $bepinex_install_path"
+            touch "$bepinex_mergefile"
+            just_started=$just_started /usr/local/bin/bepinex-updater
         fi
     fi
 }
