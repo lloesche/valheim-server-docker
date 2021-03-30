@@ -33,10 +33,10 @@ bepinex_download_path=/opt/valheim/dl/bepinex    # BepInEx download directory
 bepinex_install_path=/opt/valheim/bepinex        # BepInEx installation directory
 bepinex_config_path="/config/bepinex"
 bepinex_mergefile="$bepinex_download_path/merge" # Signaling file created by valheim-updater
-                                                 # that tells valheim-plus-updater that Valheim
+                                                 # that tells bepinex-updater that Valheim
                                                  # server was updated and needs to be merged
                                                  # with BepInEx
-bepinex_zipfile=BepInEx.zip                      # Name of the ValheimPlus archive
+bepinex_zipfile=BepInEx.zip                      # Name of the BepInEx archive
 
 # Collection of PID files
 valheim_server_pidfile=/var/run/valheim-server.pid
