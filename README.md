@@ -104,6 +104,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 
 
 # Environment Variables
+**All variable names and values are case-sensitive!**
 | Name | Default | Purpose |
 |----------|----------|-------|
 | `SERVER_NAME` | `My Server` | Name that will be shown in the server browser |
@@ -140,6 +141,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `SYSLOG_REMOTE_AND_LOCAL` | `true` | When sending logs to a remote syslog server also log local |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
+
 
 ## Log filters
 Valheim server by default logs a lot of noise. These env variables allow users to remove unwanted lines from the log.
