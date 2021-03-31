@@ -105,6 +105,9 @@ merge_bepinex() {
             if [ ! -f "$dest_file" ]; then
                 debug "Config $dest_file does not exist - copying from archive"
                 cp -f "$config_file" "$dest_file"
+                if [ "$config_file" = "BepInEx.cfg" ]; then
+                    write_bepinex_config
+                fi
             fi
         done
         cd - || fatal "Could not cd -"

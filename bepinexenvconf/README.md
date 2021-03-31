@@ -1,10 +1,10 @@
-# vpenvconf
-Generate ValheimPlus configuration from env
+# bepinexenvconf
+Generate BepInEx configuration from env
 
 ```
-usage: vpenvconf [-h] [--verbose] [--config CONFIG_FILE] [--env-prefix ENV_PREFIX]
+usage: bepinexenvconf [-h] [--verbose] [--config CONFIG_FILE] [--env-prefix ENV_PREFIX]
 
-Generate ValheimPlus config from env
+Generate BepInEx config from env
 
 optional arguments:
   -h, --help            show this help message and exit

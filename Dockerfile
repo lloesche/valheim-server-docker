@@ -17,8 +17,8 @@ RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-${BUSY
     && make \
     && cp busybox /usr/local/bin/
 
-WORKDIR /build/vpenvconf
-COPY ./vpenvconf/ /build/vpenvconf/
+WORKDIR /build/bepinexenvconf
+COPY ./bepinexenvconf/ /build/bepinexenvconf/
 RUN if [ "${TESTS:-true}" = true ]; then \
         pip3 install tox \
         && tox \
@@ -70,7 +70,7 @@ RUN if [ "${TESTS:-true}" = true ]; then \
 WORKDIR /
 RUN rm -rf /usr/local/lib/
 RUN tar xzvf /build/supervisor/dist/supervisor-*.linux-x86_64.tar.gz
-RUN tar xzvf /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz
+RUN tar xzvf /build/bepinexenvconf/dist/bepinexenvconf-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz
 COPY supervisord.conf /usr/local/etc/supervisord.conf
 RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \

@@ -23,7 +23,7 @@ def main() -> None:
         merge_env_with_config(config, env)
         write_config(config, args.config_file)
     else:
-        log.info("No ValheimPlus config found in env")
+        log.info("No BepInEx config found in env")
 
 
 if __name__ == "__main__":

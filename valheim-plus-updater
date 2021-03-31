@@ -104,6 +104,8 @@ merge_valheim_plus() {
                 cp -f "$config_file" "$dest_file"
                 if [ "$config_file" = "valheim_plus.cfg" ]; then
                     write_valheim_plus_config
+                elif [ "$config_file" = "BepInEx.cfg" ]; then
+                    write_bepinex_config
                 fi
             fi
         done

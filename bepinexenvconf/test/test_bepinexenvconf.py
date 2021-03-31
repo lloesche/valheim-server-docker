@@ -2,7 +2,7 @@ import os
 import tempfile
 import logging
 from configparser import ConfigParser
-from vpenvconf import (
+from bepinexenvconf import (
     log,
     get_arg_parser,
     add_args,
@@ -17,14 +17,18 @@ parser = get_arg_parser()
 add_args(parser)
 args = parser.parse_args()
 
-test_var = args.env_prefix + "Server_test"
-os.environ[test_var] = "true"
+test_var1 = args.env_prefix + "Server_test"
+test_var2 = args.env_prefix + "Logging_DOT_Console_Enabled"
+test_var3 = args.env_prefix + "Logging_DOT_Console_Some_UNDERSCORE_Var"
+os.environ[test_var1] = "true"
+os.environ[test_var2] = "true"
+os.environ[test_var3] = "false"
 
 
 def test_args():
     assert args.verbose is False
-    assert args.config_file == "/config/valheimplus/valheim_plus.cfg"
-    assert args.env_prefix == "VPCFG_"
+    assert args.config_file == "/config/bepinex/BepInEx.cfg"
+    assert args.env_prefix == "MODCFG_"
 
 
 def test_get_env():
@@ -32,6 +36,8 @@ def test_get_env():
     assert "Server" in env
     assert "test" in env["Server"]
     assert env["Server"]["test"] == "true"
+    assert env["Logging.Console"]["Enabled"] == "true"
+    assert env["Logging.Console"]["Some_Var"] == "false"
 
 
 def test_merge_env_with_config():
