@@ -19,7 +19,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 			* [Install extra packages](#install-extra-packages)
 			* [Copy backups to another location](#copy-backups-to-another-location)
 			* [Notify on Discord](#notify-on-discord)
-	* [ValheimPlus config from Environment Variables](#valheimplus-config-from-environment-variables)
+	* [Mod config from Environment Variables](#mod-config-from-environment-variables)
 * [System requirements](#system-requirements)
 * [Deployment](#deployment)
 	* [Deploying with Docker and systemd](#deploying-with-docker-and-systemd)
@@ -275,22 +275,49 @@ PRE_RESTART_HOOK=curl -sfSL -X PUT -d "{\"msgtype\":\"m.notice\",\"body\":\"Valh
 Note the `$(date +%s-%N)` is used for the required unique txnId.
 
 
-## ValheimPlus config from Environment Variables
-ValheimPlus config can be specified in environment variables using the syntax `VPCFG_<section>_<variable>=<value>`.
+## Mod config from Environment Variables
+Mod config can be specified in environment variables using the syntax `<prefix>_<section>_<variable>=<value>`.
+
+**Prefix list**
+| Prefix | Mod | File |
+|----------|----------|----------|
+| `VPCFG` | ValheimPlus | `/config/valheimplus/valheim_plus.cfg` |
+| `BEPINEXCFG` | BepInEx | `/config/valheimplus/BepInEx.cfg` or `/config/bepinex/BepInEx.cfg` depending on whether `VALHEIM_PLUS=true` or `BEPINEX=true` |
+
+
+**Translation table**  
+Some characters that are allowed as section names in the config files are not allowed as environment variable names. They can be encoded using the following translation table.
+| Variable name string | Replacement |
+|----------|----------|
+| `_DOT_` | `.` |
+| `_HYPHEN_` | `-` |
+| `_UNDERSCORE_` | `_` |
+| `_PLUS_` | `+` |
 
 Example:
 ```
--e VPCFG_Server_enabled=true -e VPCFG_Server_enforceMod=false -e VPCFG_Server_dataRate=500
+-e VALHEIM_PLUS=true \
+-e VPCFG_Server_enabled=true \
+-e VPCFG_Server_enforceMod=false \
+-e VPCFG_Server_dataRate=500 \
+-e BEPINEXCFG_Logging_DOT_Console_Enabled=true
 ```
 
-turns into
+turns into `/config/valheimplus/valheim_plus.cfg`
 ```
 [Server]
 enabled=true
 enforceMod=false
 dataRate=500
 ```
-All existing configuration in `/config/valheimplus/valheim_plus.cfg` is retained and a backup of the old config is created as `/config/valheimplus/valheim_plus.cfg.old` before writing the new config file.
+
+and `/config/valheimplus/BepInEx.cfg`
+```
+[Logging.Console]
+Enabled=true
+```
+
+All existing configuration in those files is retained and a backup of the old config is created as e.g. `/config/valheimplus/valheim_plus.cfg.old` before writing the new config file.
 
 
 # System requirements
