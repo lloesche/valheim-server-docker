@@ -56,7 +56,9 @@ check_for_update() {
     # was downloaded and the mod needs to be applied to it.
     if [ -f "$vp_mergefile" ]; then
         info "Valheim dedicated server or ValheimPlus got updated - extracting and merging installation files"
-        if (set -e; extract_valheim_plus && merge_valheim_plus); then
+        (set -e; extract_valheim_plus && merge_valheim_plus)
+        # shellcheck disable=SC2181
+        if [ $? -eq 0 ]; then
             debug "Successfully installed ValheimPlus mod"
             cp -f "$vp_zipfile.updated_at" "$vp_zipfile.installed_at"
             rm -f "$vp_mergefile"
