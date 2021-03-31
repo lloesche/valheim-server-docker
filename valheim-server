@@ -70,10 +70,12 @@ ensure_permissions_after_start() {
 wait_for_server_listening() {
     while :; do
         if server_is_listening; then
+            post_server_listening_hook
             update_server_status running
             debug "Server is now listening on UDP port $SERVER_PORT"
             break
         else
+            pre_server_listening_hook
             debug "Waiting for server to listen on UDP port $SERVER_PORT"
             sleep 5
         fi
@@ -144,6 +146,20 @@ post_server_run_hook() {
     if [ -n "$POST_SERVER_RUN_HOOK" ]; then
         info "Running post server run hook: $POST_SERVER_RUN_HOOK"
         eval "$POST_SERVER_RUN_HOOK"
+    fi
+}
+
+pre_server_listening_hook() {
+     if [ -n "$PRE_SERVER_LISTENING_HOOK" ]; then
+        info "Running pre server listening hook: $PRE_SERVER_LISTENING_HOOK"
+        eval "$PRE_SERVER_LISTENING_HOOK"
+    fi
+}
+
+post_server_listening_hook() {
+    if [ -n "$POST_SERVER_LISTENING_HOOK" ]; then
+        info "Running post server listening hook: $POST_SERVER_LISTENING_HOOK"
+        eval "$POST_SERVER_LISTENING_HOOK"
     fi
 }
 
