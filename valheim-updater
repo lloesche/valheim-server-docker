@@ -74,26 +74,19 @@ update() {
 
 
 check_mods() {
-    local valheim_server_update_status
-    valheim_server_update_status=$1
+    local valheim_server_update_status=$1
     check_mod "$valheim_server_update_status" "ValheimPlus" "$VALHEIM_PLUS" "$vp_mergefile" "$vp_install_path" "$vp_updater"
     check_mod "$valheim_server_update_status" "BepInEx" "$BEPINEX" "$bepinex_mergefile" "$bepinex_install_path" "$bepinex_updater"
 }
 
 
 check_mod() {
-    local valheim_server_update_status
-    local mod_name
-    local mod_enabled
-    local mod_mergefile
-    local mod_install_path
-    local mod_updater
-    valheim_server_update_status=$1
-    mod_name=$2
-    mod_enabled=$3
-    mod_mergefile=$4
-    mod_install_path=$5
-    mod_updater=$6
+    local valheim_server_update_status=$1
+    local mod_name=$2
+    local mod_enabled=$3
+    local mod_mergefile=$4
+    local mod_install_path=$5
+    local mod_updater=$6
 
     if [ "$mod_enabled" = true ]; then
         debug "$mod_name is enabled - running updater"
@@ -121,6 +114,8 @@ download_valheim() {
 
 # This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` steamcmd issue (#184).
 verify_cpu_mhz() {
+    local float_regex
+    local cpu_mhz
     float_regex="^([0-9]+\\.?[0-9]*)\$"
     cpu_mhz=$(grep "^cpu MHz" /proc/cpuinfo | head -1 | cut -d : -f 2 | xargs)
     if [ -n "$cpu_mhz" ] && [[ "$cpu_mhz" =~ $float_regex ]] && [ "${cpu_mhz%.*}" -gt 0 ]; then
@@ -134,6 +129,7 @@ verify_cpu_mhz() {
 
 
 verify_memory() {
+    local mem
     mem=$(awk '
         BEGIN {
             total=0
