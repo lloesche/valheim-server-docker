@@ -52,6 +52,7 @@ mkdir -p "$valheim_install_path"
 # Mod support
 if [ "$VALHEIM_PLUS" = true ] && [ "$BEPINEX" = true ]; then
     fatal "Enable ValheimPlus or BepInEx mod support but not both - aborting startup"
+    supervisorctl shutdown
     exit 1
 fi
 

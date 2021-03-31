@@ -19,6 +19,7 @@ valheim_restartfile="/tmp/valheim.restart"      # Signaling file created by valh
                                                 # if and how to restart the server
 
 # ValheimPlus Mod
+vp_updater=/usr/local/bin/valheim-plus-updater
 vp_download_path=/opt/valheim/dl/plus           # ValheimPlus download directory
 vp_install_path=/opt/valheim/plus               # ValheimPlus installation directory
 vp_zipfile=UnixServer.zip                       # Name of the ValheimPlus archive
@@ -29,6 +30,7 @@ vp_mergefile="$vp_download_path/merge"          # Signaling file created by valh
 vp_config_path="/config/valheimplus"
 
 # BepInEx Mod
+bepinex_updater=/usr/local/bin/bepinex-updater
 bepinex_download_path=/opt/valheim/dl/bepinex    # BepInEx download directory
 bepinex_install_path=/opt/valheim/bepinex        # BepInEx installation directory
 bepinex_config_path="/config/bepinex"
