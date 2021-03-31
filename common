@@ -1,3 +1,4 @@
+#!/bin/bash
 # trap SIGUSR1 as it is being used to check
 # for process aliveness when an existing
 # pidfile is found
@@ -305,4 +306,151 @@ write_serverlist() {
         # shellcheck disable=SC2001
         echo "$id_list" | sed -e "s/ \\+/\\n/g" >> "$list_file"
     fi
+}
+
+
+extract_archive() {
+    local archive_path="$1"
+    local archive_file="$2"
+    cd "$archive_path" || fatal "Could not cd $archive_path"
+    debug "Extracting downloaded ZIP archive"
+    rm -rf extracted
+    mkdir -p extracted
+    unzip -d extracted/ "$archive_file"
+}
+
+
+download_mod() {
+    local download_url="$1"
+    local updated_at="$2"
+    local download_path="$3"
+    debug "Downloading $download_url to $download_path"
+    curl -sfSL -o "$download_path" "$download_url" \
+        && echo "$updated_at" > "$download_path.updated_at"
+}
+
+
+check_merge() {
+    local mergefile=$1
+    local download_path=$2
+    local zipfile=$3
+    local install_path=$4
+    local config_path=$5
+    local extraction_path=$6
+    local mod_name=$7
+
+    # The control file $mergefile is either created
+    # in prepare_mod() if the mod is being installed for
+    # the first time or an update is available, or
+    # it is created by valheim-updater if a Valheim server update
+    # was downloaded and the mod needs to be applied to it.
+    if [ -f "$mergefile" ]; then
+        info "Valheim dedicated server or $mod_name got updated - extracting and merging installation files"
+        (set -e; extract_archive "$download_path" "$zipfile" && merge_mod "$install_path" "$config_path" "$download_path/$extraction_path")
+        # shellcheck disable=SC2181
+        if [ $? -eq 0 ]; then
+            debug "Successfully installed $mod_name"
+            cp -f "$zipfile.updated_at" "$zipfile.installed_at"
+            rm -f "$mergefile"
+        else
+            error "Failed to extract and install $mod_name - retrying later"
+        fi
+    fi
+}
+
+
+prepare_mod() {
+    local download_url="$1"
+    local updated_at="$2"
+    local mergefile="$3"
+    local zipfile="$4"
+    download_mod "$download_url" "$updated_at" "$zipfile" \
+    && touch "$mergefile"
+}
+
+
+merge_mod() {
+    local mod_install_path="$1"
+    local mod_config_path="$2"
+    local mod_download_path="$3"
+    local config_file
+    local pkg_config_dir
+    local dest_file
+    mod_config_path=${mod_config_path%/}
+    mod_download_path=${mod_download_path%/}
+    debug "Merging Valheim server and mod"
+    # remove any old install directories
+    rm -rf "$mod_install_path.tmp" "$mod_install_path.old"
+    # create a new install directory where we will stage the new version
+    mkdir -p "$mod_install_path.tmp"
+    # rsync all Valheim dedicated server files
+    rsync -a --itemize-changes --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$mod_install_path.tmp"
+    # rsync all ValheimPlus mod files on top of the dedicated server files
+    rsync -a --itemize-changes "$mod_download_path/" "$mod_install_path.tmp"
+    # if /config/valheimplus/ does not exist copy the default config from the ZIP archive
+    mkdir -p "$mod_config_path"
+    pkg_config_dir="$mod_install_path.tmp/BepInEx/config"
+    if [ -d "$pkg_config_dir" ]; then
+        cd "$pkg_config_dir" || fatal "Could not cd $pkg_config_dir"
+        for config_file in *; do
+            dest_file="$mod_config_path/$config_file"
+            # always copy the configs that came with the latest ZIP archive to .cfg.default
+            cp -f "$config_file" "$dest_file.default"
+            if [ ! -f "$dest_file" ]; then
+                debug "Config $dest_file does not exist - copying from archive"
+                cp -f "$config_file" "$dest_file"
+                if [ "$config_file" = "valheim_plus.cfg" ]; then
+                    write_valheim_plus_config
+                elif [ "$config_file" = "BepInEx.cfg" ]; then
+                    write_bepinex_config
+                fi
+            fi
+        done
+        cd - || fatal "Could not cd -"
+    fi
+    # ensure config file permissions
+    ensure_permissions
+    # remove the config folder within the server directory and symlink it to /config
+    rm -rf "$pkg_config_dir"
+    ln -s "$mod_config_path" "$pkg_config_dir"
+    # move an existing copy of ValheimPlus to the .old extension
+    if [ -d "$mod_install_path" ]; then
+        mv -f "$mod_install_path" "$mod_install_path.old"
+    fi
+    # move the staging folder to the live folder and signal valheim-updater to restart the server
+    mv "$mod_install_path.tmp" "$mod_install_path"
+    write_restart_file updated
+}
+
+
+check_for_mod_update() {
+    local download_url="$1"
+    local remote_updated_at="$2"
+    local zipfile="$3"
+    local mergefile="$4"
+    local download_path="$5"
+    local config_path="$6"
+    local extraction_path="$7"
+    local install_path="$8"
+    local mod_name="$9"
+    local local_updated_at
+    local local_installed_at
+
+    mkdir -p "$download_path" "$install_path"
+    cd "$download_path" || fatal "Could not cd $download_path"
+    if [ -f "$zipfile" ] && [ -f "$zipfile.updated_at" ] && [ -f "$zipfile.installed_at" ]; then
+        local_updated_at=$(< "$zipfile.updated_at")
+        local_installed_at=$(< "$zipfile.installed_at")
+        if [ "$local_updated_at" = "$remote_updated_at" ] && [ "$local_updated_at" = "$local_installed_at" ]; then
+            debug "Local $mod_name archive is identical to remote archive and was successfully installed - no update required"
+        else
+            info "Local $mod_name archive with update date $local_updated_at differs from date $remote_updated_at or failed to successfully install - updating"
+            prepare_mod "$download_url" "$remote_updated_at" "$mergefile" "$download_path/$zipfile"
+        fi
+    else
+        info "Fresh $mod_name install"
+        prepare_mod "$download_url" "$remote_updated_at" "$mergefile" "$download_path/$zipfile"
+    fi
+
+    check_merge "$mergefile" "$download_path" "$zipfile" "$install_path" "$config_path" "$extraction_path" "$mod_name"
 }
