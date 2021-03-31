@@ -245,7 +245,7 @@ write_bepinex_config() {
         if [ -d "$config_path/plugins" ] && [ -d "$plugins_path" ]; then
             mkdir -p "$plugins_path"
             info "Copying BepInEx plugins from $config_path/plugins/ -> $plugins_path"
-            cp -a "$config_path/plugins/" "$plugins_path"
+            find "$config_path/plugins/" -type f -iname '*.dll' -print -exec cp -f "{}" "$plugins_path" \;
         fi
     fi
     if [ -n "$POST_BEPINEX_CONFIG_HOOK" ]; then
