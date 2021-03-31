@@ -89,8 +89,8 @@ export VALHEIM_LOG_FILTER_UTF8=${VALHEIM_LOG_FILTER_UTF8:-true}
 export VALHEIM_LOG_FILTER_MATCH=${VALHEIM_LOG_FILTER_MATCH- }
 export VALHEIM_LOG_FILTER_STARTSWITH=${VALHEIM_LOG_FILTER_STARTSWITH-(Filename:}
 export VALHEIM_LOG_FILTER_STARTSWITH_AssertionFailed=${VALHEIM_LOG_FILTER_STARTSWITH_AssertionFailed-src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp}
-if [ "$VALHEIM_PLUS" = true ]; then
-    export VALHEIM_LOG_FILTER_STARTSWITH_VP=${VALHEIM_LOG_FILTER_STARTSWITH_VP-Fallback handler could not load library}
+if [ "$VALHEIM_PLUS" = true ] || [ "$BEPINEX" = true ]; then
+    export VALHEIM_LOG_FILTER_STARTSWITH_BepInEx=${VALHEIM_LOG_FILTER_STARTSWITH_BepInEx-Fallback handler could not load library}
 fi
 
 # Syslog settings
