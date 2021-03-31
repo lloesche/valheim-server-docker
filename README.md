@@ -210,6 +210,8 @@ The following environment variables can be populated to run commands whenever sp
 | `PRE_START_HOOK` |  | Command to be executed before the first server start is performed by the valheim-updater. Current start is blocked until this command returns. |
 | `POST_START_HOOK` |  | Command to be executed after the first server start was performed by the valheim-updater. Future restarts and update checks are blocked until this command returns. |
 | `PRE_RESTART_HOOK` |  | Command to be executed before a server restart is performed by the valheim-updater. Current restart is blocked until this command returns. |
+| `PRE_SERVER_LISTENING_HOOK` |  | Command to be executed after the server runs, but before it's able to accept connections. The loop that checks connection status will be blocked until this command returns. |
+| `POST_SERVER_LISTENING_HOOK` |  | Command to be executed once the server is available for players to connect! Future server shutdowns will be blocked until this command returns. |
 | `POST_RESTART_HOOK` |  | Command to be executed after a server restart was performed by the valheim-updater. Future restarts and update checks are blocked until this command returns. |
 | `PRE_SERVER_RUN_HOOK` |  | Command to be executed before the server is started. Server startup is blocked until this command returns. |
 | `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered after 29 seconds. |
