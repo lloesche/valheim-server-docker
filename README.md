@@ -39,6 +39,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 * [Supervisor](#supervisor)
   * [Supervisor API](#supervisor-api)
 * [Status web server](#status-web-server)
+* [BepInExPack Valheim](#bepinexpack-valheim)
 * [ValheimPlus](#valheimplus)
 	* [Updates](#updates-1)
 	* [Configuration](#configuration)
@@ -575,9 +576,18 @@ Within the container `status.json` is written to `STATUS_HTTP_HTDOCS` which by d
 As mentioned all the information is publicly available on the Valheim server query port. However the option is there to configure a `STATUS_HTTP_CONF` (`/config/httpd.conf` by default) containing [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) to limit access to the status web server by IP/subnet or login/password.
 
 
+# BepInExPack Valheim
+[BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) packages [BepInEx](https://github.com/BepInEx/BepInEx) for Valheim. BepInEx is a plugin / modding framework for Unity Mono, IL2CPP and .NET framework games.
+To enable BepInExPack provide the env variable `BEPINEX=true`. This can not be specified together with `VALHEIM_PLUS=true`.
+Just like Valheim Server this mod is automatically updated.
+
+Upon first start BepInExPack will create a new directory `/config/bepinex` where its config files are located.
+BepInEx plugins must be copied into the `/config/bepinex/plugins/` directory. From there they will be automatically copied into `/opt/valheim/bepinex/BepInEx/plugins/` on install/update.
+
+
 # ValheimPlus
-[ValheimPlus](https://github.com/valheimPlus/ValheimPlus) is a popular Valheim mod.
-It has been incorporated into this container. To enable V+ provide the env variable `VALHEIM_PLUS=true`.
+[ValheimPlus](https://github.com/valheimPlus/ValheimPlus) is a popular Valheim mod based on BepInEx.
+It has been incorporated into this container. To enable V+ provide the env variable `VALHEIM_PLUS=true`. This can not be specified together with `BEPINEX=true`.
 Upon first start V+ will create a new directory `/config/valheimplus` where its config files are located.
 As a user you are mainly concerned with the values in `/config/valheimplus/valheim_plus.cfg`.
 For most modifications the mod has to be installed both, on the server as well as all the clients that connect to the server.
