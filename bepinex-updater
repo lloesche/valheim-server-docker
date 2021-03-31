@@ -58,7 +58,9 @@ check_for_update() {
     # was downloaded and the mod needs to be applied to it.
     if [ -f "$bepinex_mergefile" ]; then
         info "Valheim dedicated server or BepInEx got updated - extracting and merging installation files"
-        if (set -e; extract_bepinex && merge_bepinex); then
+        (set -e; extract_bepinex && merge_bepinex)
+        # shellcheck disable=SC2181
+        if [ $? -eq 0 ]; then
             debug "Successfully installed BepInEx mod"
             cp -f "$bepinex_zipfile.updated_at" "$bepinex_zipfile.installed_at"
             rm -f "$bepinex_mergefile"
