@@ -7,14 +7,14 @@ def read(fname):
 
 
 setup(
-    name="bepinexenvconf",
+    name="env2cfg",
     version="0.0.1",
     description="Generate BepInEx config from env",
     license="Apache 2.0",
     packages=find_packages(),
     long_description=read("README.md"),
     entry_points={
-        "console_scripts": ["bepinexenvconf = bepinexenvconf.__main__:main"],
+        "console_scripts": ["env2cfg = env2cfg.__main__:main"],
     },
     include_package_data=True,
     zip_safe=False,
@@ -39,5 +39,5 @@ setup(
         "Natural Language :: English",
         "Topic :: Utilities",
     ],
-    keywords="valheim valheimplus",
+    keywords="valheim valheimplus bepinex",
 )

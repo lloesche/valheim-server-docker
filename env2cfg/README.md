@@ -1,8 +1,8 @@
-# bepinexenvconf
-Generate BepInEx configuration from env
+# env2cfg
+Generate mod configuration from env
 
 ```
-usage: bepinexenvconf [-h] [--verbose] [--config CONFIG_FILE] [--env-prefix ENV_PREFIX]
+usage: env2cfg [-h] [--verbose] [--config CONFIG_FILE] [--env-prefix ENV_PREFIX]
 
 Generate mod config from env
 

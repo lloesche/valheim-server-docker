@@ -2,7 +2,7 @@ import os
 import tempfile
 import logging
 from configparser import ConfigParser
-from bepinexenvconf import (
+from env2cfg import (
     log,
     get_arg_parser,
     add_args,

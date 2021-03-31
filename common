@@ -216,7 +216,7 @@ error_handler() {
 write_valheim_plus_config() {
     if [ -d "$vp_config_path" ]; then
         if env | grep "^$VALHEIM_PLUS_CFG_ENV_PREFIX" > /dev/null; then
-            /usr/local/bin/bepinexenvconf --verbose --config "$vp_config_path/valheim_plus.cfg" --env-prefix "$VALHEIM_PLUS_CFG_ENV_PREFIX"
+            /usr/local/bin/env2cfg --verbose --config "$vp_config_path/valheim_plus.cfg" --env-prefix "$VALHEIM_PLUS_CFG_ENV_PREFIX"
         fi
     fi
 }
@@ -240,7 +240,7 @@ write_bepinex_config() {
     fi
     if [ -d "$config_path" ]; then
         if env | grep "^$BEPINEX_CFG_ENV_PREFIX" > /dev/null; then
-            /usr/local/bin/bepinexenvconf --verbose --config "$config_path/BepInEx.cfg" --env-prefix "$BEPINEX_CFG_ENV_PREFIX"
+            /usr/local/bin/env2cfg --verbose --config "$config_path/BepInEx.cfg" --env-prefix "$BEPINEX_CFG_ENV_PREFIX"
         fi
         if [ -d "$config_path/plugins" ] && [ -d "$plugins_path" ]; then
             mkdir -p "$plugins_path"
