@@ -129,8 +129,10 @@ verify_cpu_mhz() {
 
 
 verify_memory() {
-    local mem
-    mem=$(awk '
+    local mem_info
+    local mem_total
+    local mem_min=4000000
+    mem_info=$(awk '
         BEGIN {
             total=0
             free=0
@@ -148,7 +150,11 @@ verify_memory() {
             print total"/"free"/"available
         }
     ' /proc/meminfo)
-    debug "Memory total/free/available: $mem"
+    debug "Memory total/free/available: $mem_info"
+    mem_total=${mem_info//\/*}
+    if [ "$mem_total" -lt $mem_min ]; then
+        error "Not enough memory - read https://github.com/lloesche/valheim-server-docker#system-requirements"
+    fi
 }
 
 
