@@ -153,7 +153,8 @@ verify_memory() {
     debug "Memory total/free/available: $mem_info"
     mem_total=${mem_info//\/*}
     if [ "$mem_total" -lt $mem_min ]; then
-        error "Not enough memory - read https://github.com/lloesche/valheim-server-docker#system-requirements"
+        mem_total=$(iec_size_format "$((mem_total*1024))")
+        error "$mem_total is not enough memory - read https://github.com/lloesche/valheim-server-docker#system-requirements"
     fi
 }
 

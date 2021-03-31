@@ -454,3 +454,30 @@ check_for_mod_update() {
 
     check_merge "$mergefile" "$download_path" "$zipfile" "$install_path" "$config_path" "$extraction_path" "$mod_name"
 }
+
+
+iec_size_format() {
+    local byte_size=$1
+    local use_bc=false
+    local float_regex="^([0-9]+\\.?[0-9]*)\$"
+
+    if [ -z "$byte_size" ] || ! [[ "$byte_size" =~ $float_regex ]]; then
+        error "Input $byte_size is no valid float"
+        return 1
+    fi
+    if command -v bc > /dev/null 2>&1; then
+        use_bc=true
+    fi
+    for unit in B KiB MiB GiB TiB PiB EiB ZiB; do
+        if [ "${byte_size%.*}" -lt 1024 ]; then
+            printf "%.2f %s\\n" "$byte_size" "$unit"
+            return
+        fi
+        if [ "$use_bc" = true ]; then
+            byte_size=$(echo "$byte_size/1024" | bc -l)
+        else
+            byte_size=$((byte_size/1024))
+        fi
+    done
+    printf "%.2f YiB\\n" $byte_size
+}

@@ -142,6 +142,7 @@ RUN dpkg --add-architecture i386 \
     && ln -s /usr/local/bin/busybox /usr/local/bin/xz \
     && ln -s /usr/local/bin/busybox /usr/local/bin/pstree \
     && ln -s /usr/local/bin/busybox /usr/local/bin/killall \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/bc \
     && curl -L -o /tmp/steamcmd_linux.tar.gz https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
     && tar xzvf /tmp/steamcmd_linux.tar.gz -C /opt/steamcmd/ \
     && chown -R root:root /opt/steamcmd \
