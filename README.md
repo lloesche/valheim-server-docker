@@ -579,10 +579,13 @@ As mentioned all the information is publicly available on the Valheim server que
 # BepInExPack Valheim
 [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) packages [BepInEx](https://github.com/BepInEx/BepInEx) for Valheim. BepInEx is a plugin / modding framework for Unity Mono, IL2CPP and .NET framework games.
 To enable BepInExPack provide the env variable `BEPINEX=true`. This can not be specified together with `VALHEIM_PLUS=true`.
-Just like Valheim Server this mod is automatically updated.
+Just like Valheim Server this mod is automatically updated using the `UPDATE_CRON` schedule.
 
 Upon first start BepInExPack will create a new directory `/config/bepinex` where its config files are located.
 BepInEx plugins must be copied into the `/config/bepinex/plugins/` directory. From there they will be automatically copied into `/opt/valheim/bepinex/BepInEx/plugins/` on install/update.
+
+## Configuration
+See [Mod config from Environment Variables](#mod-config-from-environment-variables)
 
 
 # ValheimPlus
@@ -599,7 +602,7 @@ Valheim server or ValheimPlus is found it is being downloaded, configured and th
 This also means your clients always need to run the latest ValheimPlus version or will not be able to connect. If this is undesired the schedule could be changed to only check for updates once per day. Example  `UPDATE_CRON='0 6 * * *'` would only check at 6 AM.
 
 ## Configuration
-See [ValheimPlus config from Environment Variables](#valheimplus-config-from-environment-variables)
+See [Mod config from Environment Variables](#mod-config-from-environment-variables)
 
 ### Server data rate
 A popular change is to increase the server send rate.
