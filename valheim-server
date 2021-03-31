@@ -71,9 +71,9 @@ wait_for_server_listening() {
     pre_server_listening_hook
     while :; do
         if server_is_listening; then
-            post_server_listening_hook
             update_server_status running
             debug "Server is now listening on UDP port $SERVER_PORT"
+            post_server_listening_hook
             break
         else
             debug "Waiting for server to listen on UDP port $SERVER_PORT"
