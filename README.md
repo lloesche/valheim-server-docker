@@ -220,6 +220,9 @@ The following environment variables can be populated to run commands whenever sp
 | `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered after 29 seconds. |
 | `PRE_SERVER_SHUTDOWN_HOOK` |  | Command to be executed before the server is shut down. Server shutdown is blocked until this command returns. If `PRE_SERVER_SHUTDOWN_HOOK` holds the shutdown process for more than 90 seconds, the entire process will be hard-killed by `supervisord`. |
 | `POST_SERVER_SHUTDOWN_HOOK` |  | Command to be executed after the server has finished shutting down. |
+| `PRE_BEPINEX_CONFIG_HOOK` |  | Command to be executed before writing BepInEx.cfg. |
+| `POST_BEPINEX_CONFIG_HOOK` |  | Command to be executed after writing BepInEx.cfg. Can be used to write your own mod config using [`bepinexenvconf`](#mod-config-from-environment-variables). |
+
 
 ### Event hook examples
 #### Install extra packages
@@ -278,7 +281,7 @@ Note the `$(date +%s-%N)` is used for the required unique txnId.
 ## Mod config from Environment Variables
 Mod config can be specified in environment variables using the syntax `<prefix>_<section>_<variable>=<value>`.
 
-**Prefix list**
+**Predefined prefix list**
 | Prefix | Mod | File |
 |----------|----------|----------|
 | `VPCFG` | ValheimPlus | `/config/valheimplus/valheim_plus.cfg` |
@@ -318,6 +321,8 @@ Enabled=true
 ```
 
 All existing configuration in those files is retained and a backup of the old config is created as e.g. `/config/valheimplus/valheim_plus.cfg.old` before writing the new config file.
+
+You could generate your own custom plugin config from environment variables using [the `POST_BEPINEX_CONFIG_HOOK` event hook](#event-hooks) and [`bepinexenvconf`](https://github.com/lloesche/valheim-server-docker/tree/main/bepinexenvconf).
 
 
 # System requirements

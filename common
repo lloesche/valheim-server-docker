@@ -226,16 +226,31 @@ write_bepinex_config() {
     local config_path
     if [ "$VALHEIM_PLUS" = true ]; then
         config_path=$vp_config_path
+        plugins_path="$vp_install_path/BepInEx/plugins/"
     elif [ "$BEPINEX" = true ]; then
         config_path=$bepinex_config_path
+        plugins_path="$bepinex_install_path/BepInEx/plugins/"
     else
         error "Neither ValheimPlus nor BepInExPack enabled - not writing BepInEx config"
         return 1
+    fi
+    if [ -n "$PRE_BEPINEX_CONFIG_HOOK" ]; then
+        info "Running pre BepInEx config hook: $PRE_BEPINEX_CONFIG_HOOK"
+        eval "$PRE_BEPINEX_CONFIG_HOOK"
     fi
     if [ -d "$config_path" ]; then
         if env | grep "^$BEPINEX_CFG_ENV_PREFIX" > /dev/null; then
             /usr/local/bin/bepinexenvconf --verbose --config "$config_path/BepInEx.cfg" --env-prefix "$BEPINEX_CFG_ENV_PREFIX"
         fi
+        if [ -d "$config_path/plugins" ]; then
+            mkdir -p "$plugins_path"
+            info "Copying BepInEx plugins from $config_path/plugins/ -> $plugins_path"
+            cp -a "$config_path/plugins/*" "$plugins_path"
+        fi
+    fi
+    if [ -n "$POST_BEPINEX_CONFIG_HOOK" ]; then
+        info "Running post BepInEx config hook: $POST_BEPINEX_CONFIG_HOOK"
+        eval "$POST_BEPINEX_CONFIG_HOOK"
     fi
 }
 
