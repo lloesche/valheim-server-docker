@@ -75,7 +75,6 @@ RUN tar xzvf /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz
 COPY supervisord.conf /usr/local/etc/supervisord.conf
 RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \
     && chmod 600 /usr/local/etc/supervisord.conf
-
 RUN echo "${SOURCE_COMMIT:-unknown}" > /usr/local/etc/git-commit.HEAD
 
 
@@ -152,7 +151,8 @@ RUN dpkg --add-architecture i386 \
         /usr/bin/supervisord \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && date --utc --iso-8601=seconds > /usr/local/etc/build.date
 
 EXPOSE 2456-2457/udp
 EXPOSE 9001/tcp
