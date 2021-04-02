@@ -14,6 +14,7 @@ valheim_server_pid=-1
 timeout=29
 kill_signal=TERM
 password_args=(-password "$SERVER_PASS")
+mod_name=none
 
 if [ "$VALHEIM_PLUS" = true ]; then
     cd "$vp_install_path" || fatal "Could not cd $vp_install_path"
@@ -24,7 +25,23 @@ if [ "$VALHEIM_PLUS" = true ]; then
     export LD_LIBRARY_PATH="$vp_install_path/linux64/:$vp_install_path/doorstop_libs/"
     SERVER_LD_PRELOAD=libdoorstop_x64.so
     valheim_server="$vp_install_path/valheim_server.x86_64"
-    [ -z "$SERVER_PASS" ] && password_args=()
+    if [ -z "$SERVER_PASS" ]; then
+        password_args=()
+    fi
+    mod_name="ValheimPlus"
+elif [ "$BEPINEX" = true ]; then
+    cd "$bepinex_install_path" || fatal "Could not cd $bepinex_install_path"
+    rm -rf "$bepinex_install_path.old"
+    export DOORSTOP_ENABLE=TRUE
+    export DOORSTOP_INVOKE_DLL_PATH="./BepInEx/core/BepInEx.Preloader.dll"
+    export DOORSTOP_CORLIB_OVERRIDE_PATH="./unstripped_corlib"
+    export LD_LIBRARY_PATH="$bepinex_install_path/linux64/:$bepinex_install_path/doorstop_libs/"
+    SERVER_LD_PRELOAD=libdoorstop_x64.so
+    valheim_server="$bepinex_install_path/valheim_server.x86_64"
+    if [ -z "$SERVER_PASS" ]; then
+        password_args=()
+    fi
+    mod_name="BepInEx"
 else
     cd "$valheim_install_path" || fatal "Could not cd $valheim_install_path"
     export LD_LIBRARY_PATH="$valheim_install_path/linux64/"
@@ -86,7 +103,7 @@ wait_for_server_listening() {
 run_server() {
     pre_server_run_hook
     info "Running Valheim Server"
-    debug "Server config is name: $SERVER_NAME, port: $SERVER_PORT/udp, world: $WORLD_NAME, public: $SERVER_PUBLIC, V+ mod: $VALHEIM_PLUS"
+    debug "Server config is name: $SERVER_NAME, port: $SERVER_PORT/udp, world: $WORLD_NAME, public: $SERVER_PUBLIC, mod: $mod_name"
     update_server_status starting
 
     # shellcheck disable=SC2086

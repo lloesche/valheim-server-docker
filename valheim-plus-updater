@@ -9,137 +9,29 @@
 . /usr/local/etc/valheim/defaults
 . /usr/local/etc/valheim/common
 
+
 main() {
-    create_directory_structure
-    check_for_update
-}
-
-
-create_directory_structure() {
-    mkdir -p "$vp_download_path" "$vp_install_path"
-}
-
-
-check_for_update() {
-    cd "$vp_download_path" || fatal "Could not cd $vp_download_path"
     local api_response
     local download_url
     local remote_updated_at
-    local remote_size
+
     if ! api_response=$(curl -sfSL https://api.github.com/repos/valheimPlus/ValheimPlus/releases/latest); then
         fatal "Error: could not retrieve ValheimPlus release info from Github API"
     fi
     api_response=$(jq -r ".assets[] | select(.name == \"$vp_zipfile\")" <<< "$api_response" )
     download_url=$(jq -r  ".browser_download_url" <<< "$api_response" )
     remote_updated_at=$(jq -r  ".updated_at" <<< "$api_response" )
-    remote_size=$(jq -r  ".size" <<< "$api_response")
 
-    if [ -f "$vp_zipfile" ] && [ -f "$vp_zipfile.updated_at" ] && [ -f "$vp_zipfile.installed_at" ]; then
-        local_updated_at=$(< "$vp_zipfile.updated_at")
-        local_installed_at=$(< "$vp_zipfile.installed_at")
-        local_size=$(stat --format="%s" "$vp_zipfile")
-        if [ "$local_updated_at" = "$remote_updated_at" ] && [ "$local_size" = "$remote_size" ] && [ "$local_updated_at" = "$local_installed_at" ]; then
-            debug "Local ValheimPlus archive is identical to remote archive and was successfully installed - no update required"
-        else
-            info "Local ValheimPlus archive with size $local_size and update date $local_updated_at differs from remote size $remote_size and date $remote_updated_at or failed to successfully install - updating"
-            prepare_valheim_plus "$download_url" "$remote_updated_at"
-        fi
-    else
-        info "Fresh ValheimPlus install"
-        prepare_valheim_plus "$download_url" "$remote_updated_at"
-    fi
-
-    # The control file $vp_mergefile is either created
-    # in prepare_valheim_plus() if ValheimPlus is being installed for
-    # the first time or an update is available, or
-    # it is created by valheim-updater if a Valheim server update
-    # was downloaded and the mod needs to be applied to it.
-    if [ -f "$vp_mergefile" ]; then
-        info "Valheim dedicated server or ValheimPlus got updated - extracting and merging installation files"
-        (set -e; extract_valheim_plus && merge_valheim_plus)
-        # shellcheck disable=SC2181
-        if [ $? -eq 0 ]; then
-            debug "Successfully installed ValheimPlus mod"
-            cp -f "$vp_zipfile.updated_at" "$vp_zipfile.installed_at"
-            rm -f "$vp_mergefile"
-        else
-            error "Failed to extract and install ValheimPlus mod - retrying later"
-        fi
-    fi
-}
-
-
-prepare_valheim_plus() {
-    local download_url="$1"
-    local updated_at="$2"
-    download_valheim_plus "$download_url" "$updated_at" \
-        && touch "$vp_mergefile"
-}
-
-
-merge_valheim_plus() {
-    local config_file
-    local pkg_config_dir
-    local dest_file
-    debug "Merging Valheim server and ValheimPlus mod"
-    # remove any old ValheimPlus install directories
-    rm -rf "$vp_install_path.tmp" "$vp_install_path.old"
-    # create a new install directory where we will stage the new version
-    mkdir -p "$vp_install_path.tmp"
-    # rsync all Valheim dedicated server files
-    rsync -a --itemize-changes --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$vp_install_path.tmp"
-    # rsync all ValheimPlus mod files on top of the dedicated server files
-    rsync -a --itemize-changes "$vp_download_path/extracted/" "$vp_install_path.tmp"
-    # if /config/valheimplus/ does not exist copy the default config from the ZIP archive
-    mkdir -p "$vp_config_path"
-    pkg_config_dir="$vp_install_path.tmp/BepInEx/config"
-    if [ -d "$pkg_config_dir" ]; then
-        cd "$pkg_config_dir" || fatal "Could not cd $pkg_config_dir"
-        for config_file in *; do
-            dest_file="$vp_config_path/$config_file"
-            # always copy the config that came with the latest ZIP archive to valheim_plus.cfg.default
-            cp -f "$config_file" "$dest_file.default"
-            if [ ! -f "$dest_file" ]; then
-                debug "Config $dest_file does not exist - copying from archive"
-                cp -f "$config_file" "$dest_file"
-                if [ "$config_file" = "valheim_plus.cfg" ]; then
-                    write_valheim_plus_config
-                fi
-            fi
-        done
-        cd - || fatal "Could not cd -"
-    fi
-    # ensure config file permissions
-    ensure_permissions
-    # remove the config folder within the server directory and symlink it to /config
-    rm -rf "$pkg_config_dir"
-    ln -s "$vp_config_path" "$pkg_config_dir"
-    # move an existing copy of ValheimPlus to the .old extension
-    if [ -d "$vp_install_path" ]; then
-        mv -f "$vp_install_path" "$vp_install_path.old"
-    fi
-    # move the staging folder to the live folder and signal valheim-updater to restart the server
-    mv "$vp_install_path.tmp" "$vp_install_path"
-    write_restart_file updated
-}
-
-
-download_valheim_plus() {
-    local download_url="$1"
-    local updated_at="$2"
-    local download_path="$vp_download_path/$vp_zipfile"
-    debug "Downloading $download_url to $download_path"
-    curl -sfSL -o "$download_path" "$download_url" \
-        && echo "$updated_at" > "$download_path.updated_at"
-}
-
-
-extract_valheim_plus() {
-    cd "$vp_download_path" || fatal "Could not cd $vp_download_path"
-    debug "Extracting downloaded ValheimPlus ZIP archive"
-    rm -rf extracted
-    mkdir -p extracted
-    unzip -d extracted/ "$vp_zipfile"
+    check_for_mod_update \
+        "$download_url" \
+        "$remote_updated_at" \
+        "$vp_zipfile" \
+        "$vp_mergefile" \
+        "$vp_download_path" \
+        "$vp_config_path" \
+        "extracted" \
+        "$vp_install_path" \
+        "ValheimPlus"
 }
 
 

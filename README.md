@@ -19,7 +19,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 			* [Install extra packages](#install-extra-packages)
 			* [Copy backups to another location](#copy-backups-to-another-location)
 			* [Notify on Discord](#notify-on-discord)
-	* [ValheimPlus config from Environment Variables](#valheimplus-config-from-environment-variables)
+	* [Mod config from Environment Variables](#mod-config-from-environment-variables)
 * [System requirements](#system-requirements)
 * [Deployment](#deployment)
 	* [Deploying with Docker and systemd](#deploying-with-docker-and-systemd)
@@ -39,11 +39,14 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 * [Supervisor](#supervisor)
   * [Supervisor API](#supervisor-api)
 * [Status web server](#status-web-server)
-* [ValheimPlus](#valheimplus)
-	* [Updates](#updates-1)
-	* [Configuration](#configuration)
-		* [Server data rate](#server-data-rate)
-		* [Disable server password](#disable-server-password)
+* [Modding](#modding)
+  * [BepInExPack Valheim](#bepinexpack-valheim)
+    * [Configuration](#configuration)
+  * [ValheimPlus](#valheimplus)
+    * [Updates](#updates-1)
+    * [Configuration](#configuration-1)
+      * [Server data rate](#server-data-rate)
+      * [Disable server password](#disable-server-password)
 * [Changing startup CMD in Portainer](#changing-startup-cmd-in-portainer)
 * [Synology Help](#synology-help)
 	* [First install](#first-install)
@@ -104,6 +107,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 
 
 # Environment Variables
+**All variable names and values are case-sensitive!**
 | Name | Default | Purpose |
 |----------|----------|-------|
 | `SERVER_NAME` | `My Server` | Name that will be shown in the server browser |
@@ -125,7 +129,8 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `BACKUPS_MAX_AGE` | `3` | Age in days after which old backups are flushed |
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
-| `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`) |
+| `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`). Can not be used together with `BEPINEX`. |
+| `BEPINEX` | `false` | Whether [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) mod should be loaded (config in `/config/bepinex`, plugins in `/opt/valheim/bepinex/BepInEx/plugins`). Can not be used together with `VALHEIM_PLUS`. |
 | `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server |
 | `SUPERVISOR_HTTP_PORT` | `9001` | Set supervisor's http server port |
 | `SUPERVISOR_HTTP_USER` | `admin` | Supervisor http server username |
@@ -139,6 +144,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `SYSLOG_REMOTE_AND_LOCAL` | `true` | When sending logs to a remote syslog server also log local |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
+
 
 ## Log filters
 Valheim server by default logs a lot of noise. These env variables allow users to remove unwanted lines from the log.
@@ -217,6 +223,9 @@ The following environment variables can be populated to run commands whenever sp
 | `POST_SERVER_RUN_HOOK` |  | Command to be executed after the server has finished running. Server shutdown is blocked until this command returns or a shutdown timeout is triggered after 29 seconds. |
 | `PRE_SERVER_SHUTDOWN_HOOK` |  | Command to be executed before the server is shut down. Server shutdown is blocked until this command returns. If `PRE_SERVER_SHUTDOWN_HOOK` holds the shutdown process for more than 90 seconds, the entire process will be hard-killed by `supervisord`. |
 | `POST_SERVER_SHUTDOWN_HOOK` |  | Command to be executed after the server has finished shutting down. |
+| `PRE_BEPINEX_CONFIG_HOOK` |  | Command to be executed before writing BepInEx.cfg. |
+| `POST_BEPINEX_CONFIG_HOOK` |  | Command to be executed after writing BepInEx.cfg. Can be used to write your own mod config using [`env2cfg`](#mod-config-from-environment-variables). |
+
 
 ### Event hook examples
 #### Install extra packages
@@ -272,22 +281,51 @@ PRE_RESTART_HOOK=curl -sfSL -X PUT -d "{\"msgtype\":\"m.notice\",\"body\":\"Valh
 Note the `$(date +%s-%N)` is used for the required unique txnId.
 
 
-## ValheimPlus config from Environment Variables
-ValheimPlus config can be specified in environment variables using the syntax `VPCFG_<section>_<variable>=<value>`.
+## Mod config from Environment Variables
+Mod config can be specified in environment variables using the syntax `<prefix>_<section>_<variable>=<value>`.
+
+**Predefined prefix list**
+| Prefix | Mod | File |
+|----------|----------|----------|
+| `VPCFG` | ValheimPlus | `/config/valheimplus/valheim_plus.cfg` |
+| `BEPINEXCFG` | BepInEx | `/config/valheimplus/BepInEx.cfg` or `/config/bepinex/BepInEx.cfg` depending on whether `VALHEIM_PLUS=true` or `BEPINEX=true` |
+
+
+**Translation table**  
+Some characters that are allowed as section names in the config files are not allowed as environment variable names. They can be encoded using the following translation table.
+| Variable name string | Replacement |
+|----------|----------|
+| `_DOT_` | `.` |
+| `_HYPHEN_` | `-` |
+| `_UNDERSCORE_` | `_` |
+| `_PLUS_` | `+` |
 
 Example:
 ```
--e VPCFG_Server_enabled=true -e VPCFG_Server_enforceMod=false -e VPCFG_Server_dataRate=500
+-e VALHEIM_PLUS=true \
+-e VPCFG_Server_enabled=true \
+-e VPCFG_Server_enforceMod=false \
+-e VPCFG_Server_dataRate=500 \
+-e BEPINEXCFG_Logging_DOT_Console_Enabled=true
 ```
 
-turns into
+turns into `/config/valheimplus/valheim_plus.cfg`
 ```
 [Server]
 enabled=true
 enforceMod=false
 dataRate=500
 ```
-All existing configuration in `/config/valheimplus/valheim_plus.cfg` is retained and a backup of the old config is created as `/config/valheimplus/valheim_plus.cfg.old` before writing the new config file.
+
+and `/config/valheimplus/BepInEx.cfg`
+```
+[Logging.Console]
+Enabled=true
+```
+
+All existing configuration in those files is retained and a backup of the old config is created as e.g. `/config/valheimplus/valheim_plus.cfg.old` before writing the new config file.
+
+You could generate your own custom plugin config from environment variables using [the `POST_BEPINEX_CONFIG_HOOK` event hook](#event-hooks) and [`env2cfg`](https://github.com/lloesche/valheim-server-docker/tree/main/env2cfg).
 
 
 # System requirements
@@ -539,24 +577,46 @@ Within the container `status.json` is written to `STATUS_HTTP_HTDOCS` which by d
 
 As mentioned all the information is publicly available on the Valheim server query port. However the option is there to configure a `STATUS_HTTP_CONF` (`/config/httpd.conf` by default) containing [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) to limit access to the status web server by IP/subnet or login/password.
 
+# Modding
+## BepInExPack Valheim
+**Enable with**
+| Variable | Value |
+|----------|----------|
+| `BEPINEX` | `true` |
 
-# ValheimPlus
-[ValheimPlus](https://github.com/valheimPlus/ValheimPlus) is a popular Valheim mod.
-It has been incorporated into this container. To enable V+ provide the env variable `VALHEIM_PLUS=true`.
+[BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) packages [BepInEx](https://github.com/BepInEx/BepInEx) for Valheim. BepInEx is a plugin / modding framework for Unity Mono, IL2CPP and .NET framework games.
+To enable BepInExPack provide the env variable `BEPINEX=true`. This can not be specified together with `VALHEIM_PLUS=true`.
+Just like Valheim Server this mod is automatically updated using the `UPDATE_CRON` schedule.
+
+Upon first start BepInExPack will create a new directory `/config/bepinex` where its config files are located.
+BepInEx plugins must be copied into the `/config/bepinex/plugins/` directory. From there they will be automatically copied into `/opt/valheim/bepinex/BepInEx/plugins/` on install/update.
+
+### Configuration
+See [Mod config from Environment Variables](#mod-config-from-environment-variables)
+
+
+## ValheimPlus
+**Enable with**
+| Variable | Value |
+|----------|----------|
+| `VALHEIM_PLUS` | `true` |
+
+[ValheimPlus](https://github.com/valheimPlus/ValheimPlus) is a popular Valheim mod based on BepInEx.
+It has been incorporated into this container. To enable V+ provide the env variable `VALHEIM_PLUS=true`. This can not be specified together with `BEPINEX=true`.
 Upon first start V+ will create a new directory `/config/valheimplus` where its config files are located.
 As a user you are mainly concerned with the values in `/config/valheimplus/valheim_plus.cfg`.
 For most modifications the mod has to be installed both, on the server as well as all the clients that connect to the server.
 A few modifications, like for example changing the `dataRate` can be done server only.
 
-## Updates
+### Updates
 ValheimPlus is automatically being updated using the same `UPDATE_CRON` schedule the Valheim server uses to check for updates. If an update of either
 Valheim server or ValheimPlus is found it is being downloaded, configured and the server automatically restarted.
 This also means your clients always need to run the latest ValheimPlus version or will not be able to connect. If this is undesired the schedule could be changed to only check for updates once per day. Example  `UPDATE_CRON='0 6 * * *'` would only check at 6 AM.
 
-## Configuration
-See [ValheimPlus config from Environment Variables](#valheimplus-config-from-environment-variables)
+### Configuration
+See [Mod config from Environment Variables](#mod-config-from-environment-variables)
 
-### Server data rate
+#### Server data rate
 A popular change is to increase the server send rate.
 
 To do so enable ValheimPlus (`VALHEIM_PLUS=true`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
@@ -570,7 +630,7 @@ dataRate=600
 
 Alternatively start with `-e VPCFG_Server_enabled=true -e VPCFG_Server_enforceMod=false -e VPCFG_Server_dataRate=600`.
 
-### Disable server password
+#### Disable server password
 Another popular mod for LAN play that does not require the clients to run ValheimPlus is to turn off password authentication.
 
 To do so enable ValheimPlus (`VALHEIM_PLUS=true`), set an empty password (`SERVER_PASS=""`), make the server non-public (`SERVER_PUBLIC=false`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`

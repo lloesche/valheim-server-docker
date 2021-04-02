@@ -58,11 +58,11 @@ update() {
     rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$valheim_install_path" | tee "$logfile"
     if grep '^[*>]' "$logfile" > /dev/null 2>&1; then
         info "Valheim Server was updated - restarting"
-        check_valheim_plus updated
+        check_mods updated
         write_restart_file updated
     else
         info "Valheim Server is already the latest version"
-        check_valheim_plus uptodate
+        check_mods uptodate
         if [ "$just_started" = true ]; then
             write_restart_file just_started
         fi
@@ -73,20 +73,34 @@ update() {
 }
 
 
-check_valheim_plus() {
-    if [ "$VALHEIM_PLUS" = true ]; then
-        debug "ValheimPlus is enabled - running updater"
-        if [ "$1" = updated ]; then
-            info "Valheim Server was updated from Steam - signaling ValheimPlus updater to merge updated files"
-            touch "$vp_mergefile"
+check_mods() {
+    local valheim_server_update_status=$1
+    check_mod "$valheim_server_update_status" "ValheimPlus" "$VALHEIM_PLUS" "$vp_mergefile" "$vp_install_path" "$vp_updater"
+    check_mod "$valheim_server_update_status" "BepInEx" "$BEPINEX" "$bepinex_mergefile" "$bepinex_install_path" "$bepinex_updater"
+}
+
+
+check_mod() {
+    local valheim_server_update_status=$1
+    local mod_name=$2
+    local mod_enabled=$3
+    local mod_mergefile=$4
+    local mod_install_path=$5
+    local mod_updater=$6
+
+    if [ "$mod_enabled" = true ]; then
+        debug "$mod_name is enabled - running updater"
+        if [ "$valheim_server_update_status" = updated ]; then
+            info "Valheim Server was updated from Steam - signaling $mod_name updater to merge updated files"
+            touch "$mod_mergefile"
         fi
-        just_started=$just_started /usr/local/bin/valheim-plus-updater
+        just_started=$just_started "$mod_updater"
     else
-        if [ "$1" = updated ] && [ -d "$vp_install_path" ]; then
-            debug "ValheimPlus currently disabled but previously installed - keeping installation fresh"
-            debug "If this is unwanted remove $vp_install_path"
-            touch "$vp_mergefile"
-            just_started=$just_started /usr/local/bin/valheim-plus-updater
+        if [ "$valheim_server_update_status" = updated ] && [ -d "$mod_install_path" ]; then
+            debug "$mod_name currently disabled but previously installed - keeping installation fresh"
+            debug "If this is unwanted remove $mod_install_path"
+            touch "$mod_mergefile"
+            just_started=$just_started "$mod_updater"
         fi
     fi
 }
@@ -100,6 +114,8 @@ download_valheim() {
 
 # This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` steamcmd issue (#184).
 verify_cpu_mhz() {
+    local float_regex
+    local cpu_mhz
     float_regex="^([0-9]+\\.?[0-9]*)\$"
     cpu_mhz=$(grep "^cpu MHz" /proc/cpuinfo | head -1 | cut -d : -f 2 | xargs)
     if [ -n "$cpu_mhz" ] && [[ "$cpu_mhz" =~ $float_regex ]] && [ "${cpu_mhz%.*}" -gt 0 ]; then
@@ -113,7 +129,10 @@ verify_cpu_mhz() {
 
 
 verify_memory() {
-    mem=$(awk '
+    local mem_info
+    local mem_total
+    local mem_min=4000000
+    mem_info=$(awk '
         BEGIN {
             total=0
             free=0
@@ -131,7 +150,12 @@ verify_memory() {
             print total"/"free"/"available
         }
     ' /proc/meminfo)
-    debug "Memory total/free/available: $mem"
+    debug "Memory total/free/available: $mem_info"
+    mem_total=${mem_info//\/*}
+    if [ "$mem_total" -lt $mem_min ]; then
+        mem_total=$(iec_size_format "$((mem_total*1024))")
+        error "$mem_total is not enough memory - read https://github.com/lloesche/valheim-server-docker#system-requirements"
+    fi
 }
 
 

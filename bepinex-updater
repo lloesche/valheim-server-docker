@@ -1,0 +1,37 @@
+#!/bin/bash
+# bepinex-updater is being called by
+# valheim-updater when $BEPINEX=true
+# It downloads the BepInExPack mod and merges
+# the downloaded archive with the vanilla
+# Valheim server into /opt/valheim/bepinex
+
+# Include defaults and common functions
+. /usr/local/etc/valheim/defaults
+. /usr/local/etc/valheim/common
+
+
+main() {
+    local api_response
+    local download_url
+    local remote_updated_at
+
+    if ! api_response=$(curl -sfSL -H "accept: application/json" "https://valheim.thunderstore.io/api/experimental/package/denikson/BepInExPack_Valheim/"); then
+        fatal "Error: could not retrieve BepInEx release info from Thunderstore.io API"
+    fi
+    download_url=$(jq -r  ".latest.download_url" <<< "$api_response" )
+    remote_updated_at=$(jq -r  ".date_updated" <<< "$api_response" )
+
+    check_for_mod_update \
+        "$download_url" \
+        "$remote_updated_at" \
+        "$bepinex_zipfile" \
+        "$bepinex_mergefile" \
+        "$bepinex_download_path" \
+        "$bepinex_config_path" \
+        "extracted/BepInExPack_Valheim" \
+        "$bepinex_install_path" \
+        "BepInEx"
+}
+
+
+main

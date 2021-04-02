@@ -1,3 +1,4 @@
+#!/bin/bash
 # The following are default values.
 # They can be overridden by supplying the -e VAR=value option to the containerizer.
 
@@ -22,6 +23,8 @@ STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 DEBUG_START_FRESH=${DEBUG_START_FRESH:-false}
 # Flat to make valheim-plus-updater reinstall the V+ ZIP over vanilla server
 DEBUG_REINSTALL_VALHEIM_PLUS=${DEBUG_REINSTALL_VALHEIM_PLUS:-false}
+# Flat to make bepinex-updater reinstall the BepInEx ZIP over vanilla server
+DEBUG_REINSTALL_BEPINEX=${DEBUG_REINSTALL_BEPINEX:-false}
 
 # How often we check for Valheim server updates
 # This used to be 900 (15 min) and is here for backwards
@@ -61,6 +64,8 @@ STATUS_HTTP_HTDOCS=${STATUS_HTTP_HTDOCS%/}
 # Mod support
 VALHEIM_PLUS=${VALHEIM_PLUS:-false}
 VALHEIM_PLUS_CFG_ENV_PREFIX=${VALHEIM_PLUS_CFG_ENV_PREFIX:-VPCFG_}
+BEPINEX=${BEPINEX:-false}
+BEPINEX_CFG_ENV_PREFIX=${BEPINEX_CFG_ENV_PREFIX:-BEPINEXCFG_}
 
 # Permissions
 PERMISSIONS_UMASK=${PERMISSIONS_UMASK:-022}
@@ -85,8 +90,8 @@ export VALHEIM_LOG_FILTER_UTF8=${VALHEIM_LOG_FILTER_UTF8:-true}
 export VALHEIM_LOG_FILTER_MATCH=${VALHEIM_LOG_FILTER_MATCH- }
 export VALHEIM_LOG_FILTER_STARTSWITH=${VALHEIM_LOG_FILTER_STARTSWITH-(Filename:}
 export VALHEIM_LOG_FILTER_STARTSWITH_AssertionFailed=${VALHEIM_LOG_FILTER_STARTSWITH_AssertionFailed-src/steamnetworkingsockets/clientlib/steamnetworkingsockets_lowlevel.cpp}
-if [ "$VALHEIM_PLUS" = true ]; then
-    export VALHEIM_LOG_FILTER_STARTSWITH_VP=${VALHEIM_LOG_FILTER_STARTSWITH_VP-Fallback handler could not load library}
+if [ "$VALHEIM_PLUS" = true ] || [ "$BEPINEX" = true ]; then
+    export VALHEIM_LOG_FILTER_STARTSWITH_BepInEx=${VALHEIM_LOG_FILTER_STARTSWITH_BepInEx-Fallback handler could not load library}
 fi
 
 # Syslog settings
@@ -115,6 +120,8 @@ PRE_SERVER_RUN_HOOK=${PRE_SERVER_RUN_HOOK:-}
 POST_SERVER_RUN_HOOK=${POST_SERVER_RUN_HOOK:-}
 PRE_SERVER_SHUTDOWN_HOOK=${PRE_SERVER_SHUTDOWN_HOOK:-}
 POST_SERVER_SHUTDOWN_HOOK=${POST_SERVER_SHUTDOWN_HOOK:-}
+PRE_BEPINEX_CONFIG_HOOK=${PRE_BEPINEX_CONFIG_HOOK:-}
+POST_BEPINEX_CONFIG_HOOK=${POST_BEPINEX_CONFIG_HOOK:-}
 
 # Adminlist/Bannedlist IDs
 ADMINLIST_IDS=${ADMINLIST_IDS:-}

@@ -17,8 +17,8 @@ RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-${BUSY
     && make \
     && cp busybox /usr/local/bin/
 
-WORKDIR /build/vpenvconf
-COPY ./vpenvconf/ /build/vpenvconf/
+WORKDIR /build/env2cfg
+COPY ./env2cfg/ /build/env2cfg/
 RUN if [ "${TESTS:-true}" = true ]; then \
         pip3 install tox \
         && tox \
@@ -48,6 +48,7 @@ COPY valheim-bootstrap /usr/local/bin/
 COPY valheim-backup /usr/local/bin/
 COPY valheim-updater /usr/local/bin/
 COPY valheim-plus-updater /usr/local/bin/
+COPY bepinex-updater /usr/local/bin/
 COPY valheim-server /usr/local/bin/
 COPY defaults /usr/local/etc/valheim/
 COPY common /usr/local/etc/valheim/
@@ -62,18 +63,18 @@ RUN if [ "${TESTS:-true}" = true ]; then \
             /usr/local/bin/valheim-server \
             /usr/local/bin/valheim-updater \
             /usr/local/bin/valheim-plus-updater \
+            /usr/local/bin/bepinex-updater \
             /usr/local/share/valheim/contrib/*.sh \
         ; \
     fi
 WORKDIR /
 RUN rm -rf /usr/local/lib/
 RUN tar xzvf /build/supervisor/dist/supervisor-*.linux-x86_64.tar.gz
-RUN tar xzvf /build/vpenvconf/dist/vpenvconf-*.linux-x86_64.tar.gz
+RUN tar xzvf /build/env2cfg/dist/env2cfg-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz
 COPY supervisord.conf /usr/local/etc/supervisord.conf
 RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \
     && chmod 600 /usr/local/etc/supervisord.conf
-
 RUN echo "${SOURCE_COMMIT:-unknown}" > /usr/local/etc/git-commit.HEAD
 
 
@@ -140,6 +141,7 @@ RUN dpkg --add-architecture i386 \
     && ln -s /usr/local/bin/busybox /usr/local/bin/xz \
     && ln -s /usr/local/bin/busybox /usr/local/bin/pstree \
     && ln -s /usr/local/bin/busybox /usr/local/bin/killall \
+    && ln -s /usr/local/bin/busybox /usr/local/bin/bc \
     && curl -L -o /tmp/steamcmd_linux.tar.gz https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
     && tar xzvf /tmp/steamcmd_linux.tar.gz -C /opt/steamcmd/ \
     && chown -R root:root /opt/steamcmd \
@@ -149,7 +151,8 @@ RUN dpkg --add-architecture i386 \
         /usr/bin/supervisord \
     && cd "/opt/steamcmd" \
     && ./steamcmd.sh +login anonymous +quit \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && date --utc --iso-8601=seconds > /usr/local/etc/build.date
 
 EXPOSE 2456-2457/udp
 EXPOSE 9001/tcp
