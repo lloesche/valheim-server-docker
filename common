@@ -388,7 +388,7 @@ merge_mod() {
     # rsync all ValheimPlus mod files on top of the dedicated server files
     rsync -a --itemize-changes "$mod_download_path/" "$mod_install_path.tmp"
     # if /config/valheimplus/ does not exist copy the default config from the ZIP archive
-    mkdir -p "$mod_config_path"
+    mkdir -p "$mod_config_path/plugins"
     pkg_config_dir="$mod_install_path.tmp/BepInEx/config"
     if [ -d "$pkg_config_dir" ]; then
         cd "$pkg_config_dir" || fatal "Could not cd $pkg_config_dir"
