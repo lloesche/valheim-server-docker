@@ -246,7 +246,6 @@ write_bepinex_config() {
             /usr/local/bin/env2cfg --verbose --config "$config_path/BepInEx.cfg" --env-prefix "$BEPINEX_CFG_ENV_PREFIX"
         fi
         if [ -d "$config_path/plugins" ] && [ -d "$plugins_path" ]; then
-            mkdir -p "$plugins_path"
             info "Copying BepInEx plugins from $config_path/plugins/ -> $plugins_path"
             find "$config_path/plugins/" -type f -iname '*.dll' -print -exec cp -f "{}" "$plugins_path" \;
         fi
