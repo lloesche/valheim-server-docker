@@ -39,12 +39,14 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 * [Supervisor](#supervisor)
   * [Supervisor API](#supervisor-api)
 * [Status web server](#status-web-server)
-* [BepInExPack Valheim](#bepinexpack-valheim)
-* [ValheimPlus](#valheimplus)
-	* [Updates](#updates-1)
-	* [Configuration](#configuration)
-		* [Server data rate](#server-data-rate)
-		* [Disable server password](#disable-server-password)
+* [Modding](#modding)
+  * [BepInExPack Valheim](#bepinexpack-valheim)
+    * [Configuration](#configuration)
+  * [ValheimPlus](#valheimplus)
+    * [Updates](#updates-1)
+    * [Configuration](#configuration-1)
+      * [Server data rate](#server-data-rate)
+      * [Disable server password](#disable-server-password)
 * [Changing startup CMD in Portainer](#changing-startup-cmd-in-portainer)
 * [Synology Help](#synology-help)
 	* [First install](#first-install)
@@ -575,8 +577,13 @@ Within the container `status.json` is written to `STATUS_HTTP_HTDOCS` which by d
 
 As mentioned all the information is publicly available on the Valheim server query port. However the option is there to configure a `STATUS_HTTP_CONF` (`/config/httpd.conf` by default) containing [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) to limit access to the status web server by IP/subnet or login/password.
 
+# Modding
+## BepInExPack Valheim
+**Enable with**
+| Variable | Value |
+|----------|----------|
+| `BEPINEX` | `true` |
 
-# BepInExPack Valheim
 [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) packages [BepInEx](https://github.com/BepInEx/BepInEx) for Valheim. BepInEx is a plugin / modding framework for Unity Mono, IL2CPP and .NET framework games.
 To enable BepInExPack provide the env variable `BEPINEX=true`. This can not be specified together with `VALHEIM_PLUS=true`.
 Just like Valheim Server this mod is automatically updated using the `UPDATE_CRON` schedule.
@@ -584,11 +591,16 @@ Just like Valheim Server this mod is automatically updated using the `UPDATE_CRO
 Upon first start BepInExPack will create a new directory `/config/bepinex` where its config files are located.
 BepInEx plugins must be copied into the `/config/bepinex/plugins/` directory. From there they will be automatically copied into `/opt/valheim/bepinex/BepInEx/plugins/` on install/update.
 
-## Configuration
+### Configuration
 See [Mod config from Environment Variables](#mod-config-from-environment-variables)
 
 
-# ValheimPlus
+## ValheimPlus
+**Enable with**
+| Variable | Value |
+|----------|----------|
+| `VALHEIM_PLUS` | `true` |
+
 [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) is a popular Valheim mod based on BepInEx.
 It has been incorporated into this container. To enable V+ provide the env variable `VALHEIM_PLUS=true`. This can not be specified together with `BEPINEX=true`.
 Upon first start V+ will create a new directory `/config/valheimplus` where its config files are located.
@@ -596,15 +608,15 @@ As a user you are mainly concerned with the values in `/config/valheimplus/valhe
 For most modifications the mod has to be installed both, on the server as well as all the clients that connect to the server.
 A few modifications, like for example changing the `dataRate` can be done server only.
 
-## Updates
+### Updates
 ValheimPlus is automatically being updated using the same `UPDATE_CRON` schedule the Valheim server uses to check for updates. If an update of either
 Valheim server or ValheimPlus is found it is being downloaded, configured and the server automatically restarted.
 This also means your clients always need to run the latest ValheimPlus version or will not be able to connect. If this is undesired the schedule could be changed to only check for updates once per day. Example  `UPDATE_CRON='0 6 * * *'` would only check at 6 AM.
 
-## Configuration
+### Configuration
 See [Mod config from Environment Variables](#mod-config-from-environment-variables)
 
-### Server data rate
+#### Server data rate
 A popular change is to increase the server send rate.
 
 To do so enable ValheimPlus (`VALHEIM_PLUS=true`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
@@ -618,7 +630,7 @@ dataRate=600
 
 Alternatively start with `-e VPCFG_Server_enabled=true -e VPCFG_Server_enforceMod=false -e VPCFG_Server_dataRate=600`.
 
-### Disable server password
+#### Disable server password
 Another popular mod for LAN play that does not require the clients to run ValheimPlus is to turn off password authentication.
 
 To do so enable ValheimPlus (`VALHEIM_PLUS=true`), set an empty password (`SERVER_PASS=""`), make the server non-public (`SERVER_PUBLIC=false`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
