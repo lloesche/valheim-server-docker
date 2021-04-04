@@ -109,6 +109,12 @@ printline() {
 
 
 ensure_permissions() {
+    debug "Ensuring /config permissions"
+    local restore_errexit=false
+    if [ -o errexit ]; then
+        restore_errexit=true
+        set +e
+    fi
     chmod "$CONFIG_DIRECTORY_PERMISSIONS" /config
     chmod -f "$CONFIG_FILE_PERMISSIONS" /config/*.txt
     if [ -d /config/worlds ]; then
@@ -118,6 +124,13 @@ ensure_permissions() {
     if [ "$VALHEIM_PLUS" = true ] && [ -d /config/valheimplus ]; then
         chmod "$VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS" /config/valheimplus
         chmod "$VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS" /config/valheimplus/*
+    fi
+    if [ "$BEPINEX" = true ] && [ -d /config/bepinex ]; then
+        chmod "$BEPINEX_CONFIG_DIRECTORY_PERMISSIONS" /config/bepinex
+        chmod "$BEPINEX_CONFIG_FILE_PERMISSIONS" /config/bepinex/*
+    fi
+    if [ "$restore_errexit" = true ]; then
+        set -e
     fi
 }
 
@@ -344,11 +357,11 @@ check_merge() {
     # it is created by valheim-updater if a Valheim server update
     # was downloaded and the mod needs to be applied to it.
     if [ -f "$mergefile" ]; then
-        info "Valheim dedicated server or $mod_name got updated - extracting and merging installation files"
+        info "Valheim dedicated server or $mod_name mod got updated - extracting and merging installation files"
         (set -e; extract_archive "$download_path" "$zipfile" && merge_mod "$install_path" "$config_path" "$download_path/$extraction_path")
         # shellcheck disable=SC2181
         if [ $? -eq 0 ]; then
-            debug "Successfully installed $mod_name"
+            debug "Successfully installed $mod_name mod"
             cp -f "$zipfile.updated_at" "$zipfile.installed_at"
             rm -f "$mergefile"
         else
@@ -384,9 +397,10 @@ merge_mod() {
     mkdir -p "$mod_install_path.tmp"
     # rsync all Valheim dedicated server files
     rsync -a --itemize-changes --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$mod_install_path.tmp"
-    # rsync all ValheimPlus mod files on top of the dedicated server files
+    # rsync all mod files on top of the dedicated server files
     rsync -a --itemize-changes "$mod_download_path/" "$mod_install_path.tmp"
-    # if /config/valheimplus/ does not exist copy the default config from the ZIP archive
+    # if /config/<modname>/ does not exist copy the default config from the ZIP archive
+    debug "Ensuring $mod_config_path/plugins exists"
     mkdir -p "$mod_config_path/plugins"
     pkg_config_dir="$mod_install_path.tmp/BepInEx/config"
     if [ -d "$pkg_config_dir" ]; then
@@ -410,13 +424,16 @@ merge_mod() {
     # ensure config file permissions
     ensure_permissions
     # remove the config folder within the server directory and symlink it to /config
+    debug "Removing $pkg_config_dir and symlinking from $mod_config_path"
     rm -rf "$pkg_config_dir"
     ln -s "$mod_config_path" "$pkg_config_dir"
     # move an existing copy of ValheimPlus to the .old extension
     if [ -d "$mod_install_path" ]; then
+        debug "Moving old $mod_install_path -> $mod_install_path.old"
         mv -f "$mod_install_path" "$mod_install_path.old"
     fi
     # move the staging folder to the live folder and signal valheim-updater to restart the server
+    debug "Moving $mod_install_path.tmp -> $mod_install_path"
     mv "$mod_install_path.tmp" "$mod_install_path"
     write_restart_file updated
 }
