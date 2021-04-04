@@ -116,7 +116,6 @@ are_permissions_equal() {
     
     if [ $(stat -c "%a" "$2") -eq $1 ]
     then
-        echo $(stat -c "%a" "$2")
         true  
     else
         false
