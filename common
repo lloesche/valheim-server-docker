@@ -108,16 +108,71 @@ printline() {
 }
 
 
-ensure_permissions() {
-    chmod "$CONFIG_DIRECTORY_PERMISSIONS" /config
-    chmod -f "$CONFIG_FILE_PERMISSIONS" /config/*.txt
-    if [ -d /config/worlds ]; then
-        chmod "$WORLDS_DIRECTORY_PERMISSIONS" /config/worlds
-        chmod "$WORLDS_FILE_PERMISSIONS" /config/worlds/*
+are_permissions_equal() {
+    #local target_umask=$1
+    #local target_path=$2
+    #local found_umask=$(stat -c "%a" "$target_path")
+    #echo $found_umask
+    
+    if [ $(stat -c "%a" "$2") -eq $1 ]
+    then
+        echo $(stat -c "%a" "$2")
+        true  
+    else
+        false
     fi
-    if [ "$VALHEIM_PLUS" = true ] && [ -d /config/valheimplus ]; then
-        chmod "$VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS" /config/valheimplus
-        chmod "$VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS" /config/valheimplus/*
+}
+
+
+
+ensure_permissions() {
+
+    # config dir and file permission check
+
+    if ! are_permissions_equal "$CONFIG_DIRECTORY_PERMISSIONS" /config
+    then
+        chmod "$CONFIG_DIRECTORY_PERMISSIONS" /config
+    fi
+    
+    for filepath in $(find /config -maxdepth 1 -type f -name "*.txt")
+    do 
+        if ! are_permissions_equal "$CONFIG_DIRECTORY_PERMISSIONS" $filepath
+        then
+            chmod -f "$CONFIG_FILE_PERMISSIONS" $filepath
+        fi
+    done
+    
+    
+    # worlds dir and file permission check
+    if [ -d /config/worlds ]; then        
+        if ! are_permissions_equal "$WORLDS_DIRECTORY_PERMISSIONS" /config/worlds
+        then
+            chmod "$WORLDS_DIRECTORY_PERMISSIONS" /config/worlds
+        fi  
+
+        for filepath in $(find /config/worlds -maxdepth 1 -type f)
+        do 
+            if ! are_permissions_equal "$WORLDS_FILE_PERMISSIONS" $filepath
+            then
+                chmod -f "$WORLDS_FILE_PERMISSIONS" $filepath
+            fi
+        done  
+    fi
+
+    # valheimplus dir and file permission check
+    if [ "$VALHEIM_PLUS" = true ] && [ -d /config/valheimplus ]; then        
+        if ! are_permissions_equal "$VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS" /config/valheimplus
+        then
+            chmod "$VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS" /config/valheimplus
+        fi
+
+        for filepath in $(find /config/valheimplus -maxdepth 1 -type f)
+        do 
+            if ! are_permissions_equal "$VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS" $filepath
+            then
+                chmod -f "$VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS" $filepath
+            fi
+        done  
     fi
 }
 
