@@ -122,12 +122,12 @@ ensure_permissions() {
         chmod "$WORLDS_FILE_PERMISSIONS" /config/worlds/*
     fi
     if [ "$VALHEIM_PLUS" = true ] && [ -d /config/valheimplus ]; then
-        chmod "$VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS" /config/valheimplus
-        chmod "$VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS" /config/valheimplus/*
+        find /config/valheimplus -type d -exec chmod "$VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS" "{}" +
+        find /config/valheimplus -type f -exec chmod "$VALHEIM_PLUS_CONFIG_FILE_PERMISSIONS" "{}" +
     fi
     if [ "$BEPINEX" = true ] && [ -d /config/bepinex ]; then
-        chmod "$BEPINEX_CONFIG_DIRECTORY_PERMISSIONS" /config/bepinex
-        chmod "$BEPINEX_CONFIG_FILE_PERMISSIONS" /config/bepinex/*
+        find /config/bepinex -type d -exec chmod "$BEPINEX_CONFIG_DIRECTORY_PERMISSIONS" "{}" +
+        find /config/bepinex -type f -exec chmod "$BEPINEX_CONFIG_FILE_PERMISSIONS" "{}" +
     fi
     if [ "$restore_errexit" = true ]; then
         set -e
@@ -231,6 +231,7 @@ error_handler() {
 
 write_valheim_plus_config() {
     if [ -d "$vp_config_path" ]; then
+        debug "Writing ValheimPlus config"
         if env | grep "^$VALHEIM_PLUS_CFG_ENV_PREFIX" > /dev/null; then
             /usr/local/bin/env2cfg --verbose --config "$vp_config_path/valheim_plus.cfg" --env-prefix "$VALHEIM_PLUS_CFG_ENV_PREFIX"
         fi
@@ -239,28 +240,20 @@ write_valheim_plus_config() {
 
 
 write_bepinex_config() {
-    local config_path
-    if [ "$VALHEIM_PLUS" = true ]; then
-        config_path=$vp_config_path
-        plugins_path="$vp_install_path/BepInEx/plugins/"
-    elif [ "$BEPINEX" = true ]; then
-        config_path=$bepinex_config_path
-        plugins_path="$bepinex_install_path/BepInEx/plugins/"
-    else
-        error "Neither ValheimPlus nor BepInExPack enabled - not writing BepInEx config"
-        return 1
-    fi
+    local config_path=$1
+    local plugins_path=$2
     if [ -n "$PRE_BEPINEX_CONFIG_HOOK" ]; then
         info "Running pre BepInEx config hook: $PRE_BEPINEX_CONFIG_HOOK"
         eval "$PRE_BEPINEX_CONFIG_HOOK"
     fi
     if [ -d "$config_path" ]; then
+        debug "Writing BepInEx config"
         if env | grep "^$BEPINEX_CFG_ENV_PREFIX" > /dev/null; then
             /usr/local/bin/env2cfg --verbose --config "$config_path/BepInEx.cfg" --env-prefix "$BEPINEX_CFG_ENV_PREFIX"
         fi
         if [ -d "$config_path/plugins" ] && [ -d "$plugins_path" ]; then
-            info "Copying BepInEx plugins from $config_path/plugins/ -> $plugins_path"
-            find "$config_path/plugins/" -type f -iname '*.dll' -print -exec cp -f "{}" "$plugins_path" \;
+            info "Syncing BepInEx plugins from $config_path/plugins/ -> $plugins_path"
+            rsync -a --itemize-changes "$config_path/plugins/" "$plugins_path"
         fi
     fi
     if [ -n "$POST_BEPINEX_CONFIG_HOOK" ]; then
@@ -407,16 +400,17 @@ merge_mod() {
         cd "$pkg_config_dir" || fatal "Could not cd $pkg_config_dir"
         for config_file in *; do
             dest_file="$mod_config_path/$config_file"
+            debug "Storing $config_file as $dest_file.default"
             # always copy the configs that came with the latest ZIP archive to .cfg.default
             cp -f "$config_file" "$dest_file.default"
             if [ ! -f "$dest_file" ]; then
                 debug "Config $dest_file does not exist - copying from archive"
                 cp -f "$config_file" "$dest_file"
-                if [ "$config_file" = "valheim_plus.cfg" ]; then
-                    write_valheim_plus_config
-                elif [ "$config_file" = "BepInEx.cfg" ]; then
-                    write_bepinex_config
-                fi
+            fi
+            if [ "$config_file" = "valheim_plus.cfg" ]; then
+                write_valheim_plus_config
+            elif [ "$config_file" = "BepInEx.cfg" ]; then
+                write_bepinex_config "$mod_config_path" "$mod_install_path.tmp/BepInEx/plugins"
             fi
         done
         cd - || fatal "Could not cd -"
