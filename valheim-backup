@@ -14,6 +14,8 @@ run=true
 
 
 main() {
+    local last_activity
+    last_activity=$(date +%s)
     if (set -o noclobber; echo $$ > "$pidfile") 2> /dev/null; then
         trap backup_now SIGHUP
         trap shutdown SIGINT SIGTERM
@@ -21,11 +23,18 @@ main() {
 
         cd /config || fatal "Could not cd /config"
         while [ $run = true ]; do
-            backup
-            flush_old
+            if [ "$BACKUPS_IF_IDLE" = true ] || [ "$(date +%s)" -le $((last_activity+BACKUPS_IDLE_GRACE_PERIOD)) ]; then
+                backup
+                flush_old
+            else
+                debug "Not running backup as there has been no server activity since $(date -d @"$last_activity")"
+            fi
             next_backup=$(($(date +%s)+BACKUPS_INTERVAL))
             while [ $run = true ] && [ "$(date +%s)" -lt $next_backup ]; do
-                sleep 8
+                sleep 20
+                if [ "$BACKUPS_IF_IDLE" = false ] && ! server_is_idle; then
+                    last_activity=$(date +%s)
+                fi
             done
         done
     else

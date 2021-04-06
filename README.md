@@ -127,6 +127,8 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `BACKUPS_CRON` | `0 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for world backups (disabled if set to an empty string or if the legacy `BACKUPS_INTERVAL` is set) |
 | `BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
 | `BACKUPS_MAX_AGE` | `3` | Age in days after which old backups are flushed |
+| `BACKUPS_IF_IDLE` | `true` | Backup even when no players have been connected for a while |
+| `BACKUPS_IDLE_GRACE_PERIOD` | `3600` | Grace period in seconds after the last player has disconnected in which we will still create backups when `BACKUPS_IF_IDLE=false` |
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`, additional plugins in `/config/valheimplus/plugins`). Can not be used together with `BEPINEX`. |
@@ -417,23 +419,32 @@ However the `worlds/` directory also contains a `.db.old` file for each world wh
 
 See [Copy backups to another location](#copy-backups-to-another-location) for an example of how to copy backups offsite.
 
+If `BACKUPS_IF_IDLE=false` then backups are only created if there has been recent player activity. Once the last player disconnects
+there is a grace period `BACKUPS_IDLE_GRACE_PERIOD` in seconds after which backups are still being created. The reason for this is that Valheim
+dedicated server only saves the world in 20 minute intervals and on shutdown. So to make sure that we have a consistent world file backup of
+the most recent changes we want to wait out one world save. This grace period also needs to be long enough so that our `BACKUPS_CRON` had a chance to run.
+
+
 ## Manual backup
 Sending `SIGHUP` to the `valheim-backup` service or restarting the service will create a backup.
+If `BACKUPS_IF_IDLE=false` sending `SIGHUP` only creates a backup if there has been recent player activity.
+Restarting `valheim-backup` will always create a backup.
+
 The PID of the running service can be found in `/var/run/valheim-backup.pid`
 
 Assuming your container's name is `valheim-server` here's how both would work:
 
-Sending SIGHUP using `supervisorctl` (the most graceful way of making a backup)
+Sending SIGHUP using `supervisorctl`
 ```
 docker exec -it valheim-server supervisorctl signal HUP valheim-backup
 ```
 
-Sending SIGHUP manually (as graceful as before but more "manual")
+Sending SIGHUP manually
 ```
 docker exec -it valheim-server bash -c 'kill -HUP $(< /var/run/valheim-backup.pid)'
 ```
 
-Restarting `valheim-backup` (the more brute force way)
+Restarting `valheim-backup`
 ```
 docker exec -it valheim-server supervisorctl restart valheim-backup
 ```

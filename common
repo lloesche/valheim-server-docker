@@ -52,6 +52,8 @@ supervisor_http_server_conf=/usr/local/etc/supervisor/conf.d/http_server.conf
 # Status httpd config files
 status_http_server_conf=/usr/local/etc/supervisor/conf.d/status_http_server.conf
 status_http_server_updater_conf=/usr/local/etc/supervisor/conf.d/status_http_server_updater.conf
+
+# Commands
 cmd_valheim_status=/usr/local/bin/valheim-status
 cmd_valheim_is_idle=/usr/local/bin/valheim-is-idle
 cmd_valheim_logfilter=/usr/local/bin/valheim-logfilter
@@ -109,7 +111,6 @@ printline() {
 
 
 ensure_permissions() {
-    debug "Ensuring /config permissions"
     local restore_errexit=false
     if [ -o errexit ]; then
         restore_errexit=true
@@ -454,7 +455,7 @@ check_for_mod_update() {
         if [ "$local_updated_at" = "$remote_updated_at" ] && [ "$local_updated_at" = "$local_installed_at" ]; then
             debug "Local $mod_name archive is identical to remote archive and was successfully installed - no update required"
         else
-            info "Local $mod_name archive with update date $local_updated_at differs from date $remote_updated_at or failed to successfully install - updating"
+            info "Local $mod_name archive with update date $local_updated_at differs from remote date $remote_updated_at or failed to successfully install - updating"
             prepare_mod "$download_url" "$remote_updated_at" "$mergefile" "$download_path/$zipfile"
         fi
     else
