@@ -38,6 +38,19 @@ type RegexpAction struct {
 	cmd    string
 }
 
+// valheim-logfilter is a string processor for log lines emitted by Valheim dedicated server.
+// This tool is primarily written to remove redundant/broken/uninteresting log lines and it has a
+// secondary function running event hooks when something happens in the log. Like notifying on Discord
+// when a player logs into the server.
+// Match patterns are read from the environment. If a log line matches a pattern the line is either
+// removed or a command is executed with the matching log line written to stdin of that command.
+// If a command is executed it is run inside a goroutine that is not being waited for. Meaning
+// if valheim-logfilter ends (i.e. if Valheim server is stopped) before the command completes
+// the command is terminated.
+// Also note that this is explicitly written for Valheim server, which emits few log lines per minute.
+// If you were to use this for a high throughput log you would want to add rate limiting and pooling
+// for command execution. This also means that you might not want to add commands on events that can
+// be triggered by unauthenticated users. Like connection attempts for instance.
 func main() {
 	envMatch := flag.String("env-match", "VALHEIM_LOG_FILTER_MATCH", "Valheim match filter env varname prefix")
 	envPrefix := flag.String("env-startswith", "VALHEIM_LOG_FILTER_STARTSWITH", "Valheim starts-with filter env varname prefix")
@@ -68,37 +81,37 @@ func main() {
 		if len(varValue) == 0 {
 			continue
 		}
-		cmd, present := os.LookupEnv("ON_" + envVar)
+		cmd, foundCmdInEnv := os.LookupEnv("ON_" + envVar)
 		if strings.HasPrefix(envVar, *envMatch) {
-			if present {
+			if foundCmdInEnv {
 				glog.V(2).Infof("On log lines matching '%s' running '%s'", varValue, cmd)
 			} else {
 				glog.V(2).Infof("Removing log lines matching '%s'", varValue)
 			}
 			matchFilters = append(matchFilters, PatternAction{varValue, cmd})
 		} else if strings.HasPrefix(envVar, *envPrefix) {
-			if present {
+			if foundCmdInEnv {
 				glog.V(2).Infof("On log lines starting with '%s' running '%s'", varValue, cmd)
 			} else {
 				glog.V(2).Infof("Removing log lines starting with '%s'", varValue)
 			}
 			prefixFilters = append(prefixFilters, PatternAction{varValue, cmd})
 		} else if strings.HasPrefix(envVar, *envSuffix) {
-			if present {
+			if foundCmdInEnv {
 				glog.V(2).Infof("On log lines ending with '%s' running '%s'", varValue, cmd)
 			} else {
 				glog.V(2).Infof("Removing log lines ending with '%s'", varValue)
 			}
 			suffixFilters = append(suffixFilters, PatternAction{varValue, cmd})
 		} else if strings.HasPrefix(envVar, *envContains) {
-			if present {
+			if foundCmdInEnv {
 				glog.V(2).Infof("On log lines containing '%s' running '%s'", varValue, cmd)
 			} else {
 				glog.V(2).Infof("Removing log lines containing '%s'", varValue)
 			}
 			containsFilters = append(containsFilters, PatternAction{varValue, cmd})
 		} else if strings.HasPrefix(envVar, *envRegexp) {
-			if present {
+			if foundCmdInEnv {
 				glog.V(2).Infof("On log lines matching regexp '%s' running '%s", varValue, cmd)
 			} else {
 				glog.V(2).Infof("Removing log lines matching regexp '%s'", varValue)
@@ -148,10 +161,8 @@ Input:
 				if glog.V(5) {
 					glog.Infof("Line matched '%s'", action.filter)
 				}
-				if action.cmd == "" {
+				if removeLogLine(action.cmd, logLine) {
 					continue Input
-				} else {
-					go runHook(action.cmd, logLine)
 				}
 			}
 		}
@@ -160,10 +171,8 @@ Input:
 				if glog.V(5) {
 					glog.Infof("Line matched prefix filter '%s'", action.filter)
 				}
-				if action.cmd == "" {
+				if removeLogLine(action.cmd, logLine) {
 					continue Input
-				} else {
-					go runHook(action.cmd, logLine)
 				}
 			}
 		}
@@ -172,10 +181,8 @@ Input:
 				if glog.V(5) {
 					glog.Infof("Line matched suffix filter '%s'", action.filter)
 				}
-				if action.cmd == "" {
+				if removeLogLine(action.cmd, logLine) {
 					continue Input
-				} else {
-					go runHook(action.cmd, logLine)
 				}
 			}
 		}
@@ -184,10 +191,8 @@ Input:
 				if glog.V(5) {
 					glog.Infof("Line contains filter '%s'", action.filter)
 				}
-				if action.cmd == "" {
+				if removeLogLine(action.cmd, logLine) {
 					continue Input
-				} else {
-					go runHook(action.cmd, logLine)
 				}
 			}
 		}
@@ -196,10 +201,8 @@ Input:
 				if glog.V(5) {
 					glog.Infof("Line matched regexp filter '%s'", action.filter)
 				}
-				if action.cmd == "" {
+				if removeLogLine(action.cmd, logLine) {
 					continue Input
-				} else {
-					go runHook(action.cmd, logLine)
 				}
 			}
 		}
@@ -216,6 +219,24 @@ Input:
 	glog.Flush()
 }
 
+// removeLogLine returns true if the cmd arg is an empty string
+// or false if it is a non-zero length string. If cmd is not empty
+// then the command in it will be executed by runHook() inside of
+// a goroutine. We are not waiting for the command to return meaning
+// if the Valheim server is being stopped while the command runs
+// it will be aborted.
+func removeLogLine(cmd string, logLine string) bool {
+	if cmd == "" {
+		return true
+	} else {
+		go runHook(cmd, logLine)
+	}
+	return false
+}
+
+// runHook takes a shell command and a log line string as arguments.
+// The command will be executed in a bash shell and the log line is
+// written to its stdin.
 func runHook(cmd string, logLine string) {
 	glog.Infof("Running hook %q for %q", cmd, logLine)
 	subProcess := exec.Command("/bin/bash", "-c", cmd)
