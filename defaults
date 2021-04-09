@@ -37,14 +37,19 @@ UPDATE_IF_IDLE=${UPDATE_IF_IDLE:-true}
 
 # What time we restart the valheim-server
 # This is usful to mitigate the effects of memory/resource leaks
-RESTART_CRON=${RESTART_CRON-0 5 * * *}
+# Briefly disable wildcard expansion so asterisks are literal
+set +f
+RESTART_CRON=${RESTART_CRON:-0 5 * * *}
+set -f
 RESTART_IF_IDLE=${RESTART_IF_IDLE:-true}
 
 # World backup related settings
 BACKUPS=${BACKUPS:-true}
 # Legacy interval variable used to be 3600 (1h)
 BACKUPS_INTERVAL=${BACKUPS_INTERVAL:-315360000}
+set +f
 BACKUPS_CRON=${BACKUPS_CRON-0 * * * *}
+set -f
 BACKUPS_DIRECTORY=${BACKUPS_DIRECTORY:-/config/backups}
 BACKUPS_MAX_AGE=${BACKUPS_MAX_AGE:-3}
 BACKUPS_IF_IDLE=${BACKUPS_IF_IDLE:-true}
