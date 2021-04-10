@@ -1,7 +1,7 @@
 # lloesche/valheim-server Docker image
 ![Valheim](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/Logo_valheim.png "Valheim")
 
-Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)  
+Valheim Server in a Docker Container (with [BepInEx](#bepinexpack-valheim) and [ValheimPlus](#valheimplus) support)  
 
 [![Docker Badge](https://img.shields.io/docker/pulls/lloesche/valheim-server.svg)](https://hub.docker.com/r/lloesche/valheim-server)
 
@@ -55,6 +55,7 @@ Valheim Server in a Docker Container (with [ValheimPlus](#valheimplus) support)
 * [QNAP NAS Help](#qnap-nas-help)
 	* [Creating container](#creating-container)
 	* [Updating image](#updating-image)
+* [Legal disclaimer](#legal-disclaimer)
 <!-- vim-markdown-toc -->
 
 
@@ -789,3 +790,7 @@ In the image name you have to specify the image from the container definition `l
 After the image is downloaded restart the container. As you can see the old image is now unused and the new one is in use by the container. You can now safely delete the old image.
 
 ![Qnap update Step 4](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/qnap_update_images.png "Qnap update Step 4")
+
+# Legal disclaimer
+This Docker container is not endorsed by, directly affiliated with, maintained, authorized, or sponsored by [Iron Gate Studio](https://irongatestudio.se/).  
+[Valheim](https://www.valheimgame.com/), [Valheim dedicated server](https://steamcommunity.com/app/896660/) and [the Valheim Logo](https://irongatestudio.se/onewebmedia/ValheimPresskit.zip) are © 2021 Iron Gate Studio.
