@@ -55,6 +55,7 @@ Valheim Server in a Docker Container (with [BepInEx](#bepinexpack-valheim) and [
 * [QNAP NAS Help](#qnap-nas-help)
 	* [Creating container](#creating-container)
 	* [Updating image](#updating-image)
+* [License](#license)
 * [Legal disclaimer](#legal-disclaimer)
 <!-- vim-markdown-toc -->
 
@@ -790,6 +791,21 @@ In the image name you have to specify the image from the container definition `l
 After the image is downloaded restart the container. As you can see the old image is now unused and the new one is in use by the container. You can now safely delete the old image.
 
 ![Qnap update Step 4](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/qnap_update_images.png "Qnap update Step 4")
+
+# License
+Copyright 2021 [Lukas Lösche](mailto:lukas@opensourcery.de)  
+  
+Licensed under the Apache License, Version 2.0 (the "License");  
+you may not use this file except in compliance with the License.  
+You may obtain a copy of the License at  
+  
+&nbsp;&nbsp;&nbsp;&nbsp;[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)  
+  
+Unless required by applicable law or agreed to in writing, software  
+distributed under the License is distributed on an "AS IS" BASIS,  
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
+See the License for the specific language governing permissions and  
+limitations under the License.
 
 # Legal disclaimer
 This Docker container is not endorsed by, directly affiliated with, maintained, authorized, or sponsored by [Iron Gate Studio](https://irongatestudio.se/).  
