@@ -55,6 +55,7 @@ Valheim Server in a Docker Container (with [BepInEx](#bepinexpack-valheim) and [
 * [QNAP NAS Help](#qnap-nas-help)
 	* [Creating container](#creating-container)
 	* [Updating image](#updating-image)
+	* [QNAP ZFS issue](#qnap-zfs-issue)
 * [License](#license)
 * [Legal disclaimer](#legal-disclaimer)
 <!-- vim-markdown-toc -->
@@ -791,6 +792,19 @@ In the image name you have to specify the image from the container definition `l
 After the image is downloaded restart the container. As you can see the old image is now unused and the new one is in use by the container. You can now safely delete the old image.
 
 ![Qnap update Step 4](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/qnap_update_images.png "Qnap update Step 4")
+
+
+## QNAP ZFS issue
+We have had [a report from a QNAP user](https://github.com/lloesche/valheim-server-docker/issues/275) where Steam failed when using ZFS as the backing filesystem with the following error
+```
+valheim-updater [ 0%] !!! Fatal Error: Steamcmd needs 250MB of free disk space to update.
+valheim-updater src/tier0/threadtools.cpp (3553) : Assertion Failed: Illegal termination of worker thread 'Thread(0x0x58a1d8f0/0x0xf7780b'
+```
+
+The only workaround they found was to use a non-ZFS volume.
+
+If you have access to a QNAP NAS running ZFS and can reproduce/debug this issue further, please open a new issue with your findings so we can update this section and provide more information here.
+
 
 # License
 Copyright 2021 [Lukas Lösche](mailto:lukas@opensourcery.de)  
