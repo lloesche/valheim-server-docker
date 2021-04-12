@@ -57,6 +57,8 @@ This project is hosted at [https://github.com/lloesche/valheim-server-docker](ht
 	* [Creating container](#creating-container)
 	* [Updating image](#updating-image)
 	* [QNAP ZFS issue](#qnap-zfs-issue)
+* [OpenMediaVault Help](#openmediavault-help)
+  * [Permission denied error](#permission-denied-error)
 * [License](#license)
 * [Legal disclaimer](#legal-disclaimer)
 <!-- vim-markdown-toc -->
@@ -805,6 +807,22 @@ valheim-updater src/tier0/threadtools.cpp (3553) : Assertion Failed: Illegal ter
 The only workaround they found was to use a non-ZFS volume.
 
 If you have access to a QNAP NAS running ZFS and can reproduce/debug this issue further, please open a new issue with your findings so we can update this section and provide more information here.
+
+
+# OpenMediaVault Help
+## Permission denied error
+If you are running this container in Portainer on a OpenMediaVault NAS and getting the following error
+```
+valheim-server /usr/local/bin/valheim-server: line 110: /opt/valheim/server/valheim_server.x86_64: Permission denied
+```
+
+the cause is that the container's filesystem is mounted with the `noexec` flag. Meaning no files are allowed to be executed on that filesystem.
+
+See [this page](https://openmediavault.readthedocs.io/en/5.x/various/fs_env_vars.html) for detailed information on how to disable noexec for newly created and existing filesystems.
+
+For existing filesystems edit `/etc/openmediavault/config.xml` and remove the `noexec` option from the filesystem in question. The file should look something like this
+
+![OMV 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/omv1.png "OMV Step 1")
 
 
 # License
