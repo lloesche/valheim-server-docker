@@ -106,7 +106,7 @@ autostart=true
 autorestart=true
 startsecs=10
 startretries=0
-priority=90
+priority=80
 EOF
         chmod 600 "$status_http_server_conf"
         cat > "$status_http_server_updater_conf" <<EOF
@@ -122,7 +122,7 @@ autostart=true
 autorestart=true
 startsecs=10
 startretries=0
-priority=80
+priority=70
 EOF
         chmod 600 "$status_http_server_updater_conf"
     fi
