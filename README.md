@@ -312,7 +312,7 @@ Example:
 ```
 -e VALHEIM_PLUS=true \
 -e VPCFG_Server_enabled=true \
--e VPCFG_Server_enforceMod=false \
+-e VPCFG_Server_enforceMod=true \
 -e VPCFG_Server_dataRate=500 \
 -e BEPINEXCFG_Logging_DOT_Console_Enabled=true
 ```
