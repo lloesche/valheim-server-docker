@@ -623,7 +623,7 @@ It has been incorporated into this container. To enable V+ provide the env varia
 Upon first start V+ will create a new directory `/config/valheimplus` where its config files are located.
 As a user you are mainly concerned with the values in `/config/valheimplus/valheim_plus.cfg`.
 For most modifications the mod has to be installed both, on the server as well as all the clients that connect to the server.
-A few modifications, like for example changing the `dataRate` can be done server only.
+A few modifications, like for example changing the `dataRate` can be done server only. [For more information on V+ configuration options.](https://valheim.plus/documentation/list)
 
 ### Updates
 ValheimPlus is automatically being updated using the same `UPDATE_CRON` schedule the Valheim server uses to check for updates. If an update of either
