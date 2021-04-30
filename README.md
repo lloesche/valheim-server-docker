@@ -37,6 +37,7 @@ This project is hosted at [https://github.com/lloesche/valheim-server-docker](ht
 	* [Steam Server Browser](#steam-server-browser)
 	* [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
 * [Admin Commands](#admin-commands)
+  * [Enable Admin Console](#enable-admin-console)
 * [Supervisor](#supervisor)
   * [Supervisor API](#supervisor-api)
 * [Status web server](#status-web-server)
@@ -531,6 +532,11 @@ or in the server logs when a user connects.
 
 Administrators can press ***F5*** to open the in-game console and use commands like `ban` and `kick`.
 ![Kick a user](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin3.png "Kick a user")
+
+
+## Enable Admin Console
+In recent versions of Valheim the game client has to be started with the `-console` flag for ***F5*** to work.
+![Enable Admin Console](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin_console1.png "Enable Admin Console")
 
 
 # Supervisor
