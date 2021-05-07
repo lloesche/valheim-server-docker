@@ -90,6 +90,13 @@ flush_old() {
         debug "No old backups to remove"
         return
     fi
+
+    info "Removing all but the newest $BACKUPS_MAX_COUNT backups"
+    pushd "$BACKUPS_DIRECTORY" > /dev/null
+    # shellcheck disable=SC2010
+    ls -tp | grep -v '/$' | tail -n +$((BACKUPS_MAX_COUNT+1)) | xargs -I {} rm -v -- {}
+    popd > /dev/null
+
     info "Removing backups older than $BACKUPS_MAX_AGE days"
     find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name 'worlds-*.zip' -print -exec rm -f "{}" \;
 }
