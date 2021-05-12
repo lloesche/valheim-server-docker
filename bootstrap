@@ -7,12 +7,30 @@
 
 
 main() {
+    apply_permissions
     configure_timezone
     setup_syslog
     setup_supervisor_http_server
     setup_status_http_server
     pre_supervisor_hook
     exec /usr/local/bin/supervisord -c /usr/local/etc/supervisord.conf
+}
+
+
+# Apply user id and group id
+apply_permissions() {
+    if [[ -n "$USER_ID" && -n "$GROUP_ID" ]]; then
+        info "Using uid:gid of valheim-server to $USER_ID:$GROUP_ID"
+        groupmod -g "${GROUP_ID}" valheim-server
+        usermod -u "${USER_ID}" -g valheim-server valheim-server
+        chown "$USER_ID":"$GROUP_ID" \
+            /config \
+            /opt/valheim \
+            /home/valheim-server \
+            /var/run/valheim -R
+        chgrp "$GROUP_ID" /usr/local/etc/supervisord.conf
+        chmod g+r /usr/local/etc/supervisord.conf
+    fi
 }
 
 

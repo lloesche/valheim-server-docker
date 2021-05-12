@@ -154,6 +154,11 @@ RUN dpkg --add-architecture i386 \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && date --utc --iso-8601=seconds > /usr/local/etc/build.date
 
+RUN groupadd -g "${GROUP_ID:-1001}" valheim-server && \
+    useradd -g "${GROUP_ID:-1001}" -u "${USER_ID:-1001}" --create-home valheim-server && \
+    mkdir -p /var/run/valheim && \
+    chown valheim-server:valheim-server /var/run/valheim
+
 EXPOSE 2456-2457/udp
 EXPOSE 9001/tcp
 EXPOSE 80/tcp
