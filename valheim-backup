@@ -93,10 +93,7 @@ flush_old() {
 
     if [ "$BACKUPS_MAX_COUNT" -gt 0 ]; then
         info "Removing all but the newest $BACKUPS_MAX_COUNT backups"
-        cd "$BACKUPS_DIRECTORY" || fatal "Could not cd $BACKUPS_DIRECTORY"
-            # shellcheck disable=SC2010
-            ls -tp | grep -v '/$' | tail -n +$((BACKUPS_MAX_COUNT+1)) | xargs -I {} rm -v -- {}
-        cd -
+        find "$BACKUPS_DIRECTORY" -type f -name 'worlds-*.zip' -printf "%T@ %p\0" | sort -z -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
     fi
 
     info "Removing backups older than $BACKUPS_MAX_AGE days"
