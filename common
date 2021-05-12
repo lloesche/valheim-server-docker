@@ -42,9 +42,9 @@ bepinex_mergefile="$bepinex_download_path/merge" # Signaling file created by val
 bepinex_zipfile=BepInEx.zip                      # Name of the BepInEx archive
 
 # Collection of PID files
-valheim_server_pidfile=/var/run/valheim-server.pid
-valheim_updater_pidfile=/var/run/valheim-updater.pid
-valheim_backup_pidfile=/var/run/valheim-backup.pid
+valheim_server_pidfile=/var/run/valheim/valheim-server.pid
+valheim_updater_pidfile=/var/run/valheim/valheim-updater.pid
+valheim_backup_pidfile=/var/run/valheim/valheim-backup.pid
 
 # Supervisor config files
 supervisor_http_server_conf=/usr/local/etc/supervisor/conf.d/http_server.conf
