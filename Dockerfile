@@ -91,6 +91,7 @@ RUN dpkg --add-architecture i386 \
         lib32gcc1 \
         libsdl2-2.0-0 \
         libsdl2-2.0-0:i386 \
+        cron \
         curl \
         tcpdump \
         libcurl4 \
@@ -115,9 +116,7 @@ RUN dpkg --add-architecture i386 \
     && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
     && ln -s /config /root/.config/unity3d/IronGate/Valheim \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/syslogd \
-    && ln -s /usr/local/bin/busybox /usr/local/sbin/crond \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/mkpasswd \
-    && ln -s /usr/local/bin/busybox /usr/local/bin/crontab \
     && ln -s /usr/local/bin/busybox /usr/local/bin/vi \
     && ln -s /usr/local/bin/busybox /usr/local/bin/patch \
     && ln -s /usr/local/bin/busybox /usr/local/bin/unix2dos \
