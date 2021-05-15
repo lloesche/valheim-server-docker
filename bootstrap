@@ -23,11 +23,17 @@ apply_permissions() {
         info "Using uid:gid of valheim-server to $USER_ID:$GROUP_ID"
         groupmod -g "${GROUP_ID}" valheim-server
         usermod -u "${USER_ID}" -g valheim-server valheim-server
-        chown "$USER_ID":"$GROUP_ID" \
+
+        mkdir -p /var/run/valheim
+        touch "$SERVER_STATUS_FILE"
+
+        chown "$USER_ID":"$GROUP_ID" -R \
             /config \
             /opt/valheim \
+            /opt/steamcmd \
             /home/valheim-server \
-            /var/run/valheim -R
+            /var/run/valheim \
+            "$SERVER_STATUS_FILE"
         chgrp "$GROUP_ID" /usr/local/etc/supervisord.conf
         chmod g+r /usr/local/etc/supervisord.conf
     fi
