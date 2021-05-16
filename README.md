@@ -134,6 +134,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `BACKUPS_CRON` | `0 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for world backups (disabled if set to an empty string or if the legacy `BACKUPS_INTERVAL` is set) |
 | `BACKUPS_DIRECTORY` | `/config/backups` | Path to the backups directory |
 | `BACKUPS_MAX_AGE` | `3` | Age in days after which old backups are flushed |
+| `BACKUPS_MAX_COUNT` | `0` | Maximum number of backups kept, 0 means infinity |
 | `BACKUPS_IF_IDLE` | `true` | Backup even when no players have been connected for a while |
 | `BACKUPS_IDLE_GRACE_PERIOD` | `3600` | Grace period in seconds after the last player has disconnected in which we will still create backups when `BACKUPS_IF_IDLE=false` |
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
@@ -420,6 +421,8 @@ It makes sense to have this directory be a volume mount from the host.
 Warning: do not make the backup directory a subfolder of `/config/worlds/`. Otherwise each backup will backup all previous backups.
 
 By default 3 days worth of backups will be kept. A different number can be configured using `BACKUPS_MAX_AGE`. The value is in days.
+
+It is possible to configure a maximum number of to-be-kept backup files with `BACKUPS_MAX_COUNT`. When going over this limit, the oldest file(s) will be deleted. The default is `0` which means no limit. Note that `BACKUPS_MAX_AGE` will always be respected: if backups get too old, they will be deleted even if `BACKUPS_MAX_COUNT` was not yet reached (or is `0`).
 
 Beware that backups are performed while the server is running. As such files might be in an open state when the backup runs.
 However the `worlds/` directory also contains a `.db.old` file for each world which should always be closed and in a consistent state.
