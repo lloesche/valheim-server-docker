@@ -5,6 +5,10 @@
 # The timezone this container is running in
 TZ=${TZ:-Etc/UTC}
 
+# User and group id for the user running valheim-server
+PUID=${PUID:-0}
+PGID=${PGID:-0}
+
 # Valheim dedicated server related values
 WORLD_NAME=${WORLD_NAME:-Dedicated}
 SERVER_NAME=${SERVER_NAME:-My Server}

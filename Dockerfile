@@ -83,8 +83,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build-env /usr/local/ /usr/local/
 COPY fake-supervisord /usr/bin/supervisord
 
-RUN groupadd -g "${GROUP_ID:-1001}" valheim-server && \
-    useradd -g "${GROUP_ID:-1001}" -u "${USER_ID:-1001}" --create-home valheim-server && \
+RUN groupadd -g "${PGID:-0}" -o valheim-server && \
+    useradd -g "${PGID:-0}" -u "${PUID:-0}" -o --create-home valheim-server && \
     mkdir -p /var/run/valheim && \
     chown valheim-server:valheim-server /var/run/valheim
 
