@@ -82,6 +82,12 @@ FROM debian:stable-slim
 ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build-env /usr/local/ /usr/local/
 COPY fake-supervisord /usr/bin/supervisord
+
+RUN groupadd -g "${PGID:-0}" -o valheim-server && \
+    useradd -g "${PGID:-0}" -u "${PUID:-0}" -o --create-home valheim-server && \
+    mkdir -p /var/run/valheim && \
+    chown valheim-server:valheim-server /var/run/valheim
+
 RUN dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get -y --no-install-recommends install apt-utils \
@@ -91,6 +97,7 @@ RUN dpkg --add-architecture i386 \
         lib32gcc1 \
         libsdl2-2.0-0 \
         libsdl2-2.0-0:i386 \
+        cron \
         curl \
         tcpdump \
         libcurl4 \
@@ -112,12 +119,10 @@ RUN dpkg --add-architecture i386 \
     && locale-gen \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
     && apt-get clean \
-    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /root/.config/unity3d/IronGate /config \
-    && ln -s /config /root/.config/unity3d/IronGate/Valheim \
+    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /home/valheim-server/.config/unity3d/IronGate /config \
+    && ln -s /config /home/valheim-server/.config/unity3d/IronGate/Valheim \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/syslogd \
-    && ln -s /usr/local/bin/busybox /usr/local/sbin/crond \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/mkpasswd \
-    && ln -s /usr/local/bin/busybox /usr/local/bin/crontab \
     && ln -s /usr/local/bin/busybox /usr/local/bin/vi \
     && ln -s /usr/local/bin/busybox /usr/local/bin/patch \
     && ln -s /usr/local/bin/busybox /usr/local/bin/unix2dos \

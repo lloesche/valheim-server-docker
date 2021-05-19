@@ -5,6 +5,10 @@
 # The timezone this container is running in
 TZ=${TZ:-Etc/UTC}
 
+# User and group id for the user running valheim-server
+PUID=${PUID:-0}
+PGID=${PGID:-0}
+
 # Valheim dedicated server related values
 WORLD_NAME=${WORLD_NAME:-Dedicated}
 SERVER_NAME=${SERVER_NAME:-My Server}
@@ -105,7 +109,7 @@ SYSLOG_REMOTE_PORT=${SYSLOG_REMOTE_PORT:-514}
 SYSLOG_REMOTE_AND_LOCAL=${SYSLOG_REMOTE_AND_LOCAL:-true}
 
 # Server status
-SERVER_STATUS_FILE=${SERVER_STATUS_FILE:-/var/run/valheim-server.status}
+SERVER_STATUS_FILE=${SERVER_STATUS_FILE:-/var/run/valheim/valheim-server.status}
 
 # Hooks
 PRE_SUPERVISOR_HOOK=${PRE_SUPERVISOR_HOOK:-}

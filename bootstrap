@@ -7,12 +7,36 @@
 
 
 main() {
+    apply_permissions
     configure_timezone
     setup_syslog
     setup_supervisor_http_server
     setup_status_http_server
     pre_supervisor_hook
     exec /usr/local/bin/supervisord -c /usr/local/etc/supervisord.conf
+}
+
+
+# Apply user id and group id
+apply_permissions() {
+    if [[ -n "$PUID" && -n "$PGID" ]]; then
+        info "Setting uid:gid of valheim-server to $PUID:$PGID"
+        groupmod -g "${PGID}" -o valheim-server
+        usermod -u "${PUID}" -o -g valheim-server valheim-server
+
+        mkdir -p /var/run/valheim
+        touch "$SERVER_STATUS_FILE"
+
+        chown "$PUID":"$PGID" -R \
+            /config \
+            /opt/valheim \
+            /opt/steamcmd \
+            /home/valheim-server \
+            /var/run/valheim \
+            "$SERVER_STATUS_FILE"
+        chgrp "$PGID" /usr/local/etc/supervisord.conf
+        chmod g+r /usr/local/etc/supervisord.conf
+    fi
 }
 
 
