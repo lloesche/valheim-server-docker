@@ -73,9 +73,10 @@ if [ "$BEPINEX" = true ]; then
     fi
 fi
 
-# Write server's adminlist.txt / bannedlist.txt
+# Write server's adminlist.txt / bannedlist / permittedlist.txt
 write_adminlist
 write_bannedlist
+write_permittedlist
 
 # Create crontabs
 crontab=$(mktemp)

@@ -297,6 +297,11 @@ write_adminlist() {
 }
 
 
+write_permittedlist() {
+    write_serverlist permitted "$PERMITTEDLIST_IDS"
+}
+
+
 write_serverlist() {
     local type
     local id_list

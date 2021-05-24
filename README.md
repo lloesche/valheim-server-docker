@@ -126,6 +126,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `SERVER_ARGS` |  | Additional Valheim server CLI arguments |
 | `ADMINLIST_IDS` |  | Space separated list of admin SteamIDs. Overrides any existing adminlist.txt entries! |
 | `BANNEDLIST_IDS` |  | Space separated list of banned SteamIDs. Overrides any existing bannedlist.txt entries! |
+| `PERMITTEDLIST_IDS` |  | Space separated list of whitelisted SteamIDs. Overrides any existing permittedlist.txt entries! |
 | `UPDATE_CRON` | `*/15 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for update checks (disabled if set to an empty string or if the legacy `UPDATE_INTERVAL` is set) |
 | `UPDATE_IF_IDLE` | `true` | Only run update check if no players are connected to the server (`true` or `false`) |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
