@@ -19,24 +19,21 @@ main() {
 
 # Apply user id and group id
 apply_permissions() {
-    if [[ -n "$PUID" && -n "$PGID" ]]; then
-        info "Setting uid:gid of valheim-server to $PUID:$PGID"
-        groupmod -g "${PGID}" -o valheim-server
-        usermod -u "${PUID}" -o -g valheim-server valheim-server
+    info "Setting uid:gid of valheim to $PUID:$PGID"
+    groupmod -g "${PGID}" -o valheim
+    #usermod -u "${PUID}" -o -g valheim valheim
+    sed -i -E "s/^(valheim:x):[0-9]+:[0-9]+:(.*)/\\1:$PUID:$PGID:\\2/" /etc/passwd
 
-        mkdir -p /var/run/valheim
-        touch "$SERVER_STATUS_FILE"
+    touch "$SERVER_STATUS_FILE"
 
-        chown "$PUID":"$PGID" -R \
-            /config \
-            /opt/valheim \
-            /opt/steamcmd \
-            /home/valheim-server \
-            /var/run/valheim \
-            "$SERVER_STATUS_FILE"
-        chgrp "$PGID" /usr/local/etc/supervisord.conf
-        chmod g+r /usr/local/etc/supervisord.conf
-    fi
+    chown -R valheim:valheim \
+        /config \
+        /opt/valheim \
+        /opt/steamcmd \
+        /home/valheim \
+        /var/run/valheim \
+        "$SERVER_STATUS_FILE"
+    chgrp valheim /usr/local/etc/supervisord.conf
 }
 
 

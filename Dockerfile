@@ -74,7 +74,7 @@ RUN tar xzvf /build/env2cfg/dist/env2cfg-*.linux-x86_64.tar.gz
 RUN tar xzvf /build/python-a2s/dist/python-a2s-*.linux-x86_64.tar.gz
 COPY supervisord.conf /usr/local/etc/supervisord.conf
 RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \
-    && chmod 600 /usr/local/etc/supervisord.conf
+    && chmod 640 /usr/local/etc/supervisord.conf
 RUN echo "${SOURCE_COMMIT:-unknown}" > /usr/local/etc/git-commit.HEAD
 
 
@@ -83,12 +83,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build-env /usr/local/ /usr/local/
 COPY fake-supervisord /usr/bin/supervisord
 
-RUN groupadd -g "${PGID:-0}" -o valheim-server && \
-    useradd -g "${PGID:-0}" -u "${PUID:-0}" -o --create-home valheim-server && \
-    mkdir -p /var/run/valheim && \
-    chown valheim-server:valheim-server /var/run/valheim
-
-RUN dpkg --add-architecture i386 \
+RUN groupadd -g "${PGID:-0}" -o valheim \
+    && useradd -g "${PGID:-0}" -u "${PUID:-0}" -o --create-home valheim \
+    && dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get -y --no-install-recommends install apt-utils \
     && apt-get -y dist-upgrade \
@@ -119,8 +116,8 @@ RUN dpkg --add-architecture i386 \
     && locale-gen \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
     && apt-get clean \
-    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /home/valheim-server/.config/unity3d/IronGate /config \
-    && ln -s /config /home/valheim-server/.config/unity3d/IronGate/Valheim \
+    && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /home/valheim/.config/unity3d/IronGate /config /var/run/valheim \
+    && ln -s /config /home/valheim/.config/unity3d/IronGate/Valheim \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/syslogd \
     && ln -s /usr/local/bin/busybox /usr/local/sbin/mkpasswd \
     && ln -s /usr/local/bin/busybox /usr/local/bin/vi \
@@ -149,13 +146,14 @@ RUN dpkg --add-architecture i386 \
     && ln -s /usr/local/bin/busybox /usr/local/bin/bc \
     && curl -L -o /tmp/steamcmd_linux.tar.gz https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
     && tar xzvf /tmp/steamcmd_linux.tar.gz -C /opt/steamcmd/ \
+    && chown valheim:valheim /var/run/valheim \
     && chown -R root:root /opt/steamcmd \
     && chmod 755 /opt/steamcmd/steamcmd.sh \
         /opt/steamcmd/linux32/steamcmd \
         /opt/steamcmd/linux32/steamerrorreporter \
         /usr/bin/supervisord \
     && cd "/opt/steamcmd" \
-    && ./steamcmd.sh +login anonymous +quit \
+    && su - valheim -c "/opt/steamcmd/steamcmd.sh +login anonymous +quit" \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && date --utc --iso-8601=seconds > /usr/local/etc/build.date
 
