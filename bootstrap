@@ -86,17 +86,17 @@ EOF
 setup_supervisor_http_server() {
     rm -f "$supervisor_http_server_conf"
     if [ "$SUPERVISOR_HTTP" = true ]; then
-        if [ -n "$SUPERVISOR_HTTP_PASS" ]; then
-            info "Supervisor http server activated"
-            cat > "$supervisor_http_server_conf" <<EOF
+        info "Supervisor http server activated"
+        cat > "$supervisor_http_server_conf" <<EOF
 [inet_http_server]
 port = :$SUPERVISOR_HTTP_PORT
+EOF
+        chmod 600 "$supervisor_http_server_conf"
+        if [ -n "$SUPERVISOR_HTTP_USER" ] && [ -n "$SUPERVISOR_HTTP_PASS" ]; then
+            cat >> "$supervisor_http_server_conf" <<EOF
 username = $SUPERVISOR_HTTP_USER
 password = $SUPERVISOR_HTTP_PASS
 EOF
-            chmod 600 "$supervisor_http_server_conf"
-        else
-            error "SUPERVISOR_HTTP enabled but SUPERVISOR_HTTP_PASS is empty - ignoring request to run supervisor http server"
         fi
     fi
 }

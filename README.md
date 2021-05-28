@@ -145,7 +145,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server |
 | `SUPERVISOR_HTTP_PORT` | `9001` | Set supervisor's http server port |
 | `SUPERVISOR_HTTP_USER` | `admin` | Supervisor http server username |
-| `SUPERVISOR_HTTP_PASS` |  | Supervisor http server password. http server will not be started if password is not set! |
+| `SUPERVISOR_HTTP_PASS` |  | Supervisor http server password |
 | `STATUS_HTTP` | `false` | Turn on the status http server. Only useful on public servers (`SERVER_PUBLIC=true`). |
 | `STATUS_HTTP_PORT` | `80` | Status http server tcp port |
 | `STATUS_HTTP_CONF` | `/config/httpd.conf` | Path to the [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) |
