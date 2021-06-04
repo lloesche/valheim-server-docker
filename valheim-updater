@@ -58,11 +58,15 @@ update() {
     rsync -a --itemize-changes --delete --exclude server_exit.drp --exclude steamapps "$valheim_download_path/" "$valheim_install_path" | tee "$logfile"
     if grep '^[*>]' "$logfile" > /dev/null 2>&1; then
         info "Valheim Server was updated - restarting"
-        check_mods updated
+        if ! check_mods updated; then
+            return
+        fi
         write_restart_file updated
     else
         info "Valheim Server is already the latest version"
-        check_mods uptodate
+        if ! check_mods uptodate; then
+            return
+        fi
         if [ "$just_started" = true ]; then
             write_restart_file just_started
         fi
@@ -75,8 +79,16 @@ update() {
 
 check_mods() {
     local valheim_server_update_status=$1
+    local ret=0
     check_mod "$valheim_server_update_status" "ValheimPlus" "$VALHEIM_PLUS" "$vp_mergefile" "$vp_install_path" "$vp_updater"
+    local mod_vp_status=$?
     check_mod "$valheim_server_update_status" "BepInEx" "$BEPINEX" "$bepinex_mergefile" "$bepinex_install_path" "$bepinex_updater"
+    local mod_bepinex_status=$?
+
+    if [ $mod_vp_status -ne 0 ] || [ $mod_bepinex_status -ne 0 ]; then
+        ret=1
+    fi
+    return $ret
 }
 
 
@@ -94,15 +106,22 @@ check_mod() {
             info "Valheim Server was updated from Steam - signaling $mod_name updater to merge updated files"
             touch "$mod_mergefile"
         fi
-        just_started=$just_started "$mod_updater"
+        if ! just_started=$just_started "$mod_updater"; then
+            error "Failed to run $mod_name updater - retrying later - check your networking and volume access permissions"
+            return 1
+        fi
     else
         if [ "$valheim_server_update_status" = updated ] && [ -d "$mod_install_path" ]; then
             debug "$mod_name currently disabled but previously installed - keeping installation fresh"
             debug "If this is unwanted remove $mod_install_path"
             touch "$mod_mergefile"
-            just_started=$just_started "$mod_updater"
+            if ! just_started=$just_started "$mod_updater"; then
+                error "Failed to run $mod_name updater - retrying later - check your networking and volume access permissions"
+                return 1
+            fi
         fi
     fi
+    return 0
 }
 
 
