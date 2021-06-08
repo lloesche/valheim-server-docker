@@ -126,6 +126,8 @@ check_mod() {
 
 
 download_valheim() {
+    # todo: remove once https://github.com/ValveSoftware/steam-for-linux/issues/7843 is fixed
+    mkdir -p "$valheim_download_path/steamapps"
     # shellcheck disable=SC2086
     /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
 }
