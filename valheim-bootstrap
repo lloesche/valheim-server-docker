@@ -46,7 +46,7 @@ fi
 
 
 # Create paths
-mkdir -p "$valheim_download_path"
+mkdir -p "$valheim_download_path/steamapps"
 mkdir -p "$valheim_install_path"
 
 # Mod support
