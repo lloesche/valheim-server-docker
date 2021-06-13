@@ -47,7 +47,6 @@ This project is hosted at [https://github.com/lloesche/valheim-server-docker](ht
   * [ValheimPlus](#valheimplus)
     * [Updates](#updates-1)
     * [Configuration](#configuration-1)
-      * [Server data rate](#server-data-rate)
       * [Disable server password](#disable-server-password)
 * [Changing startup CMD in Portainer](#changing-startup-cmd-in-portainer)
 * [Synology Help](#synology-help)
@@ -645,20 +644,6 @@ This also means your clients always need to run the latest ValheimPlus version o
 
 ### Configuration
 See [Mod config from Environment Variables](#mod-config-from-environment-variables)
-
-#### Server data rate
-A popular change is to increase the server send rate.
-
-To do so enable ValheimPlus (`VALHEIM_PLUS=true`) and configure the following section in `/config/valheimplus/valheim_plus.cfg`
-```
-[Server]
-enabled=true
-enforceMod=false
-dataRate=600
-```
-(Or whatever `dataRate` value you require. The value is in kb/s with a default of 60.)
-
-Alternatively start with `-e VPCFG_Server_enabled=true -e VPCFG_Server_enforceMod=false -e VPCFG_Server_dataRate=600`.
 
 #### Disable server password
 Another popular mod for LAN play that does not require the clients to run ValheimPlus is to turn off password authentication.
