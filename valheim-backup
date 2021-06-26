@@ -54,7 +54,6 @@ backup() {
     mkdir -p "$BACKUPS_DIRECTORY"
     chmod "$BACKUPS_DIRECTORY_PERMISSIONS" "$BACKUPS_DIRECTORY"
 
-    # Wenn BACKUPS_ZIP true, dann zip
     if [ ${BACKUPS_ZIP} = true ]; then
         backup_file="$BACKUPS_DIRECTORY/worlds-$(date +%Y%m%d-%H%M%S).zip"
         pre_backup_hook "$backup_file"
@@ -63,7 +62,7 @@ backup() {
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
     else
-        find worlds/ -name "${WORLD_NAME}.db" -type d | fatal "Could not find world file for world ${WORLD_NAME}"
+        find worlds/ -name "${WORLD_NAME}.db" -type d || info "Could not find world file for world ${WORLD_NAME}"
         backup_file="$BACKUPS_DIRECTORY/${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).db"
         pre_backup_hook "$backup_file"
         info "Backing up Valheim server worlds to $backup_file"
