@@ -62,16 +62,23 @@ backup() {
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
     else
-        find worlds/ -name "${WORLD_NAME}.db" -type d || info "Could not find world file for world ${WORLD_NAME}"
-        backup_file="$BACKUPS_DIRECTORY/${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).db"
+        find worlds/ -name "${WORLD_NAME}.db" -type f || info "Could not find .db world file for world ${WORLD_NAME}"
+        backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).db"
         pre_backup_hook "$backup_file"
-        info "Backing up Valheim server worlds to $backup_file"
+        info "Backing up Valheim server world file ${WORLD_NAME}.db to $backup_file"
         cp -v worlds/${WORLD_NAME}.db ${backup_file}
+        chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
+        post_backup_hook "$backup_file"
+        
+        find worlds/ -name "${WORLD_NAME}.db.old" -type f || info "Could not find .db.old world file for world ${WORLD_NAME}"
+        backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).db.old"
+        pre_backup_hook "$backup_file"
+        info "Backing up Valheim server world file ${WORLD_NAME}.db.old to $backup_file"
+        cp -v worlds/${WORLD_NAME}.db.old ${backup_file}
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
     fi
 }
-
 
 pre_backup_hook() {
     local backup_file
@@ -108,7 +115,8 @@ flush_old() {
         if [ ${BACKUPS_ZIP} = true ]; then
           find "$BACKUPS_DIRECTORY" -type f -name 'worlds-*.zip' -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
         else
-          find "$BACKUPS_DIRECTORY" -type f -name '${WORLD_NAME}-*.db' -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
+          find "$BACKUPS_DIRECTORY" -type f -name 'AUTOBACKUP-${WORLD_NAME}-*.db' -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
+          find "$BACKUPS_DIRECTORY" -type f -name 'AUTOBACKUP-${WORLD_NAME}-*.db.old' -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --        
         fi
     fi
 
@@ -116,7 +124,8 @@ flush_old() {
     if [ ${BACKUPS_ZIP} = true ]; then
       find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name 'worlds-*.zip' -print -exec rm -f "{}" \;
     else
-      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name '${WORLD_NAME}-*.db' -print -exec rm -f "{}" \;
+      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name 'AUTOBACKUP-${WORLD_NAME}-*.db' -print -exec rm -f "{}" \;
+      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name 'AUTOBACKUP-${WORLD_NAME}-*.db.old' -print -exec rm -f "{}" \;
     fi
 }
 
