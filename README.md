@@ -801,8 +801,24 @@ We have had [a report from a QNAP user](https://github.com/lloesche/valheim-serv
 valheim-updater [ 0%] !!! Fatal Error: Steamcmd needs 250MB of free disk space to update.
 valheim-updater src/tier0/threadtools.cpp (3553) : Assertion Failed: Illegal termination of worker thread 'Thread(0x0x58a1d8f0/0x0xf7780b'
 ```
+This appears to be due to a bad Steam/ZFS interaction akin to [this Steam bug](https://github.com/ValveSoftware/steam-for-linux/issues/4982) where very large ZFS volumes get interpreted as very small due to bad overflow handling. There are two workarounds available. Use a non-ZFS volume, or set a quota on the volume, e.g.:
 
-The only workaround they found was to use a non-ZFS volume.
+1. Connect to the QNAP SSH console.
+2. Get the ZFS volume ID from within the container
+```
+df /opt/valheim | tail -n 1 | awk '{ print $1 }'
+```
+3. Set the quota to 2TB or less from the QNAP SSH console:
+```
+zfs set quota=1TB "volume_id_here"
+```
+
+You could also try this one-liner from the SSH console:
+```
+CONTAINER="your_valheim_container name/id" \
+  docker exec -t "$CONTAINER" df /opt/valheim | tail -n 1 | awk '{ print $1 }' | \
+  xargs -I zfs_id sudo zfs set quota=1TB zfs_id
+```
 
 If you have access to a QNAP NAS running ZFS and can reproduce/debug this issue further, please open a new issue with your findings so we can update this section and provide more information here.
 
