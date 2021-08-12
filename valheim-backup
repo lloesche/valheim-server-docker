@@ -54,7 +54,7 @@ backup() {
     mkdir -p "$BACKUPS_DIRECTORY"
     chmod "$BACKUPS_DIRECTORY_PERMISSIONS" "$BACKUPS_DIRECTORY"
 
-    if [ ${BACKUPS_ZIP} = true ]; then
+    if [ "${BACKUPS_ZIP}" = true ]; then
         backup_file="$BACKUPS_DIRECTORY/worlds-$(date +%Y%m%d-%H%M%S).zip"
         pre_backup_hook "$backup_file"
         info "Backing up Valheim server worlds to $backup_file"
@@ -66,7 +66,7 @@ backup() {
         backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).db"
         pre_backup_hook "$backup_file"
         info "Backing up Valheim server world file ${WORLD_NAME}.db to $backup_file"
-        cp -v worlds/${WORLD_NAME}.db ${backup_file}
+        cp -v "worlds/${WORLD_NAME}.db" "${backup_file}"
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
         
@@ -74,7 +74,7 @@ backup() {
         backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).db.old"
         pre_backup_hook "$backup_file"
         info "Backing up Valheim server world file ${WORLD_NAME}.db.old to $backup_file"
-        cp -v worlds/${WORLD_NAME}.db.old ${backup_file}
+        cp -v "worlds/${WORLD_NAME}.db.old" "${backup_file}"
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
     fi
@@ -112,20 +112,21 @@ flush_old() {
 
     if [ "$BACKUPS_MAX_COUNT" -gt 0 ]; then
         info "Removing all but the newest $BACKUPS_MAX_COUNT backups"
-        if [ ${BACKUPS_ZIP} = true ]; then
+        if [ "${BACKUPS_ZIP}" = true ]; then
           find "$BACKUPS_DIRECTORY" -type f -name 'worlds-*.zip' -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
         else
-          find "$BACKUPS_DIRECTORY" -type f -name 'AUTOBACKUP-${WORLD_NAME}-*.db' -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
-          find "$BACKUPS_DIRECTORY" -type f -name 'AUTOBACKUP-${WORLD_NAME}-*.db.old' -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --        
+          find "$BACKUPS_DIRECTORY" -type f -name "AUTOBACKUP-${WORLD_NAME}-*.db" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
+          find "$BACKUPS_DIRECTORY" -type f -name "AUTOBACKUP-${WORLD_NAME}-*.db.old" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --        
         fi
+        find "$BACKUPS_DIRECTORY" -type f -name 'worlds-*.zip' -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -fv --
     fi
 
     info "Removing backups older than $BACKUPS_MAX_AGE days"
-    if [ ${BACKUPS_ZIP} = true ]; then
+    if [ "${BACKUPS_ZIP}" = true ]; then
       find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name 'worlds-*.zip' -print -exec rm -f "{}" \;
     else
-      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name 'AUTOBACKUP-${WORLD_NAME}-*.db' -print -exec rm -f "{}" \;
-      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name 'AUTOBACKUP-${WORLD_NAME}-*.db.old' -print -exec rm -f "{}" \;
+      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name "AUTOBACKUP-${WORLD_NAME}-*.db" -print -exec rm -f "{}" \;
+      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name "AUTOBACKUP-${WORLD_NAME}-*.db.old" -print -exec rm -f "{}" \;
     fi
 }
 
