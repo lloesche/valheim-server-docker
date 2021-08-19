@@ -91,7 +91,7 @@ RUN groupadd -g "${PGID:-0}" -o valheim \
     && apt-get -y dist-upgrade \
     && apt-get -y --no-install-recommends install \
         libc6-dev \
-        lib32gcc1 \
+        lib32gcc-s1 \
         libsdl2-2.0-0 \
         libsdl2-2.0-0:i386 \
         cron \
