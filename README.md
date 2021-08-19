@@ -138,6 +138,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `BACKUPS_MAX_COUNT` | `0` | Maximum number of backups kept, 0 means infinity |
 | `BACKUPS_IF_IDLE` | `true` | Backup even when no players have been connected for a while |
 | `BACKUPS_IDLE_GRACE_PERIOD` | `3600` | Grace period in seconds after the last player has disconnected in which we will still create backups when `BACKUPS_IF_IDLE=false` |
+| `BACKUPS_ZIP` | `true` | Compress Backups with `zip`. If set to `false` Backups will be stored uncompressed. |
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`, additional plugins in `/config/valheimplus/plugins`). Can not be used together with `BEPINEX`. |
@@ -437,6 +438,7 @@ there is a grace period `BACKUPS_IDLE_GRACE_PERIOD` in seconds after which backu
 dedicated server only saves the world in 20 minute intervals and on shutdown. So to make sure that we have a consistent world file backup of
 the most recent changes we want to wait out one world save. This grace period also needs to be long enough so that our `BACKUPS_CRON` had a chance to run.
 
+`BACKUPS_ZIP=false` can be used to store backups uncompressed in the backup directory. Please note that this will increase the filesize of the backups, due to no compression.
 
 ## Manual backup
 Sending `SIGHUP` to the `valheim-backup` service or restarting the service will create a backup.
