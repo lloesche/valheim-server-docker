@@ -4,7 +4,10 @@
 Valheim Server in a Docker Container (with [BepInEx](#bepinexpack-valheim) and [ValheimPlus](#valheimplus) support)  
 This project is hosted at [https://github.com/lloesche/valheim-server-docker](https://github.com/lloesche/valheim-server-docker)  
 
-[![Docker Badge](https://img.shields.io/docker/pulls/lloesche/valheim-server.svg)](https://hub.docker.com/r/lloesche/valheim-server)
+
+| NOTICE |
+|----------|
+| Dockerhub has deactivated automated builds for non-paying users. Please update your container config to download the image from the GitHub container registry. Use `ghcr.io/lloesche/valheim-server` instead of `lloesche/valheim-server` for the image name. |
 
 
 # Table of contents
@@ -66,7 +69,7 @@ This project is hosted at [https://github.com/lloesche/valheim-server-docker](ht
 
 # Basic Docker Usage
 
-The name of the Docker image is `lloesche/valheim-server`.
+The name of the Docker image is `ghcr.io/lloesche/valheim-server`.
 
 Volume mount the server config directory to `/config` within the Docker container.
 
@@ -90,7 +93,7 @@ $ docker run -d \
     -e SERVER_NAME="My Server" \
     -e WORLD_NAME="Neotopia" \
     -e SERVER_PASS="secret" \
-    lloesche/valheim-server
+    ghcr.io/lloesche/valheim-server
 ```
 
 Warning: `SERVER_PASS` must be at least 5 characters long. Otherwise `valheim_server.x86_64` will refuse to start!
