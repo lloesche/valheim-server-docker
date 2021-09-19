@@ -22,6 +22,7 @@ main() {
         trap 'error_handler $? $LINENO $BASH_LINENO "$BASH_COMMAND" $(printf "::%s" ${FUNCNAME[@]}); trap - ERR' ERR
         while [ $run = true ]; do
             ensure_permissions
+            verify_kernel
             verify_cpu_mhz
             verify_memory
             verify_storage
@@ -182,6 +183,11 @@ verify_storage() {
     debug "Storage configuration:"
     df -h | grep -v -E "^(tmpfs|shm)" | grep -v -E "(/sys/|/etc/|/run/)"
     grep -v -E "^(proc|tmpfs|devpts|shm|mqueue|sysfs)" /etc/mtab | grep -v -E "(/sys/|/etc/|/run/)"
+}
+
+
+verify_kernel() {
+    debug "Kernel: $(uname -a)"
 }
 
 
