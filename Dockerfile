@@ -1,4 +1,4 @@
-FROM debian:stable-slim as build-env
+FROM debian:buster-slim as build-env
 ENV DEBIAN_FRONTEND=noninteractive
 ARG TESTS
 ARG SOURCE_COMMIT
@@ -78,7 +78,7 @@ RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \
 RUN echo "${SOURCE_COMMIT:-unknown}" > /usr/local/etc/git-commit.HEAD
 
 
-FROM debian:stable-slim
+FROM debian:buster-slim
 ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build-env /usr/local/ /usr/local/
 COPY fake-supervisord /usr/bin/supervisord
@@ -91,7 +91,8 @@ RUN groupadd -g "${PGID:-0}" -o valheim \
     && apt-get -y dist-upgrade \
     && apt-get -y --no-install-recommends install \
         libc6-dev \
-        lib32gcc-s1 \
+        lib32stdc++6 \
+        lib32gcc1 \
         libsdl2-2.0-0 \
         libsdl2-2.0-0:i386 \
         cron \
