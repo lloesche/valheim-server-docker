@@ -5,11 +5,6 @@ Valheim Server in a Docker Container (with [BepInEx](#bepinexpack-valheim) and [
 This project is hosted at [https://github.com/lloesche/valheim-server-docker](https://github.com/lloesche/valheim-server-docker)  
 
 
-| NOTICE |
-|----------|
-| Dockerhub has deactivated automated builds for non-paying users. Please update your container config to download the image from the GitHub container registry. Use `ghcr.io/lloesche/valheim-server` instead of `lloesche/valheim-server` for the image name. |
-
-
 # Table of contents
 <!-- vim-markdown-toc GFM -->
 
