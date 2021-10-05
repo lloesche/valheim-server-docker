@@ -30,6 +30,14 @@ DEBUG_REINSTALL_VALHEIM_PLUS=${DEBUG_REINSTALL_VALHEIM_PLUS:-false}
 # Flat to make bepinex-updater reinstall the BepInEx ZIP over vanilla server
 DEBUG_REINSTALL_BEPINEX=${DEBUG_REINSTALL_BEPINEX:-false}
 
+# How we behave when checking for whether the server is idle, if it is not
+# public (which would mean that we could just query for user activity).
+# How long to wait for incoming UDP datagrams, in seconds
+IDLE_DATAGRAM_WINDOW=3
+# How many incoming UDP datagrams we can tolerate before declaring the server
+# as un-idle (allows some buffer for UDP querying or random UDP pings)
+IDLE_DATAGRAM_MAX_COUNT=30
+
 # How often we check for Valheim server updates
 # This used to be 900 (15 min) and is here for backwards
 # compatibility reasons. We now set it to 10 years by default
