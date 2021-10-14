@@ -125,6 +125,8 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `BANNEDLIST_IDS` |  | Space separated list of banned SteamIDs. Overrides any existing bannedlist.txt entries! |
 | `PERMITTEDLIST_IDS` |  | Space separated list of whitelisted SteamIDs. Overrides any existing permittedlist.txt entries! |
 | `UPDATE_CRON` | `*/15 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for update checks (disabled if set to an empty string or if the legacy `UPDATE_INTERVAL` is set) |
+| `IDLE_DATAGRAM_WINDOW` | `3` | The time window, in seconds, to wait for incoming UDP datagrams on non-public servers before determining if the server is idle |
+| `IDLE_DATAGRAM_MAX_COUNT` | `30` | The number of incoming UDP datagrams the container should tolerate (including useless datagrams such as mDNS, as well as useful datagrams like queries against the UDP query port and active connections by players) on non-public servers before deciding that the server is not idle |
 | `UPDATE_IF_IDLE` | `true` | Only run update check if no players are connected to the server (`true` or `false`) |
 | `RESTART_CRON` | `0 5 * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for server restarts (disabled if set to an empty string) |
 | `RESTART_IF_IDLE` | `true` | Only run daily restart if no players are connected to the server (`true` or `false`) |
