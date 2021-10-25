@@ -97,7 +97,7 @@ RUN groupadd -g "${PGID:-0}" -o valheim \
         libsdl2-2.0-0:i386 \
         cron \
         curl \
-        tcpdump \
+        iproute2 \
         libcurl4 \
         libcurl4:i386 \
         ca-certificates \

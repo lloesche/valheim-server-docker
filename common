@@ -136,11 +136,22 @@ ensure_permissions() {
 }
 
 
+_udp_datagram_count() {
+    local datagram_count
+    datagram_count="$(nstat | awk '/UdpInDatagrams/{print $2}' | tr -d ' ')"
+    echo "${datagram_count:-0}"
+}
+
+
 server_is_idle() {
     if [ "$SERVER_PUBLIC" = 1 ]; then
         "$cmd_valheim_status" > /dev/null 2>&1
     else
-        if timeout 3 tcpdump udp port "$SERVER_PORT" -n -s 84 -c 1 > /dev/null 2>&1; then
+        # Throw away datagram statistics since last run
+        _udp_datagram_count &>/dev/null
+        # Wait to track datagrams over window
+        sleep "$IDLE_DATAGRAM_WINDOW"
+        if [ "$(_udp_datagram_count)" -gt "$IDLE_DATAGRAM_MAX_COUNT" ]; then
             return 1
         else
             return 0
