@@ -70,6 +70,14 @@ backup() {
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
         
+        find worlds/ -name "${WORLD_NAME}.fwl" -type f || info "Could not find .fwl file for world ${WORLD_NAME}"
+        backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).fwl"
+        pre_backup_hook "$backup_file"
+        info "Backing up Valheim server .fwl file ${WORLD_NAME}.fwl to $backup_file"
+        cp -v "worlds/${WORLD_NAME}.fwl" "${backup_file}"
+        chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
+        post_backup_hook "$backup_file"
+        
         find worlds/ -name "${WORLD_NAME}.db.old" -type f || info "Could not find .db.old world file for world ${WORLD_NAME}"
         backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).db.old"
         pre_backup_hook "$backup_file"
@@ -77,6 +85,15 @@ backup() {
         cp -v "worlds/${WORLD_NAME}.db.old" "${backup_file}"
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
+        
+        find worlds/ -name "${WORLD_NAME}.fwl.old" -type f || info "Could not find .fwl.old file for world ${WORLD_NAME}"
+        backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).fwl.old"
+        pre_backup_hook "$backup_file"
+        info "Backing up Valheim server .fwl.old file ${WORLD_NAME}.fwl.old to $backup_file"
+        cp -v "worlds/${WORLD_NAME}.fwl.old" "${backup_file}"
+        chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
+        post_backup_hook "$backup_file"
+        
     fi
 }
 
