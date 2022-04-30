@@ -128,7 +128,7 @@ check_mod() {
 
 download_valheim() {
     # shellcheck disable=SC2086
-    /opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir "$valheim_download_path" +app_update 896660 $STEAMCMD_ARGS +quit
+    /opt/steamcmd/steamcmd.sh +force_install_dir "$valheim_download_path" +login anonymous +app_update 896660 $STEAMCMD_ARGS +quit
 }
 
 
