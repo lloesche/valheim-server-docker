@@ -15,7 +15,7 @@ main() {
     local download_url
     local remote_updated_at
 
-    if ! api_response=$(curl -sfSL https://api.github.com/repos/valheimPlus/ValheimPlus/releases/latest); then
+    if ! api_response=$(curl -sfSL https://api.github.com/repos/valheimPlus/ValheimPlus/releases/"$VALHEIM_PLUS_RELEASE"); then
         fatal "Error: could not retrieve ValheimPlus release info from Github API"
     fi
     api_response=$(jq -r ".assets[] | select(.name == \"$vp_zipfile\")" <<< "$api_response" )
