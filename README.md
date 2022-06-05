@@ -142,6 +142,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `PERMISSIONS_UMASK` | `022` | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories |
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`, additional plugins in `/config/valheimplus/plugins`). Can not be used together with `BEPINEX`. |
+| `VALHEIM_PLUS_RELEASE` | `latest` | Which version of [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) to download. Will default to latest available. To specify a specific tag set to `tags/0.9.9.8` |
 | `BEPINEX` | `false` | Whether [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) mod should be loaded (config in `/config/bepinex`, plugins in `/config/bepinex/plugins`). Can not be used together with `VALHEIM_PLUS`. |
 | `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server |
 | `SUPERVISOR_HTTP_PORT` | `9001` | Set supervisor's http server port |
