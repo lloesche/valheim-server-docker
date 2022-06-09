@@ -22,3 +22,4 @@ venv*
 .vscode/
 /config/
 *.code-workspace
+valheim.env
