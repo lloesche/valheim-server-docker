@@ -46,51 +46,52 @@ main() {
 
 backup() {
     local backup_file
-    if [ ! -d "/config/worlds_local" ]; then
-        debug "No Valheim worlds_local to backup"
+    WORLDS_DIR=$(get_worlds_dir)
+
+    if [ "${WORLDS_DIR}z" = "z" ]; then
         return
     fi
-
+    
     mkdir -p "$BACKUPS_DIRECTORY"
     chmod "$BACKUPS_DIRECTORY_PERMISSIONS" "$BACKUPS_DIRECTORY"
 
     if [ "${BACKUPS_ZIP}" = true ]; then
-        backup_file="$BACKUPS_DIRECTORY/worlds_local-$(date +%Y%m%d-%H%M%S).zip"
+        backup_file="$BACKUPS_DIRECTORY/$WORLDS_DIR-$(date +%Y%m%d-%H%M%S).zip"
         pre_backup_hook "$backup_file"
-        info "Backing up Valheim server worlds_local to $backup_file"
-        zip -r "$backup_file" "worlds_local/"
+        info "Backing up Valheim server worlds to $backup_file"
+        zip -r "$backup_file" "$WORLDS_DIR/"
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
     else
-        find worlds_local/ -name "${WORLD_NAME}.db" -type f || info "Could not find .db world file for world ${WORLD_NAME}"
+        find "${WORLDS_DIR}/" -name "${WORLD_NAME}.db" -type f || info "Could not find .db world file for world ${WORLD_NAME}"
         backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).db"
         pre_backup_hook "$backup_file"
         info "Backing up Valheim server world file ${WORLD_NAME}.db to $backup_file"
-        cp -v "worlds_local/${WORLD_NAME}.db" "${backup_file}"
+        cp -v "${WORLDS_DIR}/${WORLD_NAME}.db" "${backup_file}"
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
         
-        find worlds_local/ -name "${WORLD_NAME}.fwl" -type f || info "Could not find .fwl file for world ${WORLD_NAME}"
+        find "${WORLDS_LOCAL}/" -name "${WORLD_NAME}.fwl" -type f || info "Could not find .fwl file for world ${WORLD_NAME}"
         backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).fwl"
         pre_backup_hook "$backup_file"
         info "Backing up Valheim server .fwl file ${WORLD_NAME}.fwl to $backup_file"
-        cp -v "worlds_local/${WORLD_NAME}.fwl" "${backup_file}"
+        cp -v "${WORLDS_DIR}/${WORLD_NAME}.fwl" "${backup_file}"
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
         
-        find worlds_local/ -name "${WORLD_NAME}.db.old" -type f || info "Could not find .db.old world file for world ${WORLD_NAME}"
+        find "${WORLDS_DIR}/" -name "${WORLD_NAME}.db.old" -type f || info "Could not find .db.old world file for world ${WORLD_NAME}"
         backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).db.old"
         pre_backup_hook "$backup_file"
         info "Backing up Valheim server world file ${WORLD_NAME}.db.old to $backup_file"
-        cp -v "worlds_local/${WORLD_NAME}.db.old" "${backup_file}"
+        cp -v "${WORLDS_DIR}/${WORLD_NAME}.db.old" "${backup_file}"
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
         
-        find worlds_local/ -name "${WORLD_NAME}.fwl.old" -type f || info "Could not find .fwl.old file for world ${WORLD_NAME}"
+        find "${WORLDS_DIR}/" -name "${WORLD_NAME}.fwl.old" -type f || info "Could not find .fwl.old file for world ${WORLD_NAME}"
         backup_file="$BACKUPS_DIRECTORY/AUTOBACKUP-${WORLD_NAME}-$(date +%Y%m%d-%H%M%S).fwl.old"
         pre_backup_hook "$backup_file"
         info "Backing up Valheim server .fwl.old file ${WORLD_NAME}.fwl.old to $backup_file"
-        cp -v "worlds_local/${WORLD_NAME}.fwl.old" "${backup_file}"
+        cp -v "${WORLDS_DIR}/${WORLD_NAME}.fwl.old" "${backup_file}"
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
         
@@ -127,20 +128,22 @@ flush_old() {
         return
     fi
 
+    WORLDS_DIR=$(get_worlds_dir)
+
     if [ "$BACKUPS_MAX_COUNT" -gt 0 ]; then
         info "Removing all but the newest $BACKUPS_MAX_COUNT backups"
         if [ "${BACKUPS_ZIP}" = true ]; then
-          find "$BACKUPS_DIRECTORY" -type f -name 'worlds_local-*.zip' -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
+          find "$BACKUPS_DIRECTORY" -type f -name "${WORLDS_DIR}-*.zip" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
         else
           find "$BACKUPS_DIRECTORY" -type f -name "AUTOBACKUP-${WORLD_NAME}-*.db" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
           find "$BACKUPS_DIRECTORY" -type f -name "AUTOBACKUP-${WORLD_NAME}-*.db.old" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --        
         fi
-        find "$BACKUPS_DIRECTORY" -type f -name 'worlds_local-*.zip' -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -fv --
+        find "$BACKUPS_DIRECTORY" -type f -name "${WORLDS_DIR}-*.zip" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -fv --
     fi
 
     info "Removing backups older than $BACKUPS_MAX_AGE days"
     if [ "${BACKUPS_ZIP}" = true ]; then
-      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name 'worlds_local-*.zip' -print -exec rm -f "{}" \;
+      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name "${WORLDS_DIR}-*.zip" -print -exec rm -f "{}" \;
     else
       find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name "AUTOBACKUP-${WORLD_NAME}-*.db" -print -exec rm -f "{}" \;
       find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name "AUTOBACKUP-${WORLD_NAME}-*.db.old" -print -exec rm -f "{}" \;

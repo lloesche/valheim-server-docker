@@ -95,7 +95,7 @@ Warning: `SERVER_PASS` must be at least 5 characters long. Otherwise `valheim_se
 
 A fresh start will take several minutes depending on your Internet connection speed as the container will download the Valheim dedicated server from Steam (~1 GB).
 
-Do not forget to modify `WORLD_NAME` to reflect the name of your world! For existing worlds_local that is the filename in the `worlds/` folder without the `.db/.fwl` extension.
+Do not forget to modify `WORLD_NAME` to reflect the name of your world! For existing worlds that is the filename in the `worlds_local/` folder without the `.db/.fwl` extension.
 
 If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2457 are forwarded to the container host.
 Also ensure they are publicly accessible in any firewall.
