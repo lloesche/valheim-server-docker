@@ -120,7 +120,7 @@ get_worlds_dir() {
             worlds_dir="/config/worlds"
         fi
     fi
-    return "$worlds_dir"
+    echo "$worlds_dir"
 }
 
 
