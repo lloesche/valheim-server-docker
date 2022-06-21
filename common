@@ -111,15 +111,16 @@ printline() {
 
 
 get_worlds_dir() {
-    WORLDS_DIR="/config/worlds_local"
+    worlds_dir="/config/worlds_local"
     if [ ! -d "${WORLDS_DIR}" ]; then
         if [ ! -d "/config/worlds" ]; then
             debug "No Valheim worlds to backup"
             return
         else
-            WORLDS_DIR="/config/worlds"
+            worlds_dir="/config/worlds"
         fi
     fi
+    return "$worlds_dir"
 }
 
 
