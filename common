@@ -134,8 +134,8 @@ ensure_permissions() {
     chmod -f "$CONFIG_FILE_PERMISSIONS" /config/*.txt
     WORLDS_DIR="$(get_worlds_dir)"
     if [ -d "$WORLDS_DIR" ]; then
-        chmod "$WORLDS_DIRECTORY_PERMISSIONS" "/config/${WORLDS_DIR}"
-        chmod "$WORLDS_FILE_PERMISSIONS" "/config/${WORLDS_DIR}/*"
+        chmod "$WORLDS_DIRECTORY_PERMISSIONS" "$WORLDS_DIR"
+        chmod "$WORLDS_FILE_PERMISSIONS" "$WORLDS_DIR/*"
     fi
     if [ "$VALHEIM_PLUS" = true ] && [ -d /config/valheimplus ]; then
         find /config/valheimplus -type d -exec chmod "$VALHEIM_PLUS_CONFIG_DIRECTORY_PERMISSIONS" "{}" +
