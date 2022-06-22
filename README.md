@@ -121,9 +121,9 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `SERVER_PASS` | `secret` | Password for logging into the server - min. 5 characters! |
 | `SERVER_PUBLIC` | `true` | Whether the server should be listed in the server browser (`true`) or not (`false`) |
 | `SERVER_ARGS` |  | Additional Valheim server CLI arguments |
-| `ADMINLIST_IDS` |  | Space separated list of admin SteamIDs. Overrides any existing adminlist.txt entries! |
-| `BANNEDLIST_IDS` |  | Space separated list of banned SteamIDs. Overrides any existing bannedlist.txt entries! |
-| `PERMITTEDLIST_IDS` |  | Space separated list of whitelisted SteamIDs. Overrides any existing permittedlist.txt entries! |
+| `ADMINLIST_IDS` |  | Space separated list of admin SteamIDs in SteamID64 format. Overrides any existing adminlist.txt entries! |
+| `BANNEDLIST_IDS` |  | Space separated list of banned SteamIDs in SteamID64 format. Overrides any existing bannedlist.txt entries! |
+| `PERMITTEDLIST_IDS` |  | Space separated list of whitelisted SteamIDs in SteamID64 format. Overrides any existing permittedlist.txt entries! |
 | `UPDATE_CRON` | `*/15 * * * *` | [Cron schedule](https://en.wikipedia.org/wiki/Cron#Overview) for update checks (disabled if set to an empty string or if the legacy `UPDATE_INTERVAL` is set) |
 | `IDLE_DATAGRAM_WINDOW` | `3` | The time window, in seconds, to wait for incoming UDP datagrams on non-public servers before determining if the server is idle |
 | `IDLE_DATAGRAM_MAX_COUNT` | `30` | The number of incoming UDP datagrams the container should tolerate (including useless datagrams such as mDNS, as well as useful datagrams like queries against the UDP query port and active connections by players) on non-public servers before deciding that the server is not idle |
