@@ -15,8 +15,8 @@
 # BACKUP_SCP_PORT defaults to 22
 # BACKUP_SCP_KEY path to a private key file
 
-# Full path to the worlds backup ZIP we just created
-# e.g. /config/backups/worlds-20210303-144536.zip
+# Full path to the worlds_local backup ZIP we just created
+# e.g. /config/backups/worlds_local-20210303-144536.zip
 backup_file=$1
 
 : "${BACKUP_SCP_USER:=}" "${BACKUP_SCP_HOST:=}" "${BACKUP_SCP_PATH:=}"
