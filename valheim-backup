@@ -71,8 +71,7 @@ backup() {
         local backup_suffix
         backup_suffix=$(date +%Y%m%d-%H%M%S)
 
-        for extension in {db,fwl,db.old,fwl.old}
-        do
+        for extension in {db,fwl,db.old,fwl.old}; do
             world_file="$WORLDS_DIR/$WORLD_NAME.$extension"
             if [ ! -f "$world_file" ]; then
                 debug "World file $world_file not found - skipping"
@@ -122,20 +121,21 @@ flush_old() {
     if [ "$BACKUPS_MAX_COUNT" -gt 0 ]; then
         info "Removing all but the newest $BACKUPS_MAX_COUNT backups"
         if [ "${BACKUPS_ZIP}" = true ]; then
-          find "$BACKUPS_DIRECTORY" -type f -name "worlds-*.zip" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
+            find "$BACKUPS_DIRECTORY" -type f -name "worlds-*.zip" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -fv --
         else
-          find "$BACKUPS_DIRECTORY" -type f -name "AUTOBACKUP-${WORLD_NAME}-*.db" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
-          find "$BACKUPS_DIRECTORY" -type f -name "AUTOBACKUP-${WORLD_NAME}-*.db.old" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --        
+            for extension in {db,fwl,db.old,fwl.old}; do
+                find "$BACKUPS_DIRECTORY" -type f -name "AUTOBACKUP-${WORLD_NAME}-*.${extension}" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
+            done
         fi
-        find "$BACKUPS_DIRECTORY" -type f -name "worlds-*.zip" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -fv --
     fi
 
     info "Removing backups older than $BACKUPS_MAX_AGE days"
     if [ "${BACKUPS_ZIP}" = true ]; then
-      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name "worlds-*.zip" -print -exec rm -f "{}" \;
+        find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name "worlds-*.zip" -print -exec rm -f "{}" \;
     else
-      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name "AUTOBACKUP-${WORLD_NAME}-*.db" -print -exec rm -f "{}" \;
-      find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name "AUTOBACKUP-${WORLD_NAME}-*.db.old" -print -exec rm -f "{}" \;
+        for extension in {db,fwl,db.old,fwl.old}; do
+            find "$BACKUPS_DIRECTORY" -type f -mmin "+$((BACKUPS_MAX_AGE*60*24))" -name "AUTOBACKUP-${WORLD_NAME}-*.${extension}" -print -exec rm -f "{}" \;
+        done
     fi
 }
 
