@@ -73,7 +73,7 @@ backup() {
 
         for extension in {db,fwl,db.old,fwl.old}
         do
-            world_file="$WORLD_NAME.$extension"
+            world_file="$WORLDS_DIR/$WORLD_NAME.$extension"
             if [ ! -f "$world_file" ]; then
                 debug "World file $world_file not found - skipping"
                 continue
