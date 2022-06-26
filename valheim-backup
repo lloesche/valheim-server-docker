@@ -121,10 +121,10 @@ flush_old() {
     if [ "$BACKUPS_MAX_COUNT" -gt 0 ]; then
         info "Removing all but the newest $BACKUPS_MAX_COUNT backups"
         if [ "${BACKUPS_ZIP}" = true ]; then
-            find "$BACKUPS_DIRECTORY" -type f -name "worlds-*.zip" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -fv --
+            find "$BACKUPS_DIRECTORY" -type f -name "worlds-*.zip" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -fv -- 2>/dev/null
         else
             for extension in {db,fwl,db.old,fwl.old}; do
-                find "$BACKUPS_DIRECTORY" -type f -name "AUTOBACKUP-${WORLD_NAME}-*.${extension}" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v --
+                find "$BACKUPS_DIRECTORY" -type f -name "AUTOBACKUP-${WORLD_NAME}-*.${extension}" -printf '%T@ %p\0' | sort -z -n -r | cut -z -s -d " " -f "2-" | tail -z -n +$((BACKUPS_MAX_COUNT+1)) | xargs -0 rm -v -- 2>/dev/null
             done
         fi
     fi
