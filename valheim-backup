@@ -46,12 +46,15 @@ main() {
 
 backup() {
     local backup_file
-    WORLDS_DIR=$(get_worlds_dir)
-
-    if [ "${WORLDS_DIR}z" = "z" ]; then
+    if [ -d "$worlds_dir" ]; then
+        WORLDS_DIR=$worlds_dir
+    elif [ -d "$old_worlds_dir" ]; then
+        WORLDS_DIR=$old_worlds_dir
+    else
+        info "No worlds to backup"
         return
     fi
-    
+
     mkdir -p "$BACKUPS_DIRECTORY"
     chmod "$BACKUPS_DIRECTORY_PERMISSIONS" "$BACKUPS_DIRECTORY"
 
@@ -98,6 +101,7 @@ backup() {
     fi
 }
 
+
 pre_backup_hook() {
     local backup_file
     local pre_hook_cmd
@@ -127,8 +131,6 @@ flush_old() {
         debug "No old backups to remove"
         return
     fi
-
-    WORLDS_DIR=$(get_worlds_dir)
 
     if [ "$BACKUPS_MAX_COUNT" -gt 0 ]; then
         info "Removing all but the newest $BACKUPS_MAX_COUNT backups"
