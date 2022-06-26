@@ -68,7 +68,9 @@ backup() {
         post_backup_hook "$backup_file"
     else
         local world_file
-        local backup_suffix=$(date +%Y%m%d-%H%M%S)
+        local backup_suffix
+        backup_suffix=$(date +%Y%m%d-%H%M%S)
+
         for extension in {db,fwl,db.old,fwl.old}
         do
             world_file="$WORLD_NAME.$extension"
