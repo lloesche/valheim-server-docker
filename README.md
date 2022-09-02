@@ -178,7 +178,7 @@ The default filter removes:
 - Empty log lines
 - Log lines consisting of a single space (wtf?)
 - A repeating line saying `(Filename: ./Runtime/Export/Debug/Debug.bindings.h Line: 35)`
-- Lines flodding the log with `Assertion Failed` warnings on packet processing timeouts (See [#104](https://github.com/lloesche/valheim-server-docker/discussions/104))
+- Lines flooding the log with `Assertion Failed` warnings on packet processing timeouts (See [#104](https://github.com/lloesche/valheim-server-docker/discussions/104))
 - If ValheimPlus is turned on lines starting with `Fallback handler could not load library`
 
 
@@ -348,7 +348,7 @@ On our system while idle with no players connected Valheim server consumes aroun
 
 The picture changes when players connect. The first player increased overall load to 42%, the second player to 53%. In the thread view we see that a thread that was previously consuming 10% is now hovering around 38%. Meaning while Valheim server creates 50 threads on our system it looks like there is a single thread doing the bulk of all work (~70%) with no way for the Kernel to distribute the load to many cores.
 
-Therefor our minimum requirements would be a dual core system with 4 GB of RAM and our recommended system would be a high clocked 4 core server with 8 GB of RAM. A few very high clocked cores will be more beneficial than having many cores. I.e. two 5 GHz cores will yield better performance than six 2 GHz cores.
+Therefore our minimum requirements would be a dual core system with 4 GB of RAM and our recommended system would be a high clocked 4 core server with 8 GB of RAM. A few very high clocked cores will be more beneficial than having many cores. I.e. two 5 GHz cores will yield better performance than six 2 GHz cores.
 This holds especially true the more players are connected to the system.
 
 
@@ -683,7 +683,7 @@ Change the name back to original name (2) (3) (4).
 
 Unter Advanced container settings override (6) the command and enter `/usr/local/sbin/bootstrap` (7)
 
-Make shure "Always pull the image" is enabled.
+Make sure "Always pull the image" is enabled.
 
 click "Deploy the container" to finish.
 
@@ -731,7 +731,7 @@ The error is caused by Synology using the old image's `CMD` with the newly downl
 # QNAP NAS Help
 ## Creating container
 
-As a prerequisite you need to create a folder where you will keep yours saves, backups and configuration.
+As a prerequisite you need to create a folder where you will keep your saves, backups and configuration.
 
 Here is an example `docker-compose.yml` file that we will use in the next steps.
 ```yaml
