@@ -1,4 +1,4 @@
-FROM debian:buster-slim as build-env
+FROM debian:bullseye-slim as build-env
 ENV DEBIAN_FRONTEND=noninteractive
 ARG TESTS
 ARG SOURCE_COMMIT
@@ -78,7 +78,7 @@ RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \
 RUN echo "${SOURCE_COMMIT:-unknown}" > /usr/local/etc/git-commit.HEAD
 
 
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=build-env /usr/local/ /usr/local/
 COPY fake-supervisord /usr/bin/supervisord
@@ -92,7 +92,7 @@ RUN groupadd -g "${PGID:-0}" -o valheim \
     && apt-get -y --no-install-recommends install \
         libc6-dev \
         lib32stdc++6 \
-        lib32gcc1 \
+        lib32gcc-s1 \
         libsdl2-2.0-0 \
         libsdl2-2.0-0:i386 \
         cron \
@@ -111,6 +111,9 @@ RUN groupadd -g "${PGID:-0}" -o valheim \
         python3-minimal \
         python3-pkg-resources \
         python3-setuptools \
+        libpulse-dev \
+        libatomic1 \
+        libc6 \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && rm -f /bin/sh \
