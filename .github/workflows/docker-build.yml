@@ -3,10 +3,10 @@ name: Build Docker Images
 on:
   push:
     branches:
-      - main
+      - releases/debian10
   pull_request:
     branches:
-      - main
+      - releases/debian10
   workflow_dispatch:
 
 jobs:
@@ -54,8 +54,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           build-args: SOURCE_COMMIT=${{ github.sha }}
           tags: |
-            ghcr.io/lloesche/valheim-server:latest
-            lloesche/valheim-server:latest
+            ghcr.io/lloesche/valheim-server:debian10
+            lloesche/valheim-server:debian10
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
