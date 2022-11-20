@@ -4,6 +4,9 @@
 Valheim Server in a Docker Container (with [BepInEx](#bepinexpack-valheim) and [ValheimPlus](#valheimplus) support)  
 This project is hosted at [https://github.com/lloesche/valheim-server-docker](https://github.com/lloesche/valheim-server-docker)  
 
+The `releases/debian10` branch provides backwards compatibility with very old Kernels, like those found on NAS systems.
+The drawback is that this branch does not provide crossplay support as the necessary librarys are not included in Debian 10.
+It is unclear how long Valheim Server will be able to work on this distribution.
 
 # Table of contents
 <!-- vim-markdown-toc GFM -->
