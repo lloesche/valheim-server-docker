@@ -22,6 +22,12 @@ SERVER_PUBLIC=${SERVER_PUBLIC:-1}
 # steamcmd.sh arguments
 STEAMCMD_ARGS=${STEAMCMD_ARGS-validate}
 
+# Public Test
+PUBLIC_TEST=${PUBLIC_TEST:-false}
+if [ "$PUBLIC_TEST" = true ]; then
+    STEAMCMD_ARGS="$STEAMCMD_ARGS -beta public-test -betapassword yesimadebackups"
+fi
+
 # Debug Flags
 # Flag to wipe all downloaded server data on startup (config is untouched)
 DEBUG_START_FRESH=${DEBUG_START_FRESH:-false}
@@ -146,4 +152,3 @@ POST_BEPINEX_CONFIG_HOOK=${POST_BEPINEX_CONFIG_HOOK:-}
 ADMINLIST_IDS=${ADMINLIST_IDS:-}
 BANNEDLIST_IDS=${BANNEDLIST_IDS:-}
 PERMITTEDLIST_IDS=${PERMITTEDLIST_IDS:-}
-
