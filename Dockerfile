@@ -129,6 +129,7 @@ RUN groupadd -g "${PGID:-0}" -o valheim \
     && ln -s /bin/bash /bin/sh \
     && locale-gen \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
+    && usermod -a -G crontab valheim \
     && apt-get clean \
     && mkdir -p /var/spool/cron/crontabs /var/log/supervisor /opt/valheim /opt/steamcmd /home/valheim/.config/unity3d/IronGate /config /var/run/valheim \
     && ln -s /config /home/valheim/.config/unity3d/IronGate/Valheim \
