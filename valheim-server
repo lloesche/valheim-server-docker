@@ -86,14 +86,15 @@ ensure_permissions_after_start() {
 
 wait_for_server_listening() {
     pre_server_listening_hook
+
     while :; do
         if server_is_listening; then
             update_server_status running
-            debug "Server is now listening on UDP port $SERVER_PORT"
+            debug "Server is now listening on UDP query port $SERVER_QUERY_PORT"
             post_server_listening_hook
             break
         else
-            debug "Waiting for server to listen on UDP port $SERVER_PORT"
+            debug "Waiting for server to listen on UDP query port $SERVER_QUERY_PORT"
             sleep 5
         fi
     done

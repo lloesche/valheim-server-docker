@@ -152,10 +152,15 @@ _udp_datagram_count() {
 }
 
 
+server_is_crossplay() {
+    [[ "${SERVER_ARGS,,}" =~ "-crossplay" ]];
+}
+
+
 server_is_idle() {
-    if [ "$SERVER_PUBLIC" = 1 ]; then
-        "$cmd_valheim_status" > /dev/null 2>&1
-    else
+    # If server has crossplay enabled, A2S query performed by valheim-status always
+    # returns 0 players online. So we use nstat to count UDP datagrams instead.
+    if server_is_crossplay || [ "$SERVER_PUBLIC" = 0 ]; then
         # Throw away datagram statistics since last run
         _udp_datagram_count &>/dev/null
         # Wait to track datagrams over window
@@ -165,6 +170,8 @@ server_is_idle() {
         else
             return 0
         fi
+    else
+        "$cmd_valheim_status" > /dev/null 2>&1
     fi
 }
 
@@ -175,7 +182,10 @@ server_is_running() {
 
 
 server_is_listening() {
-    awk -v server_port="$SERVER_PORT" '
+    # Check if server is listening on either server or query port
+    # since crossplay-enabled servers don't listen on $SERVER_PORT
+    
+    awk -v server_port="$SERVER_PORT" -v server_query_port="$SERVER_QUERY_PORT" '
         BEGIN {
             exit_code = 1
         }
@@ -183,7 +193,7 @@ server_is_listening() {
             if ($1 ~ /^[0-9]/) {
                 split($2, local_bind, ":")
                 listening_port = sprintf("%d", "0x" local_bind[2])
-                if (listening_port == server_port) {
+                if (listening_port == server_query_port || listening_port == server_port) {
                     exit_code = 0
                     exit
                 }
