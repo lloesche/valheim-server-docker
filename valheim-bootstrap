@@ -80,8 +80,11 @@ write_permittedlist
 
 # Create crontabs
 crontab=$(mktemp)
-echo "SERVER_PORT=$SERVER_PORT" >>"$crontab"
-echo "STATUS_HTTP_HTDOCS=$STATUS_HTTP_HTDOCS" >> "$crontab"
+
+{ echo "SERVER_PUBLIC=$SERVER_PUBLIC"; \
+    echo "SERVER_PORT=$SERVER_PORT"; \
+    echo "STATUS_HTTP_HTDOCS=$STATUS_HTTP_HTDOCS"; } >> "$crontab"
+
 if [ "$BACKUPS" = true ] && [ -n "$BACKUPS_CRON" ] && [ "$BACKUPS_INTERVAL" = "315360000" ]; then
     debug "Creating cron to do world backups using schedule $BACKUPS_CRON"
     echo "$BACKUPS_CRON [ -f \"$valheim_backup_pidfile\" ] && kill -HUP \$(cat $valheim_backup_pidfile)" >> "$crontab"
