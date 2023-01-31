@@ -158,6 +158,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `SYSLOG_REMOTE_AND_LOCAL` | `true` | When sending logs to a remote syslog server also log local |
 | `PUID` | `0` | UID to run valheim-server as |
 | `PGID` | `0` | GID to run valheim-server as |
+| `CROSSPLAY` | `true` | Set the docker container to open crossplay. Note: open port 2498-2499 UDP too |
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
