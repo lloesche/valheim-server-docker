@@ -100,6 +100,12 @@ Do not forget to modify `WORLD_NAME` to reflect the name of your world! For exis
 If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2457 are forwarded to the container host.
 Also ensure they are publicly accessible in any firewall.
 
+**Crossplay:** To enable crossplay between different platforms add -crossplay to SERVER_ARGS:
+
+```
+    -e SERVER_ARGS="-crossplay"
+```
+
 There is more info in section [Finding Your Server](#finding-your-server).
 
 For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
