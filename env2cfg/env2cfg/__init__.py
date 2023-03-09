@@ -17,6 +17,7 @@ _PRE_TRANSLATE = {
     "_DOT_": ".",
     "_HYPHEN_": "-",
     "_PLUS_": "+",
+    "_SPACE_": " ",
     "_UNDERSCORE_": "@UNDERSCORE@",
 }
 
