@@ -321,6 +321,7 @@ Some characters that are allowed as section names in the config files are not al
 | `_HYPHEN_` | `-` |
 | `_UNDERSCORE_` | `_` |
 | `_PLUS_` | `+` |
+| `_SPACE_` | ` ` |
 
 Example:
 ```
