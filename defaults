@@ -14,7 +14,10 @@ WORLD_NAME=${WORLD_NAME:-Dedicated}
 SERVER_NAME=${SERVER_NAME:-My Server}
 SERVER_PORT=${SERVER_PORT:-2456}
 SERVER_QUERY_PORT=$((SERVER_PORT + 1))
-SERVER_PASS=${SERVER_PASS-secret}
+
+[ "${VPCFG_Server_disableServerPassword:-}" = true ] && SERVER_PASS=""
+[ "${VPCFG_Server_disableServerPassword:-}" = false ] && SERVER_PASS=${SERVER_PASS-secret}
+
 SERVER_ARGS=${SERVER_ARGS:-}
 SERVER_PUBLIC=${SERVER_PUBLIC:-1}
 [ "$SERVER_PUBLIC" = true  ] && SERVER_PUBLIC=1
