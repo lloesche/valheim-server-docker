@@ -1,8 +1,8 @@
 # lloesche/valheim-server Docker image
 ![Valheim](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/Logo_valheim.png "Valheim")
 
-Valheim Server in a Docker Container (with [BepInEx](#bepinexpack-valheim) and [ValheimPlus](#valheimplus) support)  
-This project is hosted at [https://github.com/lloesche/valheim-server-docker](https://github.com/lloesche/valheim-server-docker)  
+Valheim Server in a Docker Container (with [BepInEx](#bepinexpack-valheim) and [ValheimPlus](#valheimplus) support)
+This project is hosted at [https://github.com/lloesche/valheim-server-docker](https://github.com/lloesche/valheim-server-docker)
 
 
 # Table of contents
@@ -58,8 +58,7 @@ This project is hosted at [https://github.com/lloesche/valheim-server-docker](ht
 * [OpenMediaVault Help](#openmediavault-help)
   * [Permission denied error](#permission-denied-error)
 * [License](#license)
-* [Legal disclaimer](#legal-disclaimer)
-<!-- vim-markdown-toc -->
+* [Legal disclaimer](#legal-disclaimer)<!-- vim-markdown-toc -->
 
 
 # Basic Docker Usage
@@ -68,9 +67,9 @@ The name of the Docker image is `ghcr.io/lloesche/valheim-server`.
 
 Volume mount the server config directory to `/config` within the Docker container.
 
-If you have an existing world on a Windows system you can copy it from e.g.  
+If you have an existing world on a Windows system you can copy it from e.g.
   `C:\Users\Lukas\AppData\LocalLow\IronGate\Valheim\worlds_local`
-to e.g.  
+to e.g.
   `$HOME/valheim-server/config/worlds_local`
 and run the image with `$HOME/valheim-server/config` volume mounted to `/config` inside the container.
 The container directory `/opt/valheim` contains the downloaded server. It can optionally be volume mounted to avoid having to download the server on each fresh start.
@@ -110,7 +109,7 @@ There is more info in section [Finding Your Server](#finding-your-server).
 
 For LAN-only play see section [Steam Server Favorites & LAN Play](#steam-server-favorites--lan-play)
 
-For more deployment options see the [Deployment section](#deployment). 
+For more deployment options see the [Deployment section](#deployment).
 
 Granting `CAP_SYS_NICE` to the container is optional. It allows the Steam library that Valheim uses to give itself more CPU cycles.
 Without it you will see a message `Warning: failed to set thread priority` in the startup log.
@@ -210,11 +209,11 @@ All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` and `VALHEIM_LOG
 ```
 
 #### Discord log filter event hook example
-Sends a Discord message whenever a player spawns
+Sends a Discord message whenever a player spawns and mentions how many people are playing.
 ```
 -e DISCORD_WEBHOOK="https://discord.com/api/webhooks/8171522530..." \
 -e VALHEIM_LOG_FILTER_CONTAINS_Spawned="Got character ZDOID from" \
--e ON_VALHEIM_LOG_FILTER_CONTAINS_Spawned='{ read l; l=${l//*ZDOID from /}; l=${l// :*/}; msg="Player $l spawned into the world"; curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$msg\"}" "$DISCORD_WEBHOOK"; }'
+-e ON_VALHEIM_LOG_FILTER_CONTAINS_Spawned='{ read l; l=${l//*ZDOID from /}; l=${l// :*/}; count=$(valheim-status | jq '.player_count'); msg="Player $l spawned into the world. There are $count players on."; curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$msg\"}" "$DISCORD_WEBHOOK"; }'
 ```
 
 See [Notify on Discord](#notify-on-discord) below for proper quoting in env and compose files.
@@ -302,6 +301,33 @@ PRE_RESTART_HOOK=curl -sfSL -X PUT -d "{\"msgtype\":\"m.notice\",\"body\":\"Valh
 ```
 Note the `$(date +%s-%N)` is used for the required unique txnId.
 
+#### Auto-stop the server
+Create an ssh key just for starting and stopping the server.
+
+Add the public key to `.ssh/authorized_keys` and set that key to only run a single command:
+```
+command="/home/valheim/server.sh" ssh-rsa AAAAB3NzaC1...
+```
+
+Create the script to start and stop the server:
+```
+if [[ ! "$SSH_ORIGINAL_COMMAND" =~ ^(start|stop)$  ]]; then
+  echo "Only accepts start or stop"
+  exit 1
+fi
+
+podman $SSH_ORIGINAL_COMMAND valheim-server
+```
+
+Run the container with the following extras to auto-stop and notify on Discord.
+```
+-v $HOME/.ssh/valheim_rsa:/root/.ssh/id_rsa:Z \
+-e DISCORD_WEBHOOK="https://discord.com/api/webhooks/8171522530..." \
+-e DISCORD_MESSAGE="No one on. Shutting down!" \
+-e POST_UPDATE_CHECK_HOOK='supervisorctl status valheim-updater | cut -d ':' -f 2 | xargs test 10 -lt && curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim\",\"content\":\"$DISCORD_MESSAGE\"}" "$DISCORD_WEBHOOK" && ssh -o StrictHostKeychecking=no valheim@your_server.com stop || echo Skipping shutdown because server just started'
+```
+Note, the above will not stop the server in the first 10 minutes of the server starting.
+The `POST_UPDATE_CHECK_HOOK` only runs when no one is on.
 
 ## Mod config from Environment Variables
 Mod config can be specified in environment variables using the syntax `<prefix>_<section>_<variable>=<value>`.
@@ -313,7 +339,7 @@ Mod config can be specified in environment variables using the syntax `<prefix>_
 | `BEPINEXCFG` | BepInEx | `/config/valheimplus/BepInEx.cfg` or `/config/bepinex/BepInEx.cfg` depending on whether `VALHEIM_PLUS=true` or `BEPINEX=true` |
 
 
-**Translation table**  
+**Translation table**
 Some characters that are allowed as section names in the config files are not allowed as environment variable names. They can be encoded using the following translation table.
 | Variable name string | Replacement |
 |----------|----------|
@@ -745,15 +771,15 @@ Here is an example `docker-compose.yml` file that we will use in the next steps.
 ```yaml
 version: "3"
 
-services: 
-  valheim: 
+services:
+  valheim:
     image: lloesche/valheim-server
     cap_add:
       - sys_nice
-    volumes: 
+    volumes:
       - /share/CACHEDEV1_DATA/{path_to_folder}/config:/config
       - /share/CACHEDEV1_DATA/{path_to_folder}/data:/opt/valheim
-    ports: 
+    ports:
       - "2456-2457:2456-2457/udp"
       - "9001:9001/tcp"
     env_file:
@@ -771,7 +797,7 @@ The most important part is `/share/CACHEDEV1_DATA/{path_to_folder}/config`. You 
 
 Change your memory and cpu limit according to your available resources on QNAP. Current settings are 70% of single CPU and 4gb of RAM.
 
-In this folder you need to create a file `valheim.env` to store configuration variables. 
+In this folder you need to create a file `valheim.env` to store configuration variables.
 
 Example `valheim.env`:
 
@@ -851,20 +877,20 @@ For existing filesystems edit `/etc/openmediavault/config.xml` and remove the `n
 
 
 # License
-Copyright 2021 [Lukas Lösche](mailto:lukas@opensourcery.de)  
-  
-Licensed under the Apache License, Version 2.0 (the "License");  
-you may not use this file except in compliance with the License.  
-You may obtain a copy of the License at  
-  
-&nbsp;&nbsp;&nbsp;&nbsp;[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)  
-  
-Unless required by applicable law or agreed to in writing, software  
-distributed under the License is distributed on an "AS IS" BASIS,  
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
-See the License for the specific language governing permissions and  
+Copyright 2021 [Lukas Lösche](mailto:lukas@opensourcery.de)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+&nbsp;&nbsp;&nbsp;&nbsp;[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
 limitations under the License.
 
 # Legal disclaimer
-This Docker container is not endorsed by, directly affiliated with, maintained, authorized, or sponsored by [Iron Gate Studio](https://irongatestudio.se/).  
+This Docker container is not endorsed by, directly affiliated with, maintained, authorized, or sponsored by [Iron Gate Studio](https://irongatestudio.se/).
 [Valheim](https://www.valheimgame.com/), [Valheim dedicated server](https://steamcommunity.com/app/896660/) and [the Valheim Logo](https://irongatestudio.se/onewebmedia/ValheimPresskit.zip) are © 2021 Iron Gate Studio.
