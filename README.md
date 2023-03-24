@@ -97,7 +97,7 @@ A fresh start will take several minutes depending on your Internet connection sp
 
 Do not forget to modify `WORLD_NAME` to reflect the name of your world! For existing worlds that is the filename in the `worlds_local/` folder without the `.db/.fwl` extension.
 
-If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2457 are forwarded to the container host.
+If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2457 are forwarded to the container host. (Remark: If you use crossplay, you don't need port forwarding! See official Valheim Dedicated Server Manual.pdf in the data/server folder.)
 Also ensure they are publicly accessible in any firewall.
 
 **Crossplay:** To enable crossplay between different platforms add -crossplay to SERVER_ARGS:
@@ -514,6 +514,8 @@ Note that in my tests when connecting to the server via the Steam server browser
 ## Steam Server Favorites & LAN Play
 A third option within Steam is to add the server manually by IP. This also allows for LAN play without the need to open or forward any firewall ports.
 
+Remark: LAN-Play is only available for Steam-Version without CrossPlay enabled! See official Valheim Dedicated Server Manual.pdf in the data/server folder.
+
 Steps:
 1) Within Steam click on `View -> Servers`
 2) `FAVORITES`
@@ -619,6 +621,9 @@ Within the container `status.json` is written to `STATUS_HTTP_HTDOCS` which by d
 As mentioned all the information is publicly available on the Valheim server query port. However the option is there to configure a `STATUS_HTTP_CONF` (`/config/httpd.conf` by default) containing [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) to limit access to the status web server by IP/subnet or login/password.
 
 # Modding
+
+Remark: Some Mods are using RPC commands, which needs gameport+2 for communication (e.g. if you're using gamport 2456, you have to open port 2458 too for the network: 2456-2458:2456-2458/udp) and in your firewall rules (if defined).
+
 ## BepInExPack Valheim
 **Enable with**
 | Variable | Value |
