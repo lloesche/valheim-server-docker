@@ -102,8 +102,9 @@ $ docker run -d \
     -e SERVER_NAME="My Server" \
     -e WORLD_NAME="Neotopia" \
     -e SERVER_PASS="secret" \
-    
+
     # User set server/world settings
+
     ghcr.io/lloesche/valheim-server
 ```
 
@@ -196,6 +197,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 
 There are a few undocumented environment variables that could break things if configured wrong. They can be found in [`defaults`](defaults).
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Log filters
 Valheim server by default logs a lot of noise. These env variables allow users to remove unwanted lines from the log.
@@ -238,6 +240,7 @@ All environment variables except for `VALHEIM_LOG_FILTER_EMPTY` and `VALHEIM_LOG
 -e ON_VALHEIM_LOG_FILTER_CONTAINS_Connected="cat >> /tmp/character_login"
 ```
 
+
 #### Discord log filter event hook example
 Sends a Discord message whenever a player spawns
 ```
@@ -251,6 +254,7 @@ See [Notify on Discord](#notify-on-discord) below for proper quoting in env and 
 If you are running ValheimPlus and this filter triggers twice, check [this ValheimPlus issue](https://github.com/valheimPlus/ValheimPlus/issues/318).
 The cause is a misconfigured `BepInEx.cfg` that causes all log lines to be duplicated.
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Event hooks
 The following environment variables can be populated to run commands whenever specific events happen.
@@ -277,6 +281,7 @@ The following environment variables can be populated to run commands whenever sp
 | `PRE_BEPINEX_CONFIG_HOOK` |  | Command to be executed before writing BepInEx.cfg. |
 | `POST_BEPINEX_CONFIG_HOOK` |  | Command to be executed after writing BepInEx.cfg. Can be used to write your own mod config using [`env2cfg`](#mod-config-from-environment-variables). |
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Event hook examples
 #### Install extra packages
@@ -331,6 +336,7 @@ PRE_RESTART_HOOK=curl -sfSL -X PUT -d "{\"msgtype\":\"m.notice\",\"body\":\"Valh
 ```
 Note the `$(date +%s-%N)` is used for the required unique txnId.
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Mod config from Environment Variables
 Mod config can be specified in environment variables using the syntax `<prefix>_<section>_<variable>=<value>`.
@@ -379,6 +385,7 @@ All existing configuration in those files is retained and a backup of the old co
 
 You could generate your own custom plugin config from environment variables using [the `POST_BEPINEX_CONFIG_HOOK` event hook](#event-hooks) and [`env2cfg`](https://github.com/lloesche/valheim-server-docker/tree/main/env2cfg).
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # System requirements
 On our system while idle with no players connected Valheim server consumes around 2.8 GB RSS. All the while using around 30% of one CPU Core on a 2.40 GHz Intel Xeon E5-2620 v3. Valheim server is making use of many threads with two of them seemingly doing the bulk of the work each responsible for around 8-10% of the 30% of idle load.
@@ -388,6 +395,7 @@ The picture changes when players connect. The first player increased overall loa
 Therefore our minimum requirements would be a dual core system with 4 GB of RAM and our recommended system would be a high clocked 4 core server with 8 GB of RAM. A few very high clocked cores will be more beneficial than having many cores. I.e. two 5 GHz cores will yield better performance than six 2 GHz cores.
 This holds especially true the more players are connected to the system.
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Deployment
 
