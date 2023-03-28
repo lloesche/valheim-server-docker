@@ -61,6 +61,7 @@ This project is hosted at [https://github.com/lloesche/valheim-server-docker](ht
 * [Legal disclaimer](#legal-disclaimer)
 <!-- vim-markdown-toc -->
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Basic Docker Usage
 
@@ -69,11 +70,15 @@ The name of the Docker image is `ghcr.io/lloesche/valheim-server`.
 Volume mount the server config directory to `/config` within the Docker container.
 
 If you have an existing world on a Windows system you can copy it from e.g.  
-  `C:\Users\Lukas\AppData\LocalLow\IronGate\Valheim\worlds_local`
+  `%userprofile%\AppData\LocalLow\IronGate\Valheim\worlds_local`
 to e.g.  
   `$HOME/valheim-server/config/worlds_local`
-and run the image with `$HOME/valheim-server/config` volume mounted to `/config` inside the container.
-The container directory `/opt/valheim` contains the downloaded server. It can optionally be volume mounted to avoid having to download the server on each fresh start.
+
+
+The below 
+  
+<!--and run the image with `$HOME/valheim-server/config` volume mounted to `/config` inside the container.
+The container directory `/opt/valheim` contains the downloaded server. It can optionally be volume mounted to avoid having to download the server on each fresh start. -->
 
 ```
 $ mkdir -p $HOME/valheim-server/config/worlds_local $HOME/valheim-server/data
@@ -93,12 +98,25 @@ $ docker run -d \
 
 Warning: `SERVER_PASS` must be at least 5 characters long. Otherwise `valheim_server.x86_64` will refuse to start!
 
-A fresh start will take several minutes depending on your Internet connection speed as the container will download the Valheim dedicated server from Steam (~1 GB).
-
 Do not forget to modify `WORLD_NAME` to reflect the name of your world! For existing worlds that is the filename in the `worlds_local/` folder without the `.db/.fwl` extension.
 
-If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2457 are forwarded to the container host.
+A fresh start will take several minutes depending on your Internet connection speed as the container will download the Valheim dedicated server from Steam (~1 GB).
+
+If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2457 are forwarded to the container host, and port forwarded via your router.
 Also ensure they are publicly accessible in any firewall.
+
+**Mods:** To enable BepinEX for mod support add the below enviroment variable between the SERVER_PASS and ghcr.io/lloesche/valheim-server line
+
+```
+    -e BEPINEX="true" \
+
+```
+
+to install mods run ``` mkdir -p $home/valheim-server/config/bepinex/plugins ``` this will generate the folder path to put the plugins in
+
+
+insert the plugin folders into /valheim-server/config/bepinex/plugins and any configs you may already have into $home/valheim-server/config/bepinex
+
 
 **Crossplay:** To enable crossplay between different platforms add -crossplay to SERVER_ARGS:
 
@@ -115,7 +133,7 @@ For more deployment options see the [Deployment section](#deployment).
 Granting `CAP_SYS_NICE` to the container is optional. It allows the Steam library that Valheim uses to give itself more CPU cycles.
 Without it you will see a message `Warning: failed to set thread priority` in the startup log.
 
-
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Environment Variables
 **All variable names and values are case-sensitive!**
 
