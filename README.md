@@ -105,11 +105,10 @@ A fresh start will take several minutes depending on your Internet connection sp
 If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2457 are forwarded to the container host, and port forwarded via your router.
 Also ensure they are publicly accessible in any firewall.
 
-**Mods:** To enable BepinEX for mod support add the below enviroment variable between the SERVER_PASS and ghcr.io/lloesche/valheim-server line
+**Mods:** To enable BepinEX for mod support add the below enviroment variable between the lines SERVER_PASS and ghcr.io/lloesche/valheim-server 
 
 ```
     -e BEPINEX="true" \
-
 ```
 
 to install mods run ``` mkdir -p $home/valheim-server/config/bepinex/plugins ``` this will generate the folder path to put the plugins in
