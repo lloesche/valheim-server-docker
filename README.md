@@ -117,7 +117,7 @@ A fresh start will take several minutes depending on your Internet connection sp
 If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2457 are forwarded to the container host, and port forwarded via your router.
 Also ensure they are publicly accessible in any firewall.
 
-**Mods:** To enable BepinEX for mod support add the below enviroment variable between the lines SERVER_PASS and ghcr.io/lloesche/valheim-server 
+**Mods/BepinEX:** To enable BepinEX for mod support add the below enviroment variable between the lines SERVER_PASS and ghcr.io/lloesche/valheim-server 
 
 ```
     -e BEPINEX="true" \
@@ -134,6 +134,12 @@ insert the plugin folders into /valheim-server/config/bepinex/plugins and any co
 ```
     -e SERVER_ARGS="-crossplay"
 ```
+
+**ValheimPlus** (DO NOT TURN ON ALONG WITH BEPINEX) To enable the ValheimPlus mod add the below enviroment variable between the lines SERVER_PASS and ghcr.io/lloesche/valheim-server
+
+``
+    -e VALHEIM_PLUS="true"
+``
 
 There is more info in section [Finding Your Server](#finding-your-server).
 
@@ -454,12 +460,14 @@ $ sudo mkdir -p /var/lib/valheim/{config,data}
 $ sudo curl -o /var/lib/valheim/valheim.nomad https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/valheim.nomad
 $ sudo nomad job run /var/lib/valheim/valheim.nomad
 ```
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Updates
 By default the container will check for Valheim server updates every 15 minutes if no players are currently connected to the server.
 If an update is found it is downloaded and the server restarted.
 This update schedule can be changed using the `UPDATE_CRON` environment variable.
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Backups
 The container will on startup and periodically create a backup of the `worlds_local/` directory.
@@ -513,6 +521,7 @@ docker exec -it valheim-server supervisorctl restart valheim-backup
 The restart can also be done from [the Supervisor web UI](#supervisor).
 ![Backup Step 1](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/backup1.png "Backup Step 1")
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Finding Your Server
 Once the server is up and running and the log says something like
@@ -575,6 +584,8 @@ Overall LAN play via the Steam Server Browser has been a bit hit and miss for me
 NOTE 2: You will only find your Valheim game server using this method if your server is public (`SERVER_PUBLIC` is NOT set to `false`).
 If you started your server with `SERVER_PUBLIC` set to `false`, you will get the error message: `Server is not responding.` in the list where the servers are supposed to appear.
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 # Admin Commands
 Upon startup the server will create a file `/config/adminlist.txt`. In it you can list the IDs of all administrator users.
 
@@ -592,6 +603,7 @@ Administrators can press ***F5*** to open the in-game console and use commands l
 In recent versions of Valheim the game client has to be started with the `-console` flag for ***F5*** to work.
 ![Enable Admin Console](https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/misc/admin_console1.png "Enable Admin Console")
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Supervisor
 This container uses a process supervisor aptly named [`supervisor`](http://supervisord.org/).
@@ -606,6 +618,7 @@ The default `SUPERVISOR_HTTP_USER` is `admin` but can be changed to anything els
 ## Supervisor API
 If Supervisor's http server is enabled it also provides an XML-RPC API at `/RPC2`. Details can be found in [the official documentation](http://supervisord.org/api.html).
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Status web server
 If `STATUS_HTTP` is set to `true` the status web server will be started.
@@ -653,6 +666,8 @@ All the information in `status.json` is fetched from Valheim servers public quer
 Within the container `status.json` is written to `STATUS_HTTP_HTDOCS` which by default is `/opt/valheim/htdocs`. It can either be consumed directly or the user can add their own html/css/js to this directory to read the json data and present it in whichever style they prefer. A file named `index.html` will be shown on `/` if it exists.
 
 As mentioned all the information is publicly available on the Valheim server query port. However the option is there to configure a `STATUS_HTTP_CONF` (`/config/httpd.conf` by default) containing [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) to limit access to the status web server by IP/subnet or login/password.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Modding
 ## BepInExPack Valheim
@@ -707,6 +722,7 @@ Alternatively start with `-e VPCFG_Server_enabled=true -e VPCFG_Server_enforceMo
 
 Ensure that the server can not be accessed from the public Internet. If you like to have the LAN experience but over the Internet I can highly recommend [ZeroTier](https://www.zerotier.com/). It is an open source VPN service where you can create a virtual network switch that you and your friends can join. It is like Hamachi but free and open source. They do have a paid product for Businesses with more than 50 users. So for more than 50 users you could either get their Business product or alternatively would have to host the VPN controller yourself.
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Changing startup CMD in Portainer
 
@@ -733,6 +749,8 @@ Make sure "Always pull the image" is enabled.
 click "Deploy the container" to finish.
 
 If your server starts and is working delete the old unused image and the old container.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Synology Help
 ## First install
@@ -772,6 +790,8 @@ You will need to remove the container completely and perform the [First install]
 Make sure to use the same folder settings as before so the existing `/config` and `/opt/valheim` directories are used.
 
 The error is caused by Synology using the old image's `CMD` with the newly downloaded image. By removing the container and recreating it we're forcing Synology to use the new images `CMD`.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # QNAP NAS Help
 ## Creating container
@@ -870,6 +890,7 @@ CONTAINER="your_valheim_container name/id" \
 
 If you have access to a QNAP NAS running ZFS and can reproduce/debug this issue further, please open a new issue with your findings so we can update this section and provide more information here.
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # OpenMediaVault Help
 ## Permission denied error
