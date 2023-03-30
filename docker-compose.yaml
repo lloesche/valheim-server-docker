@@ -9,7 +9,7 @@ services:
       - $HOME/valheim-server/config:/config
       - $HOME/valheim-server/data:/opt/valheim
     ports: 
-      - "2456-2457:2456-2457/udp"
+      - "2456-2458:2456-2458/udp"
       - "9001:9001/tcp"
     env_file:
       - $HOME/valheim-server/valheim.env
