@@ -284,7 +284,7 @@ write_bepinex_config() {
         fi
         if [ -d "$config_path/plugins" ] && [ -d "$plugins_path" ]; then
             info "Syncing BepInEx plugins from $config_path/plugins/ -> $plugins_path"
-            rsync -a --delete --itemize-changes "$config_path/plugins/" "$plugins_path"
+            rsync -a --itemize-changes "$config_path/plugins/" "$plugins_path"
         fi
     fi
     if [ -n "$POST_BEPINEX_CONFIG_HOOK" ]; then
