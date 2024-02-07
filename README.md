@@ -149,7 +149,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `STEAMCMD_ARGS` | `validate` | Additional steamcmd CLI arguments |
 | `PUBLIC_TEST` | `false` | Run the Public Test Beta version of Valheim server. Note that this simply extends existing `STEAMCMD_ARGS` by adding the appropriate beta flags to it. |
 | `VALHEIM_PLUS` | `false` | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`, additional plugins in `/config/valheimplus/plugins`). Can not be used together with `BEPINEX`. |
-| `VALHEIM_PLUS_REPO` | `valheimPlus/ValheimPlus` | Which ValheimPlus Github repo to use. Useful for switching to forks. |
+| `VALHEIM_PLUS_REPO` | `Grantapher/ValheimPlus` | Which ValheimPlus Github repo to use. Useful for switching to forks. |
 | `VALHEIM_PLUS_RELEASE` | `latest` | Which version of [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) to download. Will default to latest available. To specify a specific tag set to `tags/0.9.9.8` |
 | `BEPINEX` | `false` | Whether [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) mod should be loaded (config in `/config/bepinex`, plugins in `/config/bepinex/plugins`). Can not be used together with `VALHEIM_PLUS`. |
 | `SUPERVISOR_HTTP` | `false` | Turn on supervisor's http server |
