@@ -22,7 +22,7 @@ This project is hosted at [https://github.com/lloesche/valheim-server-docker](ht
 * [System requirements](#system-requirements)
 * [Deployment](#deployment)
 	* [Deploying with Docker and systemd](#deploying-with-docker-and-systemd)
-	* [Deploying with docker-compose](#deploying-with-docker-compose)
+	* [Deploying with docker compose](#deploying-with-docker-compose)
 	* [Deploying to Kubernetes](#deploying-to-kubernetes)
 	* [Deploying to AWS ECS](#deploying-to-aws-ecs)
 	* [Deploying to Nomad](#deploying-to-nomad)
@@ -382,8 +382,8 @@ $ sudo systemctl enable valheim.service
 $ sudo systemctl start valheim.service
 ```
 
-## Deploying with docker-compose
-Copy'paste the following into your shell
+## Deploying with docker compose
+Copy and paste the following into your shell
 ```
 mkdir -p $HOME/valheim-server/config $HOME/valheim-server/data
 cd $HOME/valheim-server/
@@ -394,7 +394,7 @@ SERVER_PASS=secret
 SERVER_PUBLIC=true
 EOF
 curl -o $HOME/valheim-server/docker-compose.yaml https://raw.githubusercontent.com/lloesche/valheim-server-docker/main/docker-compose.yaml
-docker-compose up
+docker compose up -d
 ```
 
 ## Deploying to Kubernetes
@@ -747,19 +747,17 @@ The error is caused by Synology using the old image's `CMD` with the newly downl
 
 As a prerequisite you need to create a folder where you will keep your saves, backups and configuration.
 
-Here is an example `docker-compose.yml` file that we will use in the next steps.
+Here is an example `docker-compose.yaml` file that we will use in the next steps.
 ```yaml
-version: "3"
-
-services: 
-  valheim: 
+services:
+  valheim:
     image: lloesche/valheim-server
     cap_add:
       - sys_nice
-    volumes: 
+    volumes:
       - /share/CACHEDEV1_DATA/{path_to_folder}/config:/config
       - /share/CACHEDEV1_DATA/{path_to_folder}/data:/opt/valheim
-    ports: 
+    ports:
       - "2456-2457:2456-2457/udp"
       - "9001:9001/tcp"
     env_file:
