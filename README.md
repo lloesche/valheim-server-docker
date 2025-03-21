@@ -39,6 +39,7 @@ This project is hosted at [https://github.com/lloesche/valheim-server-docker](ht
 * [Supervisor](#supervisor)
   * [Supervisor API](#supervisor-api)
 * [Status web server](#status-web-server)
+  * [Monitoring with UptimeKuma](#monitoring-with-uptimekuma)
 * [Modding](#modding)
   * [BepInExPack Valheim](#bepinexpack-valheim)
     * [Configuration](#configuration)
@@ -619,6 +620,33 @@ All the information in `status.json` is fetched from Valheim servers public quer
 Within the container `status.json` is written to `STATUS_HTTP_HTDOCS` which by default is `/opt/valheim/htdocs`. It can either be consumed directly or the user can add their own html/css/js to this directory to read the json data and present it in whichever style they prefer. A file named `index.html` will be shown on `/` if it exists.
 
 As mentioned all the information is publicly available on the Valheim server query port. However the option is there to configure a `STATUS_HTTP_CONF` (`/config/httpd.conf` by default) containing [busybox httpd config](https://git.busybox.net/busybox/tree/networking/httpd.c) to limit access to the status web server by IP/subnet or login/password.
+
+## Monitoring with UptimeKuma
+The status web server can be monitored using [UptimeKuma](https://github.com/louislam/uptime-kuma), a popular open source monitoring tool. UptimeKuma supports [JSONata](https://docs.jsonata.org/overview.html) expressions which can be used to determine the health of your Valheim server.
+
+To monitor your server:
+
+1. Set up UptimeKuma according to their documentation
+2. Add a new monitor with type "HTTP(s) - Json Query"
+3. Enter the URL to your status endpoint (e.g., `http://your-server-ip:80/status.json`)
+4. Under "Json Query", enter the following:
+
+```
+(
+   $now := $toMillis($now()[0]);  /* Extract first element of $now() array */
+   $lastUpdate := $toMillis(last_status_update);
+   $minutesDiff := ($now - $lastUpdate) / 60000;  /* Difference in minutes */
+   error = null and $minutesDiff <= 1 ? "healthy" : "unhealthy"
+)
+```
+
+6. Set "Expected Value" to `healthy`
+
+This JSONata expression checks two conditions:
+- The server has no errors (`error = null`)
+- The status has been updated within the last minute (`$minutesDiff <= 1`)
+
+If both conditions are met, the monitor will return "healthy", otherwise "unhealthy". This provides a simple way to ensure your Valheim server is running properly.
 
 # Modding
 
