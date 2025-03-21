@@ -1,5 +1,5 @@
-module github.com/valheim-server-docker/valheim-logfilter
+module github.com/lloesche/valheim-server-docker/valheim-logfilter
 
-go 1.16
+go 1.24
 
-require github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+require github.com/golang/glog v1.2.4

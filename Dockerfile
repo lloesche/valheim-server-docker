@@ -4,10 +4,19 @@ ARG TESTS
 ARG SOURCE_COMMIT
 ARG BUSYBOX_VERSION=1.34.1
 ARG SUPERVISOR_VERSION=4.2.4
+ARG GO_VERSION=1.24.0
 
 RUN apt-get update
 RUN apt-get -y install apt-utils
-RUN apt-get -y install build-essential curl git python3 python3-pip golang shellcheck
+RUN apt-get -y install build-essential curl git python3 python3-pip shellcheck
+
+# Install Go 1.24 manually
+RUN curl -L -o /tmp/go${GO_VERSION}.linux-amd64.tar.gz https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf /tmp/go${GO_VERSION}.linux-amd64.tar.gz \
+    && rm /tmp/go${GO_VERSION}.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+ENV GOPATH=/go
+ENV PATH=$PATH:$GOPATH/bin
 
 WORKDIR /build/busybox
 RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2 \
@@ -20,9 +29,9 @@ RUN curl -L -o /tmp/busybox.tar.bz2 https://busybox.net/downloads/busybox-${BUSY
 WORKDIR /build/env2cfg
 COPY ./env2cfg/ /build/env2cfg/
 RUN if [ "${TESTS:-true}" = true ]; then \
-        pip3 install tox \
-        && tox \
-        ; \
+    pip3 install tox \
+    && tox \
+    ; \
     fi
 RUN python3 setup.py bdist --format=gztar
 
@@ -55,17 +64,17 @@ COPY common /usr/local/etc/valheim/
 COPY contrib/* /usr/local/share/valheim/contrib/
 RUN chmod 755 /usr/local/sbin/bootstrap /usr/local/bin/valheim-*
 RUN if [ "${TESTS:-true}" = true ]; then \
-        shellcheck -a -x -s bash -e SC2034 \
-            /usr/local/sbin/bootstrap \
-            /usr/local/bin/valheim-backup \
-            /usr/local/bin/valheim-is-idle \
-            /usr/local/bin/valheim-bootstrap \
-            /usr/local/bin/valheim-server \
-            /usr/local/bin/valheim-updater \
-            /usr/local/bin/valheim-plus-updater \
-            /usr/local/bin/bepinex-updater \
-            /usr/local/share/valheim/contrib/*.sh \
-        ; \
+    shellcheck -a -x -s bash -e SC2034 \
+    /usr/local/sbin/bootstrap \
+    /usr/local/bin/valheim-backup \
+    /usr/local/bin/valheim-is-idle \
+    /usr/local/bin/valheim-bootstrap \
+    /usr/local/bin/valheim-server \
+    /usr/local/bin/valheim-updater \
+    /usr/local/bin/valheim-plus-updater \
+    /usr/local/bin/bepinex-updater \
+    /usr/local/share/valheim/contrib/*.sh \
+    ; \
     fi
 WORKDIR /
 RUN rm -rf /usr/local/lib/
@@ -82,10 +91,10 @@ FROM --platform=linux/386 debian:buster-slim as i386-libs
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get -y --no-install-recommends install \
-        libc6-dev \
-        libstdc++6 \
-        libsdl2-2.0-0 \
-        libcurl4 \
+    libc6-dev \
+    libstdc++6 \
+    libsdl2-2.0-0 \
+    libcurl4 \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
@@ -103,26 +112,26 @@ RUN groupadd -g "${PGID:-0}" -o valheim \
     && apt-get -y --no-install-recommends install apt-utils \
     && apt-get -y dist-upgrade \
     && apt-get -y --no-install-recommends install \
-        libc6-dev \
-        libsdl2-2.0-0 \
-        cron \
-        curl \
-        iproute2 \
-        libcurl4 \
-        ca-certificates \
-        procps \
-        locales \
-        unzip \
-        zip \
-        rsync \
-        openssh-client \
-        jq \
-        python3-minimal \
-        python3-pkg-resources \
-        python3-setuptools \
-        libpulse-dev \
-        libatomic1 \
-        libc6 \
+    libc6-dev \
+    libsdl2-2.0-0 \
+    cron \
+    curl \
+    iproute2 \
+    libcurl4 \
+    ca-certificates \
+    procps \
+    locales \
+    unzip \
+    zip \
+    rsync \
+    openssh-client \
+    jq \
+    python3-minimal \
+    python3-pkg-resources \
+    python3-setuptools \
+    libpulse-dev \
+    libatomic1 \
+    libc6 \
     && echo 'LANG="en_US.UTF-8"' > /etc/default/locale \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && rm -f /bin/sh \
@@ -164,9 +173,9 @@ RUN groupadd -g "${PGID:-0}" -o valheim \
     && chown valheim:valheim /var/run/valheim \
     && chown -R root:root /opt/steamcmd \
     && chmod 755 /opt/steamcmd/steamcmd.sh \
-        /opt/steamcmd/linux32/steamcmd \
-        /opt/steamcmd/linux32/steamerrorreporter \
-        /usr/bin/supervisord \
+    /opt/steamcmd/linux32/steamcmd \
+    /opt/steamcmd/linux32/steamerrorreporter \
+    /usr/bin/supervisord \
     && cd "/opt/steamcmd" \
     && su - valheim -c "/opt/steamcmd/steamcmd.sh +login anonymous +quit" \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \

@@ -29,13 +29,13 @@ import (
 )
 
 type PatternAction struct {
-	filter string
-	cmd    string
+	Filter string
+	Cmd    string
 }
 
 type RegexpAction struct {
-	filter *regexp.Regexp
-	cmd    string
+	Filter *regexp.Regexp
+	Cmd    string
 }
 
 // valheim-logfilter is a string processor for log lines emitted by Valheim dedicated server.
@@ -112,7 +112,7 @@ func main() {
 			containsFilters = append(containsFilters, PatternAction{varValue, cmd})
 		} else if strings.HasPrefix(envVar, *envRegexp) {
 			if foundCmdInEnv {
-				glog.V(2).Infof("On log lines matching regexp '%s' running '%s", varValue, cmd)
+				glog.V(2).Infof("On log lines matching regexp '%s' running '%s'", varValue, cmd)
 			} else {
 				glog.V(2).Infof("Removing log lines matching regexp '%s'", varValue)
 			}
@@ -157,51 +157,51 @@ Input:
 			logLine = string(v)
 		}
 		for _, action := range matchFilters {
-			if logLine == action.filter {
+			if logLine == action.Filter {
 				if glog.V(5) {
-					glog.Infof("Line matched '%s'", action.filter)
+					glog.Infof("Line matched '%s'", action.Filter)
 				}
-				if removeLogLine(action.cmd, logLine) {
+				if removeLogLine(action.Cmd, logLine) {
 					continue Input
 				}
 			}
 		}
 		for _, action := range prefixFilters {
-			if strings.HasPrefix(logLine, action.filter) {
+			if strings.HasPrefix(logLine, action.Filter) {
 				if glog.V(5) {
-					glog.Infof("Line matched prefix filter '%s'", action.filter)
+					glog.Infof("Line matched prefix filter '%s'", action.Filter)
 				}
-				if removeLogLine(action.cmd, logLine) {
+				if removeLogLine(action.Cmd, logLine) {
 					continue Input
 				}
 			}
 		}
 		for _, action := range suffixFilters {
-			if strings.HasSuffix(logLine, action.filter) {
+			if strings.HasSuffix(logLine, action.Filter) {
 				if glog.V(5) {
-					glog.Infof("Line matched suffix filter '%s'", action.filter)
+					glog.Infof("Line matched suffix filter '%s'", action.Filter)
 				}
-				if removeLogLine(action.cmd, logLine) {
+				if removeLogLine(action.Cmd, logLine) {
 					continue Input
 				}
 			}
 		}
 		for _, action := range containsFilters {
-			if strings.Contains(logLine, action.filter) {
+			if strings.Contains(logLine, action.Filter) {
 				if glog.V(5) {
-					glog.Infof("Line contains filter '%s'", action.filter)
+					glog.Infof("Line contains filter '%s'", action.Filter)
 				}
-				if removeLogLine(action.cmd, logLine) {
+				if removeLogLine(action.Cmd, logLine) {
 					continue Input
 				}
 			}
 		}
 		for _, action := range regexpFilters {
-			if action.filter.MatchString(logLine) {
+			if action.Filter.MatchString(logLine) {
 				if glog.V(5) {
-					glog.Infof("Line matched regexp filter '%s'", action.filter)
+					glog.Infof("Line matched regexp filter '%s'", action.Filter)
 				}
-				if removeLogLine(action.cmd, logLine) {
+				if removeLogLine(action.Cmd, logLine) {
 					continue Input
 				}
 			}
@@ -243,6 +243,7 @@ func runHook(cmd string, logLine string) {
 	stdin, err := subProcess.StdinPipe()
 	if err != nil {
 		glog.Error(err)
+		return
 	}
 
 	subProcess.Stdout = os.Stdout
@@ -250,10 +251,17 @@ func runHook(cmd string, logLine string) {
 
 	if err = subProcess.Start(); err != nil {
 		glog.Error(err)
+		return
 	}
 	glog.Flush()
 
-	io.WriteString(stdin, logLine+"\n")
-	stdin.Close()
-	subProcess.Wait()
+	if _, err = io.WriteString(stdin, logLine+"\n"); err != nil {
+		glog.Errorf("Failed to write to stdin: %v", err)
+	}
+	if err = stdin.Close(); err != nil {
+		glog.Errorf("Failed to close stdin: %v", err)
+	}
+	if err = subProcess.Wait(); err != nil {
+		glog.Errorf("Command failed: %v", err)
+	}
 }
