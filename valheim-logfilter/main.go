@@ -112,7 +112,7 @@ func main() {
 			containsFilters = append(containsFilters, PatternAction{varValue, cmd})
 		} else if strings.HasPrefix(envVar, *envRegexp) {
 			if foundCmdInEnv {
-				glog.V(2).Infof("On log lines matching regexp '%s' running '%s", varValue, cmd)
+				glog.V(2).Infof("On log lines matching regexp '%s' running '%s'", varValue, cmd)
 			} else {
 				glog.V(2).Infof("Removing log lines matching regexp '%s'", varValue)
 			}
@@ -243,6 +243,7 @@ func runHook(cmd string, logLine string) {
 	stdin, err := subProcess.StdinPipe()
 	if err != nil {
 		glog.Error(err)
+		return
 	}
 
 	subProcess.Stdout = os.Stdout
@@ -250,10 +251,17 @@ func runHook(cmd string, logLine string) {
 
 	if err = subProcess.Start(); err != nil {
 		glog.Error(err)
+		return
 	}
 	glog.Flush()
 
-	io.WriteString(stdin, logLine+"\n")
-	stdin.Close()
-	subProcess.Wait()
+	if _, err = io.WriteString(stdin, logLine+"\n"); err != nil {
+		glog.Errorf("Failed to write to stdin: %v", err)
+	}
+	if err = stdin.Close(); err != nil {
+		glog.Errorf("Failed to close stdin: %v", err)
+	}
+	if err = subProcess.Wait(); err != nil {
+		glog.Errorf("Command failed: %v", err)
+	}
 }
