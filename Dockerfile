@@ -37,7 +37,8 @@ RUN python3 setup.py bdist --format=gztar
 
 WORKDIR /build/valheim-logfilter
 COPY ./valheim-logfilter/ /build/valheim-logfilter/
-RUN go build -ldflags="-s -w" \
+RUN go test ./... \
+    && go build -ldflags="-s -w" \
     && mv valheim-logfilter /usr/local/bin/
 
 WORKDIR /build
