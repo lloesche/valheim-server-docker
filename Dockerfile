@@ -2,8 +2,8 @@ FROM debian:bullseye-slim as build-env
 ENV DEBIAN_FRONTEND=noninteractive
 ARG TESTS
 ARG SOURCE_COMMIT
-ARG BUSYBOX_VERSION=1.34.1
-ARG SUPERVISOR_VERSION=4.2.4
+ARG BUSYBOX_VERSION=1.36.1
+ARG SUPERVISOR_VERSION=4.2.5
 ARG GO_VERSION=1.24.0
 
 RUN apt-get update
@@ -37,7 +37,8 @@ RUN python3 setup.py bdist --format=gztar
 
 WORKDIR /build/valheim-logfilter
 COPY ./valheim-logfilter/ /build/valheim-logfilter/
-RUN go build -ldflags="-s -w" \
+RUN go test ./... \
+    && go build -ldflags="-s -w" \
     && mv valheim-logfilter /usr/local/bin/
 
 WORKDIR /build
