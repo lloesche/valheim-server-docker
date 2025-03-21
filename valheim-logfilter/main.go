@@ -29,13 +29,13 @@ import (
 )
 
 type PatternAction struct {
-	filter string
-	cmd    string
+	Filter string
+	Cmd    string
 }
 
 type RegexpAction struct {
-	filter *regexp.Regexp
-	cmd    string
+	Filter *regexp.Regexp
+	Cmd    string
 }
 
 // valheim-logfilter is a string processor for log lines emitted by Valheim dedicated server.
@@ -157,51 +157,51 @@ Input:
 			logLine = string(v)
 		}
 		for _, action := range matchFilters {
-			if logLine == action.filter {
+			if logLine == action.Filter {
 				if glog.V(5) {
-					glog.Infof("Line matched '%s'", action.filter)
+					glog.Infof("Line matched '%s'", action.Filter)
 				}
-				if removeLogLine(action.cmd, logLine) {
+				if removeLogLine(action.Cmd, logLine) {
 					continue Input
 				}
 			}
 		}
 		for _, action := range prefixFilters {
-			if strings.HasPrefix(logLine, action.filter) {
+			if strings.HasPrefix(logLine, action.Filter) {
 				if glog.V(5) {
-					glog.Infof("Line matched prefix filter '%s'", action.filter)
+					glog.Infof("Line matched prefix filter '%s'", action.Filter)
 				}
-				if removeLogLine(action.cmd, logLine) {
+				if removeLogLine(action.Cmd, logLine) {
 					continue Input
 				}
 			}
 		}
 		for _, action := range suffixFilters {
-			if strings.HasSuffix(logLine, action.filter) {
+			if strings.HasSuffix(logLine, action.Filter) {
 				if glog.V(5) {
-					glog.Infof("Line matched suffix filter '%s'", action.filter)
+					glog.Infof("Line matched suffix filter '%s'", action.Filter)
 				}
-				if removeLogLine(action.cmd, logLine) {
+				if removeLogLine(action.Cmd, logLine) {
 					continue Input
 				}
 			}
 		}
 		for _, action := range containsFilters {
-			if strings.Contains(logLine, action.filter) {
+			if strings.Contains(logLine, action.Filter) {
 				if glog.V(5) {
-					glog.Infof("Line contains filter '%s'", action.filter)
+					glog.Infof("Line contains filter '%s'", action.Filter)
 				}
-				if removeLogLine(action.cmd, logLine) {
+				if removeLogLine(action.Cmd, logLine) {
 					continue Input
 				}
 			}
 		}
 		for _, action := range regexpFilters {
-			if action.filter.MatchString(logLine) {
+			if action.Filter.MatchString(logLine) {
 				if glog.V(5) {
-					glog.Infof("Line matched regexp filter '%s'", action.filter)
+					glog.Infof("Line matched regexp filter '%s'", action.Filter)
 				}
-				if removeLogLine(action.cmd, logLine) {
+				if removeLogLine(action.Cmd, logLine) {
 					continue Input
 				}
 			}
