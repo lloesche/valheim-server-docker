@@ -8,20 +8,22 @@ main() {
     echo "Waiting up to $timeout seconds for server to start..."
     start_time=$(date +%s)
     while :; do
-        echo "Current Service Status"
-        echo "======================"
-        /usr/local/bin/supervisorctl status
-        echo
-        if [ "$(/usr/local/bin/supervisorctl status valheim-server | awk '{print $2}')" != "STOPPED" ]; then
-            echo "Server Log: Last 200 Bytes"
-            echo "=========================="
-            /usr/local/bin/supervisorctl tail -200 valheim-server
-        else
-            echo "Updater Log: Last 200 Bytes"
-            echo "==========================="
-            /usr/local/bin/supervisorctl tail -200 valheim-updater
+        if [ -e /var/run/supervisor.sock ]; then
+            echo "Current Service Status"
+            echo "======================"
+            /usr/local/bin/supervisorctl status
+            echo
+            if [ "$(/usr/local/bin/supervisorctl status valheim-server | awk '{print $2}')" != "STOPPED" ]; then
+                echo "Server Log: Last 200 Bytes"
+                echo "=========================="
+                /usr/local/bin/supervisorctl tail -200 valheim-server
+            else
+                echo "Updater Log: Last 200 Bytes"
+                echo "==========================="
+                /usr/local/bin/supervisorctl tail -200 valheim-updater
+            fi
+            echo
         fi
-        echo
         if server_is_listening; then
             echo "Server is now listening on UDP port $SERVER_QUERY_PORT"
             break
