@@ -458,9 +458,9 @@ This update schedule can be changed using the `UPDATE_CRON` environment variable
 
 # Crossplay
 
-By default the container only allow Steam clients. If you enable the `CROSSPLAY=true` option the server will switch from Steam matchmaking to PlayFab, allowing Xbox and Microsoft Store clients to connect. When enabling crossplay, a third port is opened (2458 UDP) used for the crossplay backend communication, specifically for Xbox/Microsoft Store clients using PlayFab services.
+By default the container only allow Steam clients. If you enable the `CROSSPLAY=true` option the server will switch from Steam matchmaking to PlayFab, allowing Xbox and Microsoft Store clients to connect. When enabling crossplay, a third port is opened (2458 UDP) used for the crossplay backend communication.
 
-Note: that some mods may not work well or at all with crossplay enabled, which is why it is not enabled by default.
+Note that some mods may not work well or at all with crossplay enabled, which is why it is not enabled by default.
 
 ## When you need crossplay
 
