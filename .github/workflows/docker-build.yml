@@ -42,6 +42,7 @@ jobs:
         with:
           name: valheim-test-image
           path: valheim-test.tar
+          retention-days: 1
 
   test:
     name: Run Matrix Tests
@@ -80,7 +81,6 @@ jobs:
             ${{ matrix.config.env }} \
             valheim-test
           docker exec valheim-test-${{ matrix.config.name }} /usr/local/bin/valheim-tests "${{ matrix.config.name }}"
-          docker stop valheim-test-${{ matrix.config.name }}
 
   build_and_push:
     name: Build and Push Docker Image
