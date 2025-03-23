@@ -31,6 +31,7 @@ This project is hosted at [https://github.com/lloesche/valheim-server-docker](ht
 - [Crossplay](#crossplay)
   - [When you need crossplay](#when-you-need-crossplay)
   - [When you do not](#when-you-do-not)
+  - [Network Ports](#network-ports)
 - [Backups](#backups)
   - [Manual backup](#manual-backup)
 - [Finding Your Server](#finding-your-server)
