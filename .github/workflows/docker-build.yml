@@ -48,6 +48,16 @@ jobs:
             lloesche/valheim-server
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=sha
+          labels: |
+            org.opencontainers.image.title=valheim-server
+            org.opencontainers.image.description=Valheim Server
+            org.opencontainers.image.url=https://github.com/lloesche/valheim-server-docker
+            org.opencontainers.image.source=https://github.com/lloesche/valheim-server-docker
+            org.opencontainers.image.version=${{ github.sha }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=Apache-2.0
+            org.opencontainers.image.documentation=https://github.com/lloesche/valheim-server-docker/blob/main/README.md
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
