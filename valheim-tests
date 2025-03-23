@@ -1,0 +1,49 @@
+#!/bin/bash
+. /usr/local/etc/valheim/defaults
+. /usr/local/etc/valheim/common
+
+main() {
+    timeout=900
+    echo "Running tests..."
+    echo "Waiting up to $timeout seconds for server to start..."
+    start_time=$(date +%s)
+    while :; do
+        if [ -e /var/run/supervisor.sock ]; then
+            echo "Current Service Status"
+            echo "======================"
+            /usr/local/bin/supervisorctl status
+            echo
+            if [ "$(/usr/local/bin/supervisorctl status valheim-server | awk '{print $2}')" != "STOPPED" ]; then
+                echo "Server Log: Last 200 Bytes"
+                echo "=========================="
+                /usr/local/bin/supervisorctl tail -200 valheim-server
+            else
+                echo "Updater Log: Last 200 Bytes"
+                echo "==========================="
+                /usr/local/bin/supervisorctl tail -200 valheim-updater
+            fi
+            echo
+        fi
+        if server_is_listening; then
+            echo "Server is now listening on UDP port $SERVER_QUERY_PORT"
+            break
+        fi
+        sleep 10
+        current_time=$(date +%s)
+        if [ $((current_time - start_time)) -ge $timeout ]; then
+            echo "Server did not start listening on UDP port $SERVER_QUERY_PORT within $timeout seconds"
+            echo "Dumping logs and exiting..."
+            echo "Updater Log: Last 4096 Bytes"
+            echo "============================"
+            /usr/local/bin/supervisorctl tail -4096 valheim-updater
+            echo "Server Log: Last 4096 Bytes"
+            echo "==========================="
+            /usr/local/bin/supervisorctl tail -4096 valheim-server
+            exit 1
+        fi
+    done
+    echo "Tests passed!"
+    exit 0
+}
+
+main

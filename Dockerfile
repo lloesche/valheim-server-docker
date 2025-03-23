@@ -55,6 +55,7 @@ RUN curl -L -o /tmp/supervisor.tar.gz https://github.com/Supervisor/supervisor/a
     && python3 setup.py bdist --format=gztar
 
 COPY bootstrap /usr/local/sbin/
+COPY valheim-tests /usr/local/bin/
 COPY valheim-status /usr/local/bin/
 COPY valheim-is-idle /usr/local/bin/
 COPY valheim-bootstrap /usr/local/bin/
@@ -70,6 +71,7 @@ RUN chmod 755 /usr/local/sbin/bootstrap /usr/local/bin/valheim-*
 RUN if [ "${TESTS:-true}" = true ]; then \
     shellcheck -a -x -s bash -e SC2034 \
     /usr/local/sbin/bootstrap \
+    /usr/local/bin/valheim-tests \
     /usr/local/bin/valheim-backup \
     /usr/local/bin/valheim-is-idle \
     /usr/local/bin/valheim-bootstrap \
