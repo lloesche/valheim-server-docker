@@ -63,7 +63,7 @@ backup() {
         backup_file="$BACKUPS_DIRECTORY/worlds-$(date +%Y%m%d-%H%M%S).zip"
         pre_backup_hook "$backup_file"
         info "Backing up Valheim server worlds to $backup_file"
-        zip -r "$backup_file" "$WORLDS_DIR/"
+        zip -r "$backup_file" "$WORLDS_DIR/" -x '*_backup_auto-*.*'
         chmod "$BACKUPS_FILE_PERMISSIONS" "$backup_file"
         post_backup_hook "$backup_file"
     else
