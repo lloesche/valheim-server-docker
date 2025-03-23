@@ -139,6 +139,10 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.licenses=Apache-2.0
             org.opencontainers.image.documentation=https://github.com/lloesche/valheim-server-docker/blob/main/README.md
+          annotations: |
+            org.opencontainers.image.description=Valheim Server
+            org.opencontainers.image.source=https://github.com/lloesche/valheim-server-docker
+            org.opencontainers.image.licenses=Apache-2.0
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -149,4 +153,5 @@ jobs:
           build-args: SOURCE_COMMIT=${{ github.sha }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
           cache-from: type=gha
