@@ -32,6 +32,13 @@ main() {
         current_time=$(date +%s)
         if [ $((current_time - start_time)) -ge $timeout ]; then
             echo "Server did not start listening on UDP port $SERVER_QUERY_PORT within $timeout seconds"
+            echo "Dumping logs and exiting..."
+            echo "Updater Log: Last 4096 Bytes"
+            echo "============================"
+            /usr/local/bin/supervisorctl tail -4096 valheim-updater
+            echo "Server Log: Last 4096 Bytes"
+            echo "==========================="
+            /usr/local/bin/supervisorctl tail -4096 valheim-server
             exit 1
         fi
     done
