@@ -186,7 +186,7 @@ RUN groupadd -g "${PGID:-0}" -o valheim \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && date --utc --iso-8601=seconds > /usr/local/etc/build.date
 
-EXPOSE 2456-2457/udp
+EXPOSE 2456-2458/udp
 EXPOSE 9001/tcp
 EXPOSE 80/tcp
 WORKDIR /
