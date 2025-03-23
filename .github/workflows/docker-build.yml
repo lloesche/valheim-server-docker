@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - dev
   pull_request:
     branches:
       - main
+      - dev
   workflow_dispatch:
 
 concurrency:
@@ -88,6 +90,7 @@ jobs:
 
   build_and_push:
     name: Build and Push Docker Image
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     needs: test
     runs-on: ubuntu-latest
     permissions:
@@ -124,7 +127,8 @@ jobs:
             ghcr.io/lloesche/valheim-server
             lloesche/valheim-server
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
             type=sha
           labels: |
             org.opencontainers.image.title=valheim-server
