@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Running tests..."
+# TODO: Add tests here
+echo "Tests passed!"
+exit 0

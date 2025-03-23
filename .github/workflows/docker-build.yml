@@ -1,4 +1,4 @@
-name: Build Docker Images
+name: Build, Test and Push Docker Images
 
 on:
   push:
@@ -11,7 +11,79 @@ on:
 
 jobs:
   build:
-    name: Build Docker Images
+    name: Build Docker Image for Testing
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image for testing
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          push: false
+          build-args: SOURCE_COMMIT=${{ github.sha }}
+          tags: valheim-test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Save Docker image to tarball
+        run: docker save -o valheim-test.tar valheim-test
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: valheim-test-image
+          path: valheim-test.tar
+
+  test:
+    name: Run Matrix Tests
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        config:
+          - name: default
+            env: ""
+          - name: valheim_plus
+            env: "-e VALHEIM_PLUS=true"
+          - name: bepinex
+            env: "-e BEPINEX=true"
+    steps:
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: valheim-test-image
+
+      - name: Load Docker image from tarball
+        run: docker load -i valheim-test.tar
+
+      - name: Run container with ${{ matrix.config.name }}
+        run: |
+          docker run -d --rm --name valheim-test \
+            --cap-add=sys_nice \
+            --stop-timeout 120 \
+            -p 2456-2457:2456-2457/udp \
+            -e SERVER_NAME="My Server" \
+            -e WORLD_NAME="Neotopia" \
+            -e SERVER_PASS=secret \
+            ${{ matrix.config.env }} \
+            valheim-test
+          docker exec valheim-test /usr/local/bin/valheim-tests
+          docker stop valheim-test
+
+  build_and_push:
+    name: Build and Push Docker Image
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -69,4 +141,3 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
