@@ -45,7 +45,7 @@ jobs:
           retention-days: 1
 
   test:
-    name: Run Matrix Tests
+    name: Run Test Matrix
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -68,7 +68,7 @@ jobs:
       - name: Load Docker image from tarball
         run: docker load -i valheim-test.tar
 
-      - name: Run container with ${{ matrix.config.name }}
+      - name: Run container with ${{ matrix.config.name }} settings
         run: |
           docker run -d --rm \
             --name valheim-test-${{ matrix.config.name }} \
