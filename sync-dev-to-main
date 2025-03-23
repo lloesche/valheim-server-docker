@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+git fetch origin
+git checkout dev && git reset --hard origin/dev
+git checkout main && git reset --hard origin/main
+if ! git merge-base --is-ancestor main dev; then
+  echo "❌ main has diverged from dev" >&2
+  exit 1
+fi
+git checkout main && git merge dev --ff-only
+git push origin main
+echo "✅ Successfully synced dev to main" >&2
