@@ -8,11 +8,15 @@ main() {
     echo "Waiting up to $timeout seconds for server to start..."
     start_time=$(date +%s)
     while :; do
+        echo "Current Container Status"
+        echo "========================"
+        /usr/local/bin/supervisorctl status
+        echo
         if server_is_listening; then
             echo "Server is now listening on UDP port $SERVER_QUERY_PORT"
             break
         fi
-        sleep 1
+        sleep 10
         current_time=$(date +%s)
         if [ $((current_time - start_time)) -ge $timeout ]; then
             echo "Server did not start listening on UDP port $SERVER_QUERY_PORT within $timeout seconds"
