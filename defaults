@@ -33,6 +33,9 @@ if [ "$PUBLIC_TEST" = true ]; then
     STEAMCMD_ARGS="$STEAMCMD_ARGS -beta public-test -betapassword yesimadebackups"
 fi
 
+# Crossplay
+CROSSPLAY=${CROSSPLAY:-false}
+
 # Debug Flags
 # Flag to wipe all downloaded server data on startup (config is untouched)
 DEBUG_START_FRESH=${DEBUG_START_FRESH:-false}
