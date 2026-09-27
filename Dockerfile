@@ -4,7 +4,7 @@ ARG TESTS
 ARG SOURCE_COMMIT
 ARG BUSYBOX_VERSION=1.36.1
 ARG BUSYBOX_SHA256=b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314
-ARG SUPERVISOR_VERSION=4.2.5
+ARG SUPERVISOR_VERSION=4.3.0
 ARG GO_VERSION=1.24.1
 ARG PYTHON_A2S_VERSION=1.4.1
 
@@ -86,13 +86,9 @@ RUN if [ "${TESTS:-true}" = true ]; then \
 WORKDIR /
 RUN rm -rf /usr/local/lib/
 # Debian's pip is modded to install to /usr/local by default.
-# Freezes an old version of Setuptools to prevent a flood of deprecation
-# notices while supervisor still uses it. Setuptools dependency can be removed
-# when supervisor>=4.3.0 is released
 RUN pip3 install --break-system-packages \
     python-a2s==${PYTHON_A2S_VERSION} \
     supervisor==${SUPERVISOR_VERSION} \
-    "Setuptools<67.5.0" \
     /build/env2cfg
 COPY supervisord.conf /usr/local/etc/supervisord.conf
 RUN mkdir -p /usr/local/etc/supervisor/conf.d/ \
@@ -139,9 +135,7 @@ RUN groupadd -g "${PGID:-0}" -o valheim \
     rsync \
     openssh-client \
     jq \
-    python3-minimal \
-    python3-pkg-resources \
-    python3-setuptools \
+    python3 \
     libpulse-dev \
     libatomic1 \
     libc6 \
