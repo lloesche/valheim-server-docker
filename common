@@ -405,13 +405,31 @@ extract_archive() {
 }
 
 
+# Retry transient refusals (#778) and cap each attempt so a stalled transfer
+# can't hang the updater. Callers can override, e.g. a shorter --max-time.
+fetch_url() {
+    curl -sfSL \
+        --retry 5 --retry-delay 5 --retry-all-errors --retry-max-time 90 \
+        --connect-timeout 15 --max-time 300 \
+        -A "valheim-server-docker" \
+        "$@"
+}
+
+
 download_mod() {
     local download_url="$1"
     local updated_at="$2"
     local download_path="$3"
     debug "Downloading $download_url to $download_path"
-    curl -sfSL -o "$download_path" "$download_url" \
-        && echo "$updated_at" > "$download_path.updated_at"
+    # Keep the previous archive until the new one is complete, so a failed
+    # download never leaves a partial archive for check_merge to extract
+    if fetch_url -o "$download_path.tmp" "$download_url" \
+        && mv -f "$download_path.tmp" "$download_path"; then
+        echo "$updated_at" > "$download_path.updated_at"
+    else
+        rm -f "$download_path.tmp"
+        return 1
+    fi
 }
 
 
