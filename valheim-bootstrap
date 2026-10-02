@@ -49,6 +49,28 @@ fi
 mkdir -p "$valheim_download_path"
 mkdir -p "$valheim_install_path"
 
+# Keep SteamCMD's depot manifest cache on the /opt/valheim volume. SteamCMD
+# needs the installed build's manifest to update, and anonymous logins cannot
+# re-download a manifest once it is no longer the branch's current one, so
+# losing $HOME/Steam/depotcache on container re-creation breaks updates.
+mkdir -p "$steamcmd_depotcache_path" "$steamcmd_home"
+link_depotcache=true
+if [ -d "$steamcmd_home/depotcache" ] && [ ! -L "$steamcmd_home/depotcache" ]; then
+    # Entries already on the volume belong to the installation there, so they win.
+    if cp -rn "$steamcmd_home/depotcache/." "$steamcmd_depotcache_path/"; then
+        rm -rf "$steamcmd_home/depotcache"
+    else
+        # Linking now would put the symlink inside the directory we failed to
+        # empty, so keep using it in place rather than lose the manifests.
+        link_depotcache=false
+        warn "Could not copy the existing depot manifest cache to $steamcmd_depotcache_path - keeping it at $steamcmd_home/depotcache, where it will not survive container re-creation"
+    fi
+fi
+if [ "$link_depotcache" = true ]; then
+    ln -sfn "$steamcmd_depotcache_path" "$steamcmd_home/depotcache"
+    debug "SteamCMD depot manifest cache persisted at $steamcmd_depotcache_path"
+fi
+
 # Mod support
 if [ "$VALHEIM_PLUS" = true ] && [ "$BEPINEX" = true ]; then
     error "Configuration error: enable ValheimPlus or BepInEx mod support but not both - aborting startup"
@@ -61,7 +83,7 @@ if [ "$VALHEIM_PLUS" = true ]; then
     mkdir -p "$vp_install_path"
     if [ -d "$vp_config_path" ]; then
         write_valheim_plus_config
-        write_bepinex_config "$vp_config_path" "$vp_install_path/BepInEx/plugins"
+        write_bepinex_config "$vp_config_path" "$vp_install_path/BepInEx"
     fi
 fi
 
@@ -69,7 +91,7 @@ if [ "$BEPINEX" = true ]; then
     mkdir -p "$bepinex_download_path"
     mkdir -p "$bepinex_install_path"
     if [ -d "$bepinex_config_path" ]; then
-        write_bepinex_config "$bepinex_config_path" "$bepinex_install_path/BepInEx/plugins"
+        write_bepinex_config "$bepinex_config_path" "$bepinex_install_path/BepInEx"
     fi
 fi
 
@@ -77,36 +99,6 @@ fi
 write_adminlist
 write_bannedlist
 write_permittedlist
-
-# Create crontabs
-crontab=$(mktemp)
-
-{ echo "SERVER_PUBLIC=$SERVER_PUBLIC"; \
-    echo "SERVER_PORT=$SERVER_PORT"; \
-    echo "STATUS_HTTP_HTDOCS=$STATUS_HTTP_HTDOCS"; } >> "$crontab"
-
-if [ "$BACKUPS" = true ] && [ -n "$BACKUPS_CRON" ] && [ "$BACKUPS_INTERVAL" = "315360000" ]; then
-    debug "Creating cron to do world backups using schedule $BACKUPS_CRON"
-    echo "$BACKUPS_CRON [ -f \"$valheim_backup_pidfile\" ] && kill -HUP \$(cat $valheim_backup_pidfile)" >> "$crontab"
-fi
-
-if [ -n "$UPDATE_CRON" ] && [ "$UPDATE_INTERVAL" = "315360000" ]; then
-    debug "Creating cron to check for updates using schedule $UPDATE_CRON"
-    echo "$UPDATE_CRON [ -f \"$valheim_updater_pidfile\" ] && kill -HUP \$(cat $valheim_updater_pidfile)" >> "$crontab"
-fi
-
-if [ -n "$RESTART_CRON" ]; then
-    debug "Creating cron to restart valheim-server using schedule $RESTART_CRON"
-    if [ "$RESTART_IF_IDLE" = true ]; then
-        echo "$RESTART_CRON $cmd_valheim_is_idle && $cmd_supervisorctl restart valheim-server" >> "$crontab"
-    else
-        echo "$RESTART_CRON $cmd_supervisorctl restart valheim-server" >> "$crontab"
-    fi
-else
-    debug "Environment variable RESTART_CRON is empty - no automatic valheim-server restart scheduled"
-fi
-crontab "$crontab"
-rm -f "$crontab"
 
 
 # Notify users of new data paths

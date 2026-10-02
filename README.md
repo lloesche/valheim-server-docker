@@ -4,8 +4,6 @@
 
 Valheim Server in a Docker Container (with [BepInEx](#bepinexpack-valheim) and [ValheimPlus](#valheimplus) support)  
 This project is hosted at [https://github.com/community-valheim-tools/valheim-server-docker](https://github.com/community-valheim-tools/valheim-server-docker)
-It was originally forked from [lloesche/valheim-server-docker](https://github.com/lloesche/valheim-server-docker) and
-for the moment is able to act as a drop-in replacement.
 
 # Table of contents
 
@@ -81,6 +79,7 @@ to e.g.
  `$HOME/valheim-server/config/worlds_local`
 and run the image with `$HOME/valheim-server/config` volume mounted to `/config` inside the container.
 The container directory `/opt/valheim` contains the downloaded server. It can optionally be volume mounted to avoid having to download the server on each fresh start.
+It also holds SteamCMD's depot manifest cache (`/opt/valheim/dl/depotcache`), which SteamCMD needs to update an existing installation after Valheim was updated on Steam, so the cache stays in sync with the installation it belongs to.
 
 ```
 $ mkdir -p $HOME/valheim-server/config/worlds_local $HOME/valheim-server/data
@@ -102,7 +101,7 @@ Warning: `SERVER_PASS` must be at least 5 characters long. Otherwise `valheim_se
 
 A fresh start will take several minutes depending on your Internet connection speed as the container will download the Valheim dedicated server from Steam (~1 GB).
 
-Do not forget to modify `WORLD_NAME` to reflect the name of your world! For existing worlds that is the filename in the `worlds_local/` folder without the `.db/.fwl` extension.
+Do not forget to modify `WORLD_NAME` to reflect the name of your world! For existing worlds that is the name of the world's directory inside the `worlds_local/` folder, or the filename without the `.db/.fwl` extension for a pre-1.0 world.
 
 If you want to play with friends over the Internet and are behind NAT make sure that UDP ports 2456-2457 are forwarded to the container host. (Remark: If you use crossplay, you don't need port forwarding! See official Valheim Dedicated Server Manual.pdf in the data/server folder.)
 Also ensure they are publicly accessible in any firewall.
@@ -130,7 +129,7 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | --------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `SERVER_NAME`               | `My Server`              | Name that will be shown in the server browser                                                                                                                                                                                                                                          |
 | `SERVER_PORT`               | `2456`                   | UDP start port that the server will listen on                                                                                                                                                                                                                                          |
-| `WORLD_NAME`                | `Dedicated`              | Name of the world without `.db/.fwl` file extension                                                                                                                                                                                                                                    |
+| `WORLD_NAME`                | `Dedicated`              | Name of the world: the directory inside `worlds_local/`, or on pre-1.0 saves the filename without the `.db/.fwl` extension                                                                                                                                                             |
 | `SERVER_PASS`               | `secret`                 | Password for logging into the server - min. 5 characters!                                                                                                                                                                                                                              |
 | `SERVER_PASS_FILE`          |                          | Set to a secrets path (ie `/run/secrets/server_pass`) to read the server password from a secret instead of environment variables                                                                                                                                                       |
 | `SERVER_PUBLIC`             | `true`                   | Whether the server should be listed in the server browser (`true`) or not (`false`)                                                                                                                                                                                                    |
@@ -157,10 +156,10 @@ Without it you will see a message `Warning: failed to set thread priority` in th
 | `PERMISSIONS_UMASK`         | `022`                    | [Umask](https://en.wikipedia.org/wiki/Umask) to use for backups, config files and directories                                                                                                                                                                                          |
 | `STEAMCMD_ARGS`             | `validate`               | Additional steamcmd CLI arguments                                                                                                                                                                                                                                                      |
 | `PUBLIC_TEST`               | `false`                  | Run the Public Test Beta version of Valheim server. Note that this simply extends existing `STEAMCMD_ARGS` by adding the appropriate beta flags to it.                                                                                                                                 |
-| `VALHEIM_PLUS`              | `false`                  | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`, additional plugins in `/config/valheimplus/plugins`). Can not be used together with `BEPINEX`.                                                                |
+| `VALHEIM_PLUS`              | `false`                  | Whether [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) mod should be loaded (config in `/config/valheimplus`, additional plugins in `/config/valheimplus/plugins`, patchers in `/config/valheimplus/patchers`). Can not be used together with `BEPINEX`.                    |
 | `VALHEIM_PLUS_REPO`         | `Grantapher/ValheimPlus` | Which ValheimPlus Github repo to use. Useful for switching to forks.                                                                                                                                                                                                                   |
 | `VALHEIM_PLUS_RELEASE`      | `latest`                 | Which version of [ValheimPlus](https://github.com/valheimPlus/ValheimPlus) to download. Will default to latest available. To specify a specific tag set to `tags/0.9.9.8`                                                                                                              |
-| `BEPINEX`                   | `false`                  | Whether [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) mod should be loaded (config in `/config/bepinex`, plugins in `/config/bepinex/plugins`). Can not be used together with `VALHEIM_PLUS`.                                           |
+| `BEPINEX`                   | `false`                  | Whether [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) mod should be loaded (config in `/config/bepinex`, plugins in `/config/bepinex/plugins`, patchers in `/config/bepinex/patchers`). Can not be used together with `VALHEIM_PLUS`.   |
 | `SUPERVISOR_HTTP`           | `false`                  | Turn on supervisor's http server                                                                                                                                                                                                                                                       |
 | `SUPERVISOR_HTTP_PORT`      | `9001`                   | Set supervisor's http server port                                                                                                                                                                                                                                                      |
 | `SUPERVISOR_HTTP_USER`      | `admin`                  | Supervisor http server username                                                                                                                                                                                                                                                        |
@@ -246,8 +245,8 @@ The following environment variables can be populated to run commands whenever sp
 | `PRE_SUPERVISOR_HOOK`        |         | Command to be executed before supervisord is run. Startup is blocked until this command returns.                                                                                                                                                                              |
 | `PRE_BOOTSTRAP_HOOK`         |         | Command to be executed before bootstrapping is done. Startup is blocked until this command returns.                                                                                                                                                                           |
 | `POST_BOOTSTRAP_HOOK`        |         | Command to be executed after bootstrapping is done and before the server or any services are started. Can be used to install additional packages or perform additional system setup. Startup is blocked until this command returns.                                           |
-| `PRE_BACKUP_HOOK`            |         | Command to be executed before a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path of the future backup zip file. Backups are blocked until this command returns.                                                                                |
-| `POST_BACKUP_HOOK`           |         | Command to be executed after a backup is created. The string `@BACKUP_FILE@` will be replaced by the full path of the backup zip file. Backups are blocked until this command returns. See [Copy backups to another location](#copy-backups-to-another-location) for details. |
+| `PRE_BACKUP_HOOK`            |         | Command to be executed before a backup is created. `@BACKUP_FILE@` is replaced by the future backup's full path. Backups are blocked until this command returns.                                                                                                              |
+| `POST_BACKUP_HOOK`           |         | Command to be executed after a backup is created. `@BACKUP_FILE@` is replaced by the backup's full path. Backups are blocked until this command returns. See [Copy backups to another location](#copy-backups-to-another-location) for details.                               |
 | `PRE_UPDATE_CHECK_HOOK`      |         | Command to be executed before an update check is performed. Current update is blocked until this command returns.                                                                                                                                                             |
 | `POST_UPDATE_CHECK_HOOK`     |         | Command to be executed after an update check was performed. Future updates are blocked until this command returns.                                                                                                                                                            |
 | `PRE_START_HOOK`             |         | Command to be executed before the first server start is performed by the valheim-updater. Current start is blocked until this command returns.                                                                                                                                |
@@ -273,13 +272,14 @@ The following environment variables can be populated to run commands whenever sp
 
 #### Copy backups to another location
 
-After a backup ZIP has been created the command specified by `$POST_BACKUP_HOOK` will be executed if set to a non-zero string.
-Within that command the string `@BACKUP_FILE@` will be replaced by the full path to the just created ZIP file.
+After a backup has been created the command specified by `$POST_BACKUP_HOOK` will be executed if set to a non-zero string.
+Within that command the string `@BACKUP_FILE@` will be replaced by the full path to the just created backup. That is a ZIP file by default;
+with `BACKUPS_ZIP=false` a Valheim 1.0 world is backed up as a directory, so use a command that copies recursively.
 
 ```
 -v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa \
 -v $HOME/.ssh/known_hosts:/root/.ssh/known_hosts \
--e POST_BACKUP_HOOK='timeout 300 scp @BACKUP_FILE@ myself@example.com:~/backups/$(basename @BACKUP_FILE@)'
+-e POST_BACKUP_HOOK='timeout 300 scp -r @BACKUP_FILE@ myself@example.com:~/backups/$(basename @BACKUP_FILE@)'
 ```
 
 #### Notify on Discord
@@ -354,7 +354,6 @@ Example:
 -e VALHEIM_PLUS=true \
 -e VPCFG_Server_enabled=true \
 -e VPCFG_Server_enforceMod=false \
--e VPCFG_Server_dataRate=500 \
 -e BEPINEXCFG_Logging_DOT_Console_Enabled=true
 ```
 
@@ -364,7 +363,6 @@ turns into `/config/valheimplus/valheim_plus.cfg`
 [Server]
 enabled=true
 enforceMod=false
-dataRate=500
 ```
 
 and `/config/valheimplus/BepInEx.cfg`
@@ -460,6 +458,10 @@ By default the container will check for Valheim server updates every 15 minutes 
 If an update is found it is downloaded and the server restarted.
 This update schedule can be changed using the `UPDATE_CRON` environment variable.
 
+If Steam denies access to the installed depot manifest (`Error! App '896660' state is 0x6 after update job.`),
+the updater moves `appmanifest_896660.acf` aside (kept as `appmanifest_896660.acf.denied`) and retries once
+with validation. Failed downloads leave the separate installed game unchanged.
+
 # Crossplay
 
 By default the container only allow Steam clients. If you enable the `CROSSPLAY=true` option the server will switch from Steam matchmaking to PlayFab, allowing Xbox and Microsoft Store clients to connect. When enabling crossplay, a third port is opened (2458 UDP) used for the crossplay backend communication.
@@ -490,7 +492,13 @@ By default 3 days worth of backups will be kept. A different number can be confi
 It is possible to configure a maximum number of to-be-kept backup files with `BACKUPS_MAX_COUNT`. When going over this limit, the oldest file(s) will be deleted. The default is `0` which means no limit. Note that `BACKUPS_MAX_AGE` will always be respected: if backups get too old, they will be deleted even if `BACKUPS_MAX_COUNT` was not yet reached (or is `0`).
 
 Beware that backups are performed while the server is running. As such files might be in an open state when the backup runs.
-However the `worlds_local/` directory also contains a `.db.old` file for each world which should always be closed and in a consistent state.
+On pre-1.0 saves the `worlds_local/` directory also contains a `.db.old` file for each world which should always be closed and in a consistent state.
+
+Valheim 1.0 stores each world as a directory of many files instead of a single `.db`, so a backup taken mid-save could otherwise capture a
+chunk index that refers to chunk files the server had already replaced. The backup job detects this - the server marks each committed save
+with a `_main.<n>.ok` file - and retries the backup up to three times if the world was saved while it was being read. If none of the attempts
+land between saves the backup is still kept, and a warning is logged. Setting `BACKUPS_IF_IDLE=false` makes this far less likely, since
+backups then only run when players are around and world saves are less frequent.
 
 See [Copy backups to another location](#copy-backups-to-another-location) for an example of how to copy backups offsite.
 
@@ -500,6 +508,16 @@ dedicated server only saves the world in 20 minute intervals and on shutdown. So
 the most recent changes we want to wait out one world save. This grace period also needs to be long enough so that our `BACKUPS_CRON` had a chance to run.
 
 `BACKUPS_ZIP=false` can be used to store backups uncompressed in the backup directory. Please note that this will increase the filesize of the backups, due to no compression.
+
+### Upgrading a world to Valheim 1.0
+
+The first time a 1.0 server opens a world saved by an older version it converts it to the new directory format. As with every Valheim world
+version upgrade this is one-way - an older server cannot read the world afterwards - so make sure you are happy with your backups first.
+
+If you run with a non-root `PUID`/`PGID`, make sure you are on an image that contains this change before letting a 1.0 server convert a
+world. Older images apply the *file* permission mode to everything directly inside `worlds_local/`, which strips the execute bit from the new
+per-world directories and leaves the server unable to open its own save - it logs `UnauthorizedAccessException` and then keeps running with no
+world loaded, so the container still looks healthy. At the default `PUID=0` the server runs as root and is unaffected.
 
 ## Manual backup
 
@@ -730,8 +748,11 @@ Remark: Some Mods are using RPC commands, which needs gameport+2 for communicati
 To enable BepInExPack provide the env variable `BEPINEX=true`. This can not be specified together with `VALHEIM_PLUS=true`.
 Just like Valheim Server this mod is automatically updated using the `UPDATE_CRON` schedule.
 
-Upon first start BepInExPack will create a new directory `/config/bepinex` where its config files are located.
-BepInEx plugins must be copied into the `/config/bepinex/plugins/` directory. From there they will be automatically copied into `/opt/valheim/bepinex/BepInEx/plugins/` on install/update.
+Upon first start, BepInExPack creates a new directory `/config/bepinex` where its config files are located.
+BepInEx plugins must be copied into the `/config/bepinex/plugins/` directory and BepInEx patchers into `/config/bepinex/patchers/`.
+From there they're synced into `/opt/valheim/bepinex/BepInEx/plugins/` and `/opt/valheim/bepinex/BepInEx/patchers/` on container start and on install/update.
+The sync is one-way: a plugin or patcher removed from `/config` is also removed from the server directory on the next sync.
+Only files a previous sync installed are removed, so plugins that came with the mod archive itself and files a patcher generates at runtime (such as HookGenPatcher's `MMHOOK` assemblies) are left alone.
 
 ### Configuration
 
@@ -748,8 +769,9 @@ See [Mod config from Environment Variables](#mod-config-from-environment-variabl
 It has been incorporated into this container. To enable V+ provide the env variable `VALHEIM_PLUS=true`. This can not be specified together with `BEPINEX=true`.
 Upon first start V+ will create a new directory `/config/valheimplus` where its config files are located.
 As a user you are mainly concerned with the values in `/config/valheimplus/valheim_plus.cfg`.
+Additional BepInEx plugins go into `/config/valheimplus/plugins/` and patchers into `/config/valheimplus/patchers/`, synced into the server directory exactly as described under [BepInExPack Valheim](#bepinexpack-valheim).
 For most modifications the mod has to be installed both, on the server as well as all the clients that connect to the server.
-A few modifications, like for example changing the `dataRate` can be done server only.
+A few modifications can be done server only.
 
 ### Updates
 
