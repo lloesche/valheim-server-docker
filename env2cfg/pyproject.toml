@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "env2cfg"
+version = "0.0.1"
+description = "Generate BepInEx config from env"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.8"
+keywords = ["valheim", "valheimplus", "bepinex"]
+classifiers = [
+    # Current project status
+    "Development Status :: 4 - Beta",
+    # Audience
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Information Technology",
+    # Supported python versions
+    "Programming Language :: Python :: 3",
+    # Supported OS's
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Unix",
+    # Extra metadata
+    "Environment :: Console",
+    "Natural Language :: English",
+    "Topic :: Utilities",
+]
+
+[project.scripts]
+env2cfg = "env2cfg.__main__:main"
